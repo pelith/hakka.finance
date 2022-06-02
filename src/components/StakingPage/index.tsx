@@ -63,7 +63,7 @@ const Staking = () => {
     return true;
   }, [chainId]);
 
-  const [activeChainTab, setActiveChainTab] = useState(ChainId.MAINNET);
+  const [activeChainTab, setActiveChainTab] = useState(chainId || ChainId.MAINNET);
 
   const isTabInCorrectNetwork = chainId === activeChainTab;
 
