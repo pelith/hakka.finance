@@ -92,7 +92,7 @@ const RestakeModal = ({
   const vault = vaults[index];
   const hakkaBalance = useTokenBalance(account, HAKKA[chainId]);
 
-  const safeInputAmount = useMemo(() => Number(inputAmount).toString(), [inputAmount]);
+  const safeInputAmount = useMemo(() => inputAmount === '' ? '0' : inputAmount, [inputAmount]);
 
   const handleKeepAmountTheSame = useCallback(() => {
     setIsKeepAmountTheSame((state) => !state);
