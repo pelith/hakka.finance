@@ -37,7 +37,10 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-  supportedChainIds: process.env.GATSBY_ENV === 'development' ? [1, 4, 42, 56, 137, 250] : [1, 56, 137, 250],
+  supportedChainIds: [
+    1, 3, 4, 5, 10, 42, 56, 69, 97, 100, 137, 420, 42161, 42220, 43114, 80001, 421611, 421613,
+    1313161554, 11297108109
+  ],
 });
 
 export const walletconnect = new WalletConnectConnector({
