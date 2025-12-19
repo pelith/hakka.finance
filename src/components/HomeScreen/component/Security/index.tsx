@@ -6,7 +6,7 @@ import styles from './styles';
 
 export enum SecurityOrganizations {
   HashCloak,
-  Immunefi,
+  // Immunefi,
 }
 
 interface OrganizationsInfoType {
@@ -25,13 +25,13 @@ const SECURITY_ORGANIZATION_INFO: { [organization in SecurityOrganizations]: Org
     btnContent: 'Read Audit Report',
     link: 'https://github.com/hakkafinance/audit-reports',
   },
-  [SecurityOrganizations.Immunefi]: {
-    securityContent: 'Bug bounty program',
-    preposition: 'via',
-    icon: <img src={images.iconImmunefi} width='116px' height='28px' />,
-    btnContent: 'Secure Our Code',
-    link: 'https://immunefi.com/bounty/hakkafinance/',
-  },
+  // [SecurityOrganizations.Immunefi]: {
+  //   securityContent: 'Bug bounty program',
+  //   preposition: 'via',
+  //   icon: <img src={images.iconImmunefi} width='116px' height='28px' />,
+  //   btnContent: 'Secure Our Code',
+  //   link: 'https://immunefi.com/bounty/hakkafinance/',
+  // },
 };
 
 type SecurityItemProps = {
@@ -61,7 +61,7 @@ const SecuritySection = () => {
     <Box sx={styles.securitySection}>
       <Box sx={styles.title}>Security</Box>
       <SecurityItem organization={SecurityOrganizations.HashCloak} />
-      <SecurityItem organization={SecurityOrganizations.Immunefi} />
+      {/* <SecurityItem organization={SecurityOrganizations.Immunefi} /> */}
     </Box>
   )
 }

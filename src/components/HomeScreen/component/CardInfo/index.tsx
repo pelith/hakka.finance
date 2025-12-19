@@ -18,15 +18,6 @@ function CardInfo(props) {
     },
     {
       imageBottom: 'iconForwardGray',
-      title: 'Your year in Review',
-      subTitle: '',
-      subContent: 'Calculate how Hakka you are!',
-      click: () => {navigate('/yearly-review')},
-      bgColor: 'rgba(217, 251, 227, 1)',
-      bgImage: `url(${images.iconYearReviewBanner})`
-    },
-    {
-      imageBottom: 'iconForwardGray',
       title: 'Shitcoinmon!',
       subTitle: '',
       subContent: 'Turn your worst investments into mighty NFT monsters',

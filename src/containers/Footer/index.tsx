@@ -53,7 +53,7 @@ function Footer() {
         <Flex sx={styles.linkArea}>
           <Flex>
             <a sx={styles.wordLink} href="https://github.com/hakkafinance/audit-reports" target="_blank" rel="noreferrer noopener">Audit Reports</a>  
-            <a sx={styles.wordLink} href="https://immunefi.com/bounty/hakkafinance/" target="_blank" rel="noreferrer noopener">Bug Bounty</a>  
+            {/* <a sx={styles.wordLink} href="https://immunefi.com/bounty/hakkafinance/" target="_blank" rel="noreferrer noopener">Bug Bounty</a>   */}
           </Flex>
           <Flex sx={styles.footer_icons}>{renderListIcon()}</Flex>
         </Flex>

@@ -87,22 +87,15 @@ export const botSideBarItems = [
     connectOutsideWebsite: false,
     underConstruction: true,
   },
-  {
-    name: 'Year in Review',
-    icon: images.iconYearlyReview,
-    path: 'yearly-review',
-    connectOutsideWebsite: false,
-    underConstruction: false,
-  },
-  {
-    name: 'Bug Bounty',
-    icon: images.iconBug,
-    href: 'https://immunefi.com/bounty/hakkafinance/',
-    path: 'bugbounty',
-    connectOutsideWebsite: true,
-    underConstruction: false,
-    subIcon: images.iconLinkSmall,
-  },
+  // {
+  //   name: 'Bug Bounty',
+  //   icon: images.iconBug,
+  //   href: 'https://immunefi.com/bounty/hakkafinance/',
+  //   path: 'bugbounty',
+  //   connectOutsideWebsite: true,
+  //   underConstruction: false,
+  //   subIcon: images.iconLinkSmall,
+  // },
 ];
 
 function SideBar(props) {
