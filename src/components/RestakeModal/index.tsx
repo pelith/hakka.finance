@@ -1,7 +1,7 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jsx, Switch } from 'theme-ui';
-import { parseUnits } from 'ethers/lib/utils';
+import { parseUnits } from 'viem';
 import { isMobile } from 'react-device-detect';
 import {
   useRestakeModalOpen,
@@ -16,16 +16,23 @@ import { ApprovalState, useTokenApprove } from '../../hooks/useTokenApprove';
 import VotingPowerSection from '../StakingPage/StakingPanel/VotingPowerSection';
 import LockPeriodOptions from '../StakingPage/StakingPanel/LockPeriodOptions.tsx';
 import { useTokenBalance } from '../../state/wallet/hooks';
-import { ChainId, HAKKA, NEW_SHAKKA_ADDRESSES, TransactionState } from '../../constants';
+import {
+  ChainId,
+  HAKKA,
+  NEW_SHAKKA_ADDRESSES,
+  TransactionState,
+} from '../../constants';
 import useHakkaRestake from '../../hooks/staking/useHakkaRestake';
 import { restakeReceivedAmount } from '../../utils/stakeReceivedAmount';
 import { transferToYear } from '../../utils';
 import withApproveTokenCheckWrapper from '../../hoc/withApproveTokenCheckWrapper';
 import withWrongNetworkCheckWrapper from '../../hoc/withWrongNetworkCheckWrapper';
 import withConnectWalletCheckWrapper from '../../hoc/withConnectWalletCheckWrapper';
-import { VaultType } from '../../hooks/staking/useStakingVault';
-import { Zero } from '@ethersproject/constants';
+import type { VaultType } from '../../hooks/staking/useStakingVault';
 import useCurrentBlockTimestamp from '../../hooks/useCurrentBlockTimestamp';
+import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance.ts';
+import type { Address } from 'viem';
+import BigNumber from 'bignumber.js';
 interface RestakeModalInterface {
   index: number;
   vaults?: VaultType[];
@@ -56,8 +63,8 @@ const StayTheSameSwitchWithTitle = ({
         <div>
           <Switch
             disabled={isDisable}
-            id="stake-position-switch"
-            className="switch"
+            id='stake-position-switch'
+            className='switch'
             label={isMobile ? '' : 'Stay the same'}
             checked={switchState}
             onChange={handleSwitchChange}
@@ -72,7 +79,7 @@ const StayTheSameSwitchWithTitle = ({
 const secOfFourYear = 31557600 * 4;
 
 const RestakeButton = withApproveTokenCheckWrapper(
-  withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton))
+  withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton)),
 );
 
 const RestakeModal = ({
@@ -90,10 +97,14 @@ const RestakeModal = ({
   const [isCorrectInput, setIsCorrectInput] = useState<boolean>(true);
   const [isKeepAmountTheSame, setIsKeepAmountTheSame] = useState(false);
   const [isKeepPeriodTheSame, setIsKeepPeriodTheSame] = useState(false);
-  const vault = vaults[index];
-  const hakkaBalance = useTokenBalance(account, HAKKA[chainId]);
+  const vault = vaults?.[index];
+  const {data: hakkaBalanceData} = useTokenInfoAndBalance(account as Address, HAKKA[chainId].address);
+  const hakkaBalance = hakkaBalanceData?.balance ?? '0';
 
-  const safeInputAmount = useMemo(() => Number(inputAmount).toString(), [inputAmount]);
+  const safeInputAmount = useMemo(
+    () => Number(inputAmount).toString(),
+    [inputAmount],
+  );
 
   const handleKeepAmountTheSame = useCallback(() => {
     setIsKeepAmountTheSame((state) => !state);
@@ -104,7 +115,7 @@ const RestakeModal = ({
   }, []);
 
   const currentBlockTimestamp = useCurrentBlockTimestamp();
-  let timeLeft = vault?.unlockTime.sub(currentBlockTimestamp).toNumber() ?? 0;
+  let timeLeft = new BigNumber(vault?.unlockTime ?? 0).minus(currentBlockTimestamp).toNumber() ?? 0;
 
   timeLeft = timeLeft < 0 ? 0 : timeLeft;
   const isLeftTimeLessThan30Mins = useMemo(() => {
@@ -118,32 +129,34 @@ const RestakeModal = ({
   const [restakeState, restake] = useHakkaRestake(
     NEW_SHAKKA_ADDRESSES[chainId],
     index,
-    isKeepAmountTheSame ? Zero : parseUnits(safeInputAmount, 18),
-    isKeepPeriodTheSame ? escapeBlockUpdateTimeLeft : period
+    isKeepAmountTheSame ? 0n : parseUnits(safeInputAmount, 18),
+    isKeepPeriodTheSame ? escapeBlockUpdateTimeLeft : period,
   );
 
   const periodYear = transferToYear(period);
   const trialInputAmount = isKeepAmountTheSame ? '0' : safeInputAmount;
-  const trialPeriod = isKeepPeriodTheSame ? transferToYear(escapeBlockUpdateTimeLeft) : periodYear;
+  const trialPeriod = isKeepPeriodTheSame
+    ? transferToYear(escapeBlockUpdateTimeLeft)
+    : periodYear;
 
   const [receivedSHakkaAmount, additionalSHakkaAmount] = restakeReceivedAmount(
     trialInputAmount,
     trialPeriod,
     vault,
-    chainId
+    chainId,
   );
 
   const [approveState, approve] = useTokenApprove(
-    HAKKA[chainId],
+    HAKKA[chainId as ChainId].address,
     NEW_SHAKKA_ADDRESSES[chainId],
-    safeInputAmount
+    safeInputAmount,
   );
 
   const isDisable =
     (parseFloat(safeInputAmount) !== 0 && !isCorrectInput) ||
     restakeState === TransactionState.PENDING ||
     (isKeepPeriodTheSame && isKeepAmountTheSame) ||
-    parseFloat(additionalSHakkaAmount) <= 0 ||
+    parseFloat(additionalSHakkaAmount ?? '0') <= 0 ||
     isLeftTimeLessThan30Mins;
 
   const isRestakePending = restakeState === TransactionState.PENDING;
@@ -171,20 +184,20 @@ const RestakeModal = ({
           <img src={images.iconDeleteRound} onClick={toggleRestakeModal} />
         </div>
         <StayTheSameSwitchWithTitle
-          title="Stake more HAKKA?"
+          title='Stake more HAKKA?'
           switchState={isKeepAmountTheSame}
           handleSwitchChange={handleKeepAmountTheSame}
         />
         <div style={isKeepAmountTheSame ? { display: 'none' } : {}}>
           <div sx={styles.hakkaBalanceContainer}>
             <span>Amount</span>
-            <span>HAKKA Balance: {hakkaBalance?.toFixed(4) || '-'}</span>
+            <span>HAKKA Balance: {new BigNumber(hakkaBalance).toFixed(4) || '-'}</span>
           </div>
           <div sx={styles.numericalInputWrapper}>
             <NumericalInputField
               value={inputAmount}
               onUserInput={setInputAmount}
-              tokenBalance={hakkaBalance}
+              tokenBalanceAmount={hakkaBalance}
               approve={approve}
               approveState={approveState}
               setIsCorrectInput={setIsCorrectInput}
@@ -194,7 +207,7 @@ const RestakeModal = ({
         <hr sx={styles.hr} />
         <StayTheSameSwitchWithTitle
           isDisable={timeLeft === 0}
-          title="Adjust period?"
+          title='Adjust period?'
           switchState={isKeepPeriodTheSame}
           handleSwitchChange={handleKeepPeriodTheSame}
         />
@@ -209,14 +222,14 @@ const RestakeModal = ({
         <h4 sx={styles.receiveShakkaTitle}>Additional sHAKKA you get</h4>
         <div sx={styles.votingPowerSectionWrapper}>
           <VotingPowerSection
-            value={parseFloat(additionalSHakkaAmount)}
+            value={parseFloat(additionalSHakkaAmount ?? '0')}
             prefixSymbol
-            total={parseFloat(receivedSHakkaAmount)}
+            total={receivedSHakkaAmount ? parseFloat(receivedSHakkaAmount) : undefined}
           />
         </div>
         <RestakeButton
           onClick={restake}
-          styleKit="green"
+          styleKit='green'
           disabled={isDisable}
           isDisabledWhenNotPrepared={false}
           isConnected={!!account}

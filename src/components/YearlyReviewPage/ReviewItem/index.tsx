@@ -1,15 +1,15 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import React from 'react'
+import React from 'react';
 import styles from './styles';
 
 interface ReviewItemProps {
-  title: string
-  icon: string
-  performance: string
-  comment: string
+  title: string;
+  icon: string;
+  performance: string;
+  comment: string;
 }
-  
+
 const ReviewItem = ({ title, icon, performance, comment }: ReviewItemProps) => {
   return (
     <div sx={styles.itemWrapper}>
@@ -23,7 +23,7 @@ const ReviewItem = ({ title, icon, performance, comment }: ReviewItemProps) => {
       </div>
       <p sx={styles.mobileCOmment}>{comment}</p>
     </div>
-  )
-}
+  );
+};
 
-export default ReviewItem
+export default ReviewItem;

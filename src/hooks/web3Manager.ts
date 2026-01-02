@@ -1,74 +1,37 @@
-import { useWeb3React as useWeb3ReactCore } from '@web3-react/core';
 import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
 
-export const useActiveWeb3React = useWeb3ReactCore;
+// Re-export for backwards compatibility
+export { useActiveWeb3React } from './useActiveWeb3React';
 
-export function useEagerConnect () {
-  const { connector, isActive, account, chainId } = useWeb3ReactCore(); // specifically using useWeb3ReactCore because of what this hook does
+/**
+ * wagmi handles eager connection automatically via autoConnect
+ * This hook is kept for backwards compatibility
+ */
+export function useEagerConnect() {
+  const { isConnected } = useAccount();
   const [tried, setTried] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      try {
-        if(!account){
-          await connector.connectEagerly?.();
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setTried(true);
-      }
-    })();
-  }, [chainId, account]); // intentionally only running on mount (make sure it's only mounted once :))
+    // wagmi handles reconnection automatically
+    setTried(true);
+  }, []);
 
-  // if the connection worked, wait until we get confirmation of that to flip the flag
   useEffect(() => {
-    if (isActive) {
+    if (isConnected) {
       setTried(true);
     }
-  }, [isActive]);
+  }, [isConnected]);
 
   return tried;
 }
 
 /**
- * Use for network and injected - logs user in
- * and out after checking what network theyre on
+ * wagmi handles wallet events automatically
+ * This hook is kept for backwards compatibility but is mostly a no-op
  */
 export function useInactiveListener(suppress = false) {
-  const { isActive: active, connector } = useWeb3ReactCore(); // specifically using useWeb3React because of what this hook does
-  const activate = connector.activate;
-  const error = false;
-  useEffect(() => {
-    const { ethereum } = window;
-
-    if (ethereum && ethereum.on && !active && !error && !suppress) {
-      const handleChainChanged = () => {
-        // eat errors
-        activate()?.catch((error) => {
-          console.error('Failed to activate after chain changed', error);
-        });
-      };
-
-      const handleAccountsChanged = (accounts: string[]) => {
-        if (accounts.length > 0) {
-          // eat errors
-          activate()?.catch((error) => {
-            console.error('Failed to activate after accounts changed', error);
-          });
-        }
-      };
-
-      ethereum.on('chainChanged', handleChainChanged);
-      ethereum.on('accountsChanged', handleAccountsChanged);
-
-      return () => {
-        if (ethereum.removeListener) {
-          ethereum.removeListener('chainChanged', handleChainChanged);
-          ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        }
-      };
-    }
-    return undefined;
-  }, [active, error, suppress, activate]);
+  // wagmi handles chainChanged and accountsChanged events automatically
+  // This hook is kept for backwards compatibility
+  return;
 }

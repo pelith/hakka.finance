@@ -57,7 +57,7 @@ export default {
 
     p: {
       margin: '0',
-    }
+    },
   },
 
   missionSectionWrapper: {
@@ -80,4 +80,4 @@ export default {
       color: '#2da287',
     },
   },
-}
+};

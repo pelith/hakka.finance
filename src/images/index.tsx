@@ -174,9 +174,11 @@ const images = {
 
   iconTabEthWithBgColor: require('./icons/iconTabEthWithBgColor.svg').default,
   iconTabBscWithBgColor: require('./icons/iconTabBscWithBgColor.svg').default,
-  iconTabPolygonWithBgColor: require('./icons/iconTabPolygonWithBgColor.svg').default,
-  iconTabFantomWithBgColor: require('./icons/iconTabFantomWithBgColor.svg').default,
-  
+  iconTabPolygonWithBgColor: require('./icons/iconTabPolygonWithBgColor.svg')
+    .default,
+  iconTabFantomWithBgColor: require('./icons/iconTabFantomWithBgColor.svg')
+    .default,
+
   iconTabEthGray: require('./icons/iconTabEthGray.svg').default,
   iconTabBscGray: require('./icons/iconTabBscGray.svg').default,
   iconTabPolygonGray: require('./icons/iconTabPolygonGray.svg').default,

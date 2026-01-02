@@ -28,7 +28,7 @@ export default {
     fontSize: '14px',
     fontWeight: '600',
     lineHeight: '20px',
-    color: 'rgba(37, 62, 71, 0.5)'
+    color: 'rgba(37, 62, 71, 0.5)',
   },
 
   countScoreButton: {
@@ -70,6 +70,6 @@ export default {
   },
 
   goToProductsBtnWrapper: {
-    width: '200px'
+    width: '200px',
   },
-}
+};

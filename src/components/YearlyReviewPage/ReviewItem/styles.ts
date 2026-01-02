@@ -3,8 +3,8 @@ export default {
     fontSize: '14px',
 
     p: {
-      margin: '0'
-    }
+      margin: '0',
+    },
   },
 
   mainContent: {
@@ -21,7 +21,7 @@ export default {
     fontWeight: '600',
     lineHeight: '20px',
     color: 'rgba(37, 62, 71, 0.5)',
-    paddingBottom: '14px'
+    paddingBottom: '14px',
   },
 
   performance: {
@@ -52,5 +52,5 @@ export default {
     '@media screen and (max-width: 576px)': {
       display: 'block',
     },
-  }
-}
+  },
+};

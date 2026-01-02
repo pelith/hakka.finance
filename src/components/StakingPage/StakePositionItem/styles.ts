@@ -1,4 +1,5 @@
-export default {
+import createSX from 'src/utils/createSX';
+export default createSX({
   positionFormWrapper: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -96,8 +97,8 @@ export default {
   },
 
   redeemed: {
-    display: 'flex', 
-    alignItems: 'center', 
+    display: 'flex',
+    alignItems: 'center',
     padding: '0 20px 0 20px',
     fontSize: [2],
 
@@ -205,4 +206,4 @@ export default {
       width: '100%',
     },
   },
-};
+});

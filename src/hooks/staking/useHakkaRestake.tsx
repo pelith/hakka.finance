@@ -1,67 +1,95 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import { useState, useCallback, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { BigNumber } from 'ethers';
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
-import { useStakeContract } from '../useContract';
 import { getEtherscanLink, shortenTxId } from '../../utils';
 import { TransactionState } from '../../constants';
-export default function useHakkaRestake (
+import STAKING_ABI from 'src/constants/abis/shakka';
+export default function useHakkaRestake(
   stakeAddress: string,
   index: number,
-  amountParsed: BigNumber,
+  amountParsed: bigint,
   sec: number,
 ): [TransactionState, () => Promise<void>] {
   const { chainId } = useWeb3React();
-  const [currentTransaction, setCurrentTransaction] = useState(null);
-  const [transactionState, setTransactionState] = useState<TransactionState>(TransactionState.UNKNOWN);
 
-  const stakeState: TransactionState = useMemo(() => {
-    return currentTransaction
-      ? TransactionState.PENDING
-      : transactionState;
-  }, [currentTransaction, transactionState, index]);
+  const {
+    writeContractAsync,
+    data,
+    isSuccess: isWriteSuccess,
+    isError: isWriteError,
+    error: writeError,
+    reset,
+  } = useWriteContract();
 
-  const stakeContract = useStakeContract(stakeAddress);
-  const restake = useCallback(async (): Promise<void> => {
-    setTransactionState(TransactionState.UNKNOWN);
+  const {
+    isSuccess: isWaitForSuccess,
+    isError: isWaitForError,
+    error: waitForError,
+  } = useWaitForTransactionReceipt({
+    hash: data,
+    query: {
+      enabled: isWriteSuccess,
+    },
+  });
+
+  const restakeState: TransactionState = useMemo(() => {
+    if (!stakeAddress) return TransactionState.UNKNOWN;
+    if (isWriteSuccess) return TransactionState.PENDING;
+    if (isWaitForSuccess) return TransactionState.SUCCESS;
+    if (isWriteError || isWaitForError) return TransactionState.ERROR;
+    return TransactionState.UNKNOWN;
+  }, [
+    isWriteSuccess,
+    isWaitForSuccess,
+    isWriteError,
+    isWaitForError,
+    stakeAddress,
+  ]);
+
+  async function restake() {
     if (Number.isNaN(+index)) {
       console.error('no index');
       return;
     }
 
-    try {
-      const estimatedGas = await stakeContract.estimateGas.restake(index, amountParsed, sec);
-      const tx = await stakeContract.restake(index, amountParsed, sec, {
-        gasLimit: estimatedGas.mul(BigNumber.from(15000)).div(BigNumber.from(10000)), // * 1.5
-      });
-      setCurrentTransaction(tx.hash);
-      toast(
-        <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
-          sx={{ textDecoration: 'none', color: '#253e47' }}
-        >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-        , { containerId: 'tx' });
-      await tx.wait();
-      setTransactionState(TransactionState.SUCCESS);
-    } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>, { containerId: 'error' });
-      setTransactionState(TransactionState.ERROR);
-    } finally {
-      setCurrentTransaction(null);
-    }
-  }, [
-    stakeContract,
-    index,
-    amountParsed,
-    sec,
-  ]);
+    const txHash = await writeContractAsync({
+      address: stakeAddress as `0x${string}`,
+      abi: STAKING_ABI,
+      functionName: 'restake',
+      args: [BigInt(index), amountParsed, BigInt(sec)],
+    });
 
-  return [stakeState, restake];
+    toast(
+      <a
+        target='_blank'
+        href={getEtherscanLink(chainId ?? 1, txHash, 'transaction')}
+        rel='noreferrer noopener'
+        sx={{ textDecoration: 'none', color: '#253e47' }}
+      >
+        {shortenTxId(txHash)} <ExternalLink size={16} />
+      </a>,
+      { containerId: 'tx' },
+    );
+  }
+
+  useEffect(() => {
+    if (!isWaitForError && !isWriteError) return;
+    if (isWriteError) {
+      toast.error(<div>{writeError?.message}</div>, { containerId: 'error' });
+    }
+
+    if (isWaitForError) {
+      toast.error(<div>{waitForError?.message}</div>, { containerId: 'error' });
+    }
+  }, [isWaitForError, isWriteError, waitForError, writeError]);
+
+  useEffect(() => {
+    reset();
+  }, [index, reset]);
+
+  return [restakeState, restake];
 }

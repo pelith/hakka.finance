@@ -1,4 +1,4 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import React from 'react';
 import { CheckCircle, Copy } from 'react-feather';
@@ -13,12 +13,8 @@ export default function CopyHelper(props: {
   const [isCopied, setCopied] = useCopyClipboard();
 
   return (
-    <button sx={styles.copyIcon} onClick={() => setCopied(toCopy)}>
-      {isCopied ? (
-        <CheckCircle size="16" />
-      ) : (
-        <Copy size="18" />
-      )}
+    <button type='button' sx={styles.copyIcon} onClick={() => setCopied(toCopy)}>
+      {isCopied ? <CheckCircle size='16' /> : <Copy size='18' />}
       {isCopied ? <span style={{ marginLeft: '4px' }}>Copied</span> : children}
     </button>
   );

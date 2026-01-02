@@ -1,4 +1,3 @@
-import { AddressZero } from '@ethersproject/constants';
 import {
   ChainId,
   BHS_POOL,
@@ -28,7 +27,7 @@ import {
   IGAIN_FANTOM_ETH_POOL_1,
   NEW_SHAKKA_ADDRESSES,
   IGAIN_POLYGON_USDC_POOL_5,
-  IGAIN_POLYGON_DAI_POOL_4
+  IGAIN_POLYGON_DAI_POOL_4,
 } from '../../constants';
 
 export type Pool = {
@@ -38,13 +37,13 @@ export type Pool = {
   chain: ChainId;
   website: string;
   url: string;
-  tokenAddress: string;
+  tokenAddress: `0x${string}`;
   tokenSymbol: string;
   decimal: number;
-  rewardsAddress: string;
+  rewardsAddress: `0x${string}`;
   rewardsSymbol: string;
   archived: boolean;
-}
+};
 
 const timeOption: Intl.DateTimeFormatOptions = {
   year: 'numeric',
@@ -69,8 +68,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
     name: 'BHS/USDC/DAI/HAKKA',
     chain: ChainId.MAINNET,
     website: 'Balancer LP token',
-    url:
-      'https://pools.balancer.exchange/#/pool/0x1b8874baceaafba9ea194a625d12e8b270d77016',
+    url: 'https://pools.balancer.exchange/#/pool/0x1b8874baceaafba9ea194a625d12e8b270d77016',
     tokenAddress: '0x1b8874baceaafba9ea194a625d12e8b270d77016',
     tokenSymbol: 'BPT',
     decimal: 18,
@@ -82,8 +80,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
     name: 'BHS/HAKKA',
     chain: ChainId.MAINNET,
     website: 'Balancer LP token',
-    url:
-      'https://pools.balancer.exchange/#/pool/0xae95d3198d602acfb18f9188d733d710e14a27dd',
+    url: 'https://pools.balancer.exchange/#/pool/0xae95d3198d602acfb18f9188d733d710e14a27dd',
     tokenAddress: '0xae95d3198d602acfb18f9188d733d710e14a27dd',
     tokenSymbol: 'BPT',
     decimal: 18,
@@ -95,8 +92,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
     name: 'MKR/HAKKA',
     chain: ChainId.MAINNET,
     website: 'Uniswap MKR-HAKKA',
-    url:
-      'https://app.uniswap.org/#/add/0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2/0x0E29e5AbbB5FD88e28b2d355774e73BD47dE3bcd',
+    url: 'https://app.uniswap.org/#/add/0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2/0x0E29e5AbbB5FD88e28b2d355774e73BD47dE3bcd',
     tokenAddress: '0xB8b84Ce0CAde916988BD129EaFd7934ADE5Fa6a9',
     tokenSymbol: 'UNI-V2',
     decimal: 18,
@@ -192,10 +188,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   // latest at top
   [IGAIN_POLYGON_USDC_POOL_5]: {
     name: 'iGain IRS USDC',
-    subtitle: new Date(1696113319000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1696113319000).toLocaleString('en-US', timeOption),
     closeTime: '1696113319000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -209,10 +202,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_DAI_POOL_4]: {
     name: 'iGain IRS DAI',
-    subtitle: new Date(1696113705000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1696113705000).toLocaleString('en-US', timeOption),
     closeTime: '1696113705000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -226,10 +216,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_USDT_POOL_2]: {
     name: 'iGain IRS USDT',
-    subtitle: new Date(1648755529000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1648755529000).toLocaleString('en-US', timeOption),
     closeTime: '1648753240000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -243,10 +230,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_DAI_POOL_2]: {
     name: 'iGain IRS DAI',
-    subtitle: new Date(1648754430000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1648754430000).toLocaleString('en-US', timeOption),
     closeTime: '1648754430000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -260,10 +244,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_USDC_POOL_2]: {
     name: 'iGain IRS USDC',
-    subtitle: new Date(1648753240000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1648753240000).toLocaleString('en-US', timeOption),
     closeTime: '1648753240000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -277,10 +258,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_USDC_POOL_3]: {
     name: 'iGain IRS USDC',
-    subtitle: new Date(1652998884000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1652998884000).toLocaleString('en-US', timeOption),
     closeTime: '1652998884000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -294,10 +272,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_USDT_POOL_3]: {
     name: 'iGain IRS USDT',
-    subtitle: new Date(1680099823000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1680099823000).toLocaleString('en-US', timeOption),
     closeTime: '1680099823000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -311,10 +286,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_USDC_POOL_4]: {
     name: 'iGain IRS USDC',
-    subtitle: new Date(1680099953000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1680099953000).toLocaleString('en-US', timeOption),
     closeTime: '1680099953000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -328,10 +300,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_DAI_POOL_3]: {
     name: 'iGain IRS DAI',
-    subtitle: new Date(1680100039000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1680100039000).toLocaleString('en-US', timeOption),
     closeTime: '1680100039000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -345,10 +314,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_IG_POLYGON_ETH_USDC_POOL_1]: {
     name: 'iGain IG ETH-USDC',
-    subtitle: new Date(1652347832000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1652347832000).toLocaleString('en-US', timeOption),
     closeTime: '1652347832000',
     chain: ChainId.POLYGON,
     website: 'iGain IG',
@@ -362,10 +328,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_USDT_POOL_1]: {
     name: 'iGain IRS USDT',
-    subtitle: new Date(1656548685000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1656548685000).toLocaleString('en-US', timeOption),
     closeTime: '1656548685000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -379,10 +342,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_DAI_POOL_1]: {
     name: 'iGain IRS DAI',
-    subtitle: new Date(1656578065000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1656578065000).toLocaleString('en-US', timeOption),
     closeTime: '1656578065000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -396,10 +356,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_POLYGON_USDC_POOL_1]: {
     name: 'iGain IRS USDC',
-    subtitle: new Date(1656575394000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1656575394000).toLocaleString('en-US', timeOption),
     closeTime: '1656575394000',
     chain: ChainId.POLYGON,
     website: 'iGain IRS',
@@ -413,10 +370,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_FANTOM_USDT_POOL_1]: {
     name: 'iGain IRS USDT',
-    subtitle: new Date(1672390290000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1672390290000).toLocaleString('en-US', timeOption),
     closeTime: '1672390290000',
     chain: ChainId.FANTOM,
     website: 'iGain IRS',
@@ -430,10 +384,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_FANTOM_DAI_POOL_1]: {
     name: 'iGain IRS DAI',
-    subtitle: new Date(1664614290000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1664614290000).toLocaleString('en-US', timeOption),
     closeTime: '1664614290000',
     chain: ChainId.FANTOM,
     website: 'iGain IRS',
@@ -447,10 +398,7 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
   },
   [IGAIN_FANTOM_ETH_POOL_1]: {
     name: 'iGain IRS ETH',
-    subtitle: new Date(1664619331000).toLocaleString(
-      'en-US',
-      timeOption,
-    ),
+    subtitle: new Date(1664619331000).toLocaleString('en-US', timeOption),
     closeTime: '1664619331000',
     chain: ChainId.FANTOM,
     website: 'iGain IRS',
@@ -462,4 +410,4 @@ export const REWARD_POOLS: { [key: string]: Pool } = {
     rewardsSymbol: 'HAKKA',
     archived: true,
   },
-}
+};

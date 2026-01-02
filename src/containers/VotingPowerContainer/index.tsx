@@ -1,23 +1,25 @@
-import { formatUnits } from 'ethers/lib/utils';
 import React, { useMemo } from 'react';
 import VotingPowerArea from '../../components/StakingPage/VotingPower';
-import { Zero } from '@ethersproject/constants';
+import { formatUnits } from 'viem';
 import { ChainId } from '../../constants';
 import useVotingPower from '../../hooks/useVotingPower';
 import { v1PowerWeighting } from '../../utils/votingPowerCal';
 import useV1VotingPower from '../../hooks/useV1VotingPower';
 const startDateSec = ~~(new Date('2022-06-30 18:00:00').getTime() / 1000);
 const availableList = [ChainId.MAINNET, ChainId.BSC, ChainId.POLYGON];
+const ZERO = 0n;
 
 export enum StakingVersion {
   V1,
   V2,
-};
+}
 interface VotingPowerContainerProps {
-  stakingVersion?: StakingVersion
+  stakingVersion?: StakingVersion;
 }
 
-const VotingPowerContainer = ({ stakingVersion }: VotingPowerContainerProps) => {
+const VotingPowerContainer = ({
+  stakingVersion,
+}: VotingPowerContainerProps) => {
   const { v1VotingPower } = useV1VotingPower();
   const { votingPowerInfo } = useVotingPower();
   const [
@@ -32,36 +34,48 @@ const VotingPowerContainer = ({ stakingVersion }: VotingPowerContainerProps) => 
     // v2KovanProportion,
   ] = useMemo(() => {
     const v1Weight = v1PowerWeighting(
-      (Date.now() / 1000 - startDateSec) / 3600
+      (Date.now() / 1000 - startDateSec) / 3600,
     );
     const v2Weight = v1Weight.sub(1).abs();
-    const weightedV1VotingPower = v1Weight.mul(parseFloat(formatUnits(v1VotingPower || Zero)));
-    const weightedV2VotingPower = v2Weight.mul(parseFloat(
-      formatUnits(
-        availableList.reduce((total, chainId) => {
-          return (votingPowerInfo[chainId] || Zero).add(total);
-        }, Zero)
-      )
-    ));
+    const weightedV1VotingPower = v1Weight.mul(
+      parseFloat(formatUnits(v1VotingPower ?? ZERO, 18)),
+    );
+    const weightedV2VotingPower = v2Weight.mul(
+      parseFloat(
+        formatUnits(
+          availableList.reduce((total, chainId) => {
+            return total + (votingPowerInfo[chainId] ?? ZERO);
+          }, ZERO),
+          18,
+        ),
+      ),
+    );
     const totalVotingPower = weightedV1VotingPower.add(weightedV2VotingPower);
-    const v1Proportion = totalVotingPower.gt(0) ? weightedV1VotingPower.div(totalVotingPower).mul(100) : 0;
-    const v2Proportion = totalVotingPower.gt(0) ? weightedV2VotingPower.div(totalVotingPower).mul(100) : 0;
+    const v1Proportion = totalVotingPower.gt(0)
+      ? weightedV1VotingPower.div(totalVotingPower).mul(100)
+      : 0;
+    const v2Proportion = totalVotingPower.gt(0)
+      ? weightedV2VotingPower.div(totalVotingPower).mul(100)
+      : 0;
 
     const v2ProportionSum = availableList.reduce(
       (previousValue, currentChainId) => {
         if (!votingPowerInfo[currentChainId]) {
           return previousValue;
         }
-        return previousValue + parseFloat(formatUnits(votingPowerInfo[currentChainId]));
+        return (
+          previousValue +
+          parseFloat(formatUnits(votingPowerInfo[currentChainId], 18))
+        );
       },
-      0
+      0,
     );
 
     const v2ProportionList = availableList.map((chainId) => {
       if (!votingPowerInfo[chainId]) {
         return '-';
       }
-      const molecular = parseFloat(formatUnits(votingPowerInfo[chainId]));
+      const molecular = parseFloat(formatUnits(votingPowerInfo[chainId], 18));
       if (molecular > 0) {
         return ((molecular / v2ProportionSum) * 100).toFixed(2);
       }

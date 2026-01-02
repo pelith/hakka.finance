@@ -67,7 +67,8 @@ export default function reducer(
       calls.forEach((call) => {
         const callKey = toCallKey(call);
         listeners[chainId][callKey] = listeners[chainId][callKey] ?? {};
-        listeners[chainId][callKey][blocksPerFetch] = (listeners[chainId][callKey][blocksPerFetch] ?? 0) + 1;
+        listeners[chainId][callKey][blocksPerFetch] =
+          (listeners[chainId][callKey][blocksPerFetch] ?? 0) + 1;
       });
 
       return {
@@ -119,9 +120,8 @@ export default function reducer(
           };
         } else {
           if ((current.fetchingBlockNumber ?? 0) >= fetchingBlockNumber) return;
-          _state.callResults[chainId][
-            callKey
-          ].fetchingBlockNumber = fetchingBlockNumber;
+          _state.callResults[chainId][callKey].fetchingBlockNumber =
+            fetchingBlockNumber;
         }
       });
 

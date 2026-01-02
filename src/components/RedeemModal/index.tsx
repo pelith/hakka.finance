@@ -1,10 +1,9 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { useEffect, useMemo, useState } from 'react';
 import { jsx } from 'theme-ui';
 import { navigate } from 'gatsby';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { Zero } from '@ethersproject/constants';
-import { BigNumber } from 'ethers';
+import { formatUnits, parseUnits } from 'viem';
+import BigNumber from 'bignumber.js';
 import {
   useRedeemModalOpen,
   useRedeemModalToggle,
@@ -23,11 +22,12 @@ import {
 import { useHakkaUnstake } from '../../hooks/staking/useHakkaUnstake';
 import { unstakeReceivedAmount } from '../../utils/unstakeReceivedAmount';
 import { tryParseAmount } from '../../utils';
-import { VaultType } from '../../hooks/staking/useStakingVault';
+import type { VaultType } from '../../hooks/staking/useStakingVault';
 import withWrongNetworkCheckWrapper from '../../hoc/withWrongNetworkCheckWrapper';
 import withConnectWalletCheckWrapper from '../../hoc/withConnectWalletCheckWrapper';
 import useSHakkaBalance from '../../hooks/useSHakkaBalance';
-
+import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
+const Zero = BigNumber(0);
 interface RedeemModalInterface {
   vaults?: VaultType[];
   chainId: ChainId;
@@ -40,7 +40,7 @@ interface RedeemModalInterface {
 }
 
 const RedeemButton = withWrongNetworkCheckWrapper(
-  withConnectWalletCheckWrapper(MyButton)
+  withConnectWalletCheckWrapper(MyButton),
 );
 
 const RedeemModal = ({
@@ -57,14 +57,14 @@ const RedeemModal = ({
   const toggleRedeemModal = useRedeemModalToggle();
   const [inputAmount, setInputAmount] = useState('');
   const [isCorrectInput, setIsCorrectInput] = useState<boolean>(true);
-  const vault = vaults[index];
+  const vault = vaults?.[index];
   const receiveHakkaAmount = unstakeReceivedAmount(inputAmount, vault);
 
   const [unstakeState, unstake] = useHakkaUnstake(
     NEW_SHAKKA_ADDRESSES[chainId as ChainId],
     account,
     index,
-    parseUnits(inputAmount || '0')
+    parseUnits(inputAmount || '0', 18),
   );
 
   useEffect(() => {
@@ -79,19 +79,22 @@ const RedeemModal = ({
     unstakeState === TransactionState.PENDING ? 'Pending' : 'Confirm';
 
   const { sHakkaBalanceInfo } = useSHakkaBalance();
-  const sHakkaBalanceForDisplay = sHakkaBalanceInfo?.[chainId] ? 
-    parseFloat(formatUnits(sHakkaBalanceInfo[chainId] as BigNumber)).toFixed(4) : '-'
+  const sHakkaBalanceForDisplay = sHakkaBalanceInfo?.[chainId]
+    ? parseFloat(formatUnits(sHakkaBalanceInfo[chainId], 18),).toFixed(
+        4,
+      )
+    : '-';
 
   const sHakkaPositionLimit = useMemo(() => {
-    const userShakkaBalance = sHakkaBalanceInfo?.[chainId] || Zero
-    const vaultShakkaAmount = vault ? vault.wAmount : Zero
+    const userShakkaBalance = BigNumber(formatUnits(sHakkaBalanceInfo?.[chainId] || 0n, 18));
+    const vaultShakkaAmount = vault ? vault.wAmount : BigNumber(0);
 
-    if(userShakkaBalance.lt(vaultShakkaAmount)) {
-      return tryParseAmount(formatUnits(userShakkaBalance))
+    if (userShakkaBalance.lt(vaultShakkaAmount)) {
+      return userShakkaBalance.toString();
     } else {
-      return tryParseAmount(formatUnits(vaultShakkaAmount))
+      return vaultShakkaAmount.toString();
     }
-  }, [vault, sHakkaBalanceInfo?.[chainId]])
+  }, [vault, sHakkaBalanceInfo?.[chainId]]);
 
   return (
     <Modal isOpen={redeemModalOpen} onDismiss={toggleRedeemModal}>
@@ -100,18 +103,23 @@ const RedeemModal = ({
           <h2>Redeem</h2>
           <img src={images.iconDeleteRound} onClick={toggleRedeemModal} />
         </div>
-        <p sx={styles.positionShakka}><span>{(vault && parseFloat(formatUnits(vault.wAmount)).toFixed(4)) || '-'} sHAKKA</span>&nbsp;got from this position</p>
+        <p sx={styles.positionShakka}>
+          <span>
+            {(vault && formatCommonNumber(vault.wAmount) ||
+              '-')}{' '}
+            sHAKKA
+          </span>
+          &nbsp;got from this position
+        </p>
         <div sx={styles.hakkaBalanceContainer}>
           <span>Burn</span>
-          <span>
-            sHAKKA Balance: {sHakkaBalanceForDisplay}
-          </span>
+          <span>sHAKKA Balance: {sHakkaBalanceForDisplay}</span>
         </div>
         <div sx={styles.numericalInputWrapper}>
           <NumericalInputField
             value={inputAmount}
             onUserInput={setInputAmount}
-            tokenBalance={sHakkaPositionLimit}
+            tokenBalanceAmount={sHakkaPositionLimit}
             approve={() => {}} // TODO: check this
             approveState={ApprovalState.APPROVED} // TODO: check this
             setIsCorrectInput={setIsCorrectInput}
@@ -137,7 +145,7 @@ const RedeemModal = ({
         </div>
         <RedeemButton
           onClick={unstake}
-          styleKit="green"
+          styleKit='green'
           disabled={
             !isCorrectInput || unstakeState === TransactionState.PENDING
           }

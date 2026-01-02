@@ -19,44 +19,43 @@ export default {
     '@media screen and (max-width: 576px)': {
       flexDirection: 'column',
     },
-    },
-    titleWrapper: {
-      lineHeight: '28px',
-      alignItems: 'flex-end', 
+  },
+  titleWrapper: {
+    lineHeight: '28px',
+    alignItems: 'flex-end',
 
-      '@media screen and (max-width: 576px)': {
-        flexDirection: 'column',
-        alignItems: 'center',
-        lineHeight: '36px',
-      },
+    '@media screen and (max-width: 576px)': {
+      flexDirection: 'column',
+      alignItems: 'center',
+      lineHeight: '36px',
     },
-    iconWrapper: {
-      alignItems: 'flex-end',
-      '@media screen and (max-width: 576px)': {
-       margin: '8px',
-      },
+  },
+  iconWrapper: {
+    alignItems: 'flex-end',
+    '@media screen and (max-width: 576px)': {
+      margin: '8px',
     },
-    linkButton: {
-      borderRadius: '8px',
-      padding: '12px 16px 12px 20px',
-      backgroundColor: '#f7fbfc',
-      textDecoration: 'none',
-      color: '#253e47',
-      fontSize: '16px',
-      border: '1px solid transparent',
-      transition: 'all 0.25s ease-out',
+  },
+  linkButton: {
+    borderRadius: '8px',
+    padding: '12px 16px 12px 20px',
+    backgroundColor: '#f7fbfc',
+    textDecoration: 'none',
+    color: '#253e47',
+    fontSize: '16px',
+    border: '1px solid transparent',
+    transition: 'all 0.25s ease-out',
 
-      ':hover': {
-        border: '1px solid #dae1e3',
-      },
+    ':hover': {
+      border: '1px solid #dae1e3',
+    },
 
-      '@media screen and (max-width: 576px)': {
-        marginTop: '25px',
-      },
+    '@media screen and (max-width: 576px)': {
+      marginTop: '25px',
     },
-    buttonContent: {
-      fontWeight: '600',
-      paddingRight: '6px',
-    },
-  };
-  
+  },
+  buttonContent: {
+    fontWeight: '600',
+    paddingRight: '6px',
+  },
+};

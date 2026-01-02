@@ -1,4 +1,4 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { useWeb3React } from '@web3-react/core';
 import { jsx } from 'theme-ui';
 import styles from './styles';
@@ -43,22 +43,20 @@ const RewardsPoolCard = (props: RewardsPoolCardProps) => {
   const { chainId, account } = useWeb3React();
   const toggleWalletModal = useWalletModalToggle();
   const MainButton = withWrongNetworkCheckWrapper(
-    withConnectWalletCheckWrapper(MyButton)
+    withConnectWalletCheckWrapper(MyButton),
   );
   const isConnected = !!account;
 
-  return(
+  return (
     <div sx={styles.container}>
       <div sx={styles.illustration} />
       <div sx={styles.header}>
-        <p>
-          APR {apr}%
-        </p>
+        <p>APR {apr}%</p>
         <img sx={styles.icon} src={tokenImage} />
       </div>
       <p sx={styles.title}>{title}</p>
       {subtitle && <p sx={styles.subtitle}>{subtitle}</p>}
-      <a sx={styles.link} target='_blank' rel="noreferrer noopener" href={url}>
+      <a sx={styles.link} target='_blank' rel='noreferrer noopener' href={url}>
         <span>{linkContent}</span>
         <img src={images.iconLinkNormal} />
       </a>
@@ -80,12 +78,14 @@ const RewardsPoolCard = (props: RewardsPoolCardProps) => {
         connectWallet={toggleWalletModal}
         isCorrectNetwork={chainId === currentChain}
         targetNetwork={currentChain}
-        onClick={() => { location.href = `/farms/${rewardsAddress}` }}
+        onClick={() => {
+          location.href = `/farms/${rewardsAddress}`;
+        }}
       >
         {btnContent}
       </MainButton>
     </div>
-  )
-} ;
+  );
+};
 
 export default RewardsPoolCard;

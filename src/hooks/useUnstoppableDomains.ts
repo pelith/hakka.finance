@@ -4,9 +4,10 @@ import { uauthOptions } from '../connectors';
 import { isAddress } from '../utils';
 import useDebounce from './useDebounce';
 
-export default function useUnstoppableDomains (
-  address?: string
-): { unstoppableDomain: string | null; loading: boolean } {
+export default function useUnstoppableDomains(address?: string): {
+  unstoppableDomain: string | null;
+  loading: boolean;
+} {
   const debouncedAddress = useDebounce(address, 200);
   const username = window.localStorage.getItem('username');
   const changed = debouncedAddress !== address;

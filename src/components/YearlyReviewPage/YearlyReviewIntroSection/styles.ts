@@ -22,7 +22,7 @@ export default {
     '@media screen and (max-width: 576px)': {
       fontSize: '24px',
       lineHeight: '28px',
-    }
+    },
   },
 
   content: {
@@ -45,7 +45,7 @@ export default {
   howHakkaIcon: {
     '@media screen and (max-width: 576px)': {
       width: '240px',
-      height: '288px'
+      height: '288px',
     },
   },
-}
+};

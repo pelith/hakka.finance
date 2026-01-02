@@ -5,10 +5,10 @@ export enum ChainId {
   FANTOM = 250,
 }
 
-const NETWORK_URL = process.env.GATSBY_NETWORK_URL;
-const BSC_NETWORK_URL = process.env.GATSBY_BSC_NETWORK_URL;
-const POLYGON_NETWORK_URL = process.env.GATSBY_POLYGON_NETWORK_URL;
-const FANTOM_NETWORK_URL = process.env.GATSBY_FANTOM_NETWORK_URL;
+const NETWORK_URL = import.meta.env.VITE_NETWORK_URL;
+const BSC_NETWORK_URL = import.meta.env.VITE_BSC_NETWORK_URL;
+const POLYGON_NETWORK_URL = import.meta.env.VITE_POLYGON_NETWORK_URL;
+const FANTOM_NETWORK_URL = import.meta.env.VITE_FANTOM_NETWORK_URL;
 if (
   typeof NETWORK_URL === 'undefined' ||
   typeof BSC_NETWORK_URL === 'undefined' ||
@@ -16,12 +16,12 @@ if (
   typeof FANTOM_NETWORK_URL === 'undefined'
 ) {
   throw new Error(
-    'GATSBY_NETWORK_URL and GATSBY_BSC_NETWORK_URL and POLYGON_NETWORK_URL must be a defined environment variable'
+    'VITE_NETWORK_URL and VITE_BSC_NETWORK_URL and VITE_POLYGON_NETWORK_URL must be a defined environment variable',
   );
 }
 
 export const NETWORK_CHAIN_ID: number = parseInt(
-  process.env.GATSBY_CHAIN_ID ?? '1'
+  import.meta.env.VITE_CHAIN_ID ?? '1',
 );
 
 const chainUrlList = [
@@ -32,8 +32,7 @@ const chainUrlList = [
   [NETWORK_CHAIN_ID, NETWORK_URL],
 ] as const;
 
-export const CHAIN_URL_DICT: Record<number, string> = Object.fromEntries(
-  chainUrlList
-);
+export const CHAIN_URL_DICT: Record<number, string> =
+  Object.fromEntries(chainUrlList);
 
 export const CHAIN_URL_MAP = new Map(chainUrlList);

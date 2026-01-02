@@ -4,7 +4,7 @@ export default {
     marginTop: '20px',
 
     '@media screen and (max-width: 576px)': {
-      padding: '0 20px'
+      padding: '0 20px',
     },
   },
 
@@ -58,7 +58,7 @@ export default {
 
   address: {
     fontSize: '12px',
-    margin: '0 0 10px 0'
+    margin: '0 0 10px 0',
   },
 
   descriptionSection: {
@@ -95,4 +95,4 @@ export default {
       },
     },
   },
-}
+} as const;

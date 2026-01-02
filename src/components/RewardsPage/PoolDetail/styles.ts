@@ -1,4 +1,6 @@
-export default {
+import createSX from 'src/utils/createSX';
+
+export default createSX({
   btnBack: {
     display: 'flex',
     fontSize: '0.875rem',
@@ -380,4 +382,4 @@ export default {
       lineHeight: '1.5',
     },
   },
-};
+});

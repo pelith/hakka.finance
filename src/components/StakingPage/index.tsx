@@ -1,8 +1,7 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import { useState, useMemo, useEffect } from 'react';
-import { formatUnits } from '@ethersproject/units';
-import { Zero, AddressZero } from '@ethersproject/constants';
+import { formatUnits, zeroAddress } from 'viem';
 import { useWeb3React } from '@web3-react/core';
 
 import { navigate } from 'gatsby';
@@ -29,7 +28,7 @@ import StakePositionTable from './StakePositionTable';
 import StakingPanel from './StakingPanel';
 
 import _omit from 'lodash/omit';
-import ReactTooltip from 'react-tooltip';
+import {Tooltip as ReactTooltip} from 'react-tooltip';
 import { botSideBarItems } from '../../containers/SideBar';
 import { useRewardsData } from '../../data/RewardsData';
 import { REWARD_POOLS } from '../../constants/rewards';
@@ -38,8 +37,9 @@ import useVotingPower from '../../hooks/useVotingPower';
 import VotingPowerContainer from '../../containers/VotingPowerContainer';
 import useStakedHakka from '../../hooks/useStakedHakka';
 import RestakeModal from '../RestakeModal';
-import useStakingVault from '../../hooks/staking/useStakingVault';
+import {useStakingVault} from '../../hooks/staking/useStakingVault';
 import NavigateLink from './NavigateLink';
+import BigNumber from 'bignumber.js';
 
 const hakkaSupportChain = Object.keys(ChainNameWithIcon).map((key) => {
   return {
@@ -49,16 +49,18 @@ const hakkaSupportChain = Object.keys(ChainNameWithIcon).map((key) => {
   };
 });
 
-const stakingSupportChain = hakkaSupportChain.filter((chain) => 
-  NEW_SHAKKA_ADDRESSES[chain.value] !== AddressZero);
+const stakingSupportChain = hakkaSupportChain.filter(
+  (chain) => NEW_SHAKKA_ADDRESSES[chain.value] !== zeroAddress,
+);
 
 const stakingSupportChainIdSet = new Set(
-  stakingSupportChain.map((ele) => ele.value)
+  stakingSupportChain.map((ele) => ele.value),
 );
 
 const Staking = () => {
   const { account, chainId } = useWeb3React();
-  const [positionIndex, setPositionIndex] = useState<number>(undefined);
+  const activeChainId = chainId as ChainId;
+  const [positionIndex, setPositionIndex] = useState<number | undefined>();
 
   const toggleWalletModal = useWalletModalToggle();
   const toggleRedeemModal = useRedeemModalToggle();
@@ -66,42 +68,42 @@ const Staking = () => {
 
   const isCorrectNetwork = useMemo<boolean>(() => {
     if (chainId) {
-      return NEW_SHAKKA_ADDRESSES[chainId as ChainId] !== AddressZero;
+      return NEW_SHAKKA_ADDRESSES[chainId as ChainId] !== zeroAddress;
     }
     return true;
   }, [chainId]);
 
-  const isChainSupported = stakingSupportChainIdSet.has(chainId);
-  const [activeChainTab, setActiveChainTab] = useState(
-    isChainSupported ? chainId : ChainId.MAINNET
+  const isChainSupported = stakingSupportChainIdSet.has(activeChainId);
+  const [activeChainTab, setActiveChainTab] = useState<ChainId>(
+    isChainSupported ? activeChainId : ChainId.MAINNET,
   );
 
   useEffect(() => {
-    if (stakingSupportChainIdSet.has(chainId)) {
-      setActiveChainTab(chainId);
+    if (stakingSupportChainIdSet.has(activeChainId)) {
+      setActiveChainTab(activeChainId);
     }
   }, [chainId]);
 
   const isTabInCorrectNetwork = chainId === activeChainTab;
 
   const governanceLink = useMemo(() => {
-    return botSideBarItems.find((ele) => ele.name === 'governance').href!;
+    return botSideBarItems.find((ele) => ele.name === 'governance')!.href!;
   }, []);
 
   const { votingPowerInfo } = useVotingPower();
 
-  const currentShakkaRewardPoolAddress = SHAKKA_POOLS[activeChainTab];
+  const currentShakkaRewardPoolAddress = SHAKKA_POOLS[activeChainTab]!;
 
   const rewardData = useRewardsData(
     [currentShakkaRewardPoolAddress],
-    [REWARD_POOLS[currentShakkaRewardPoolAddress]?.decimal || 18]
+    [REWARD_POOLS[currentShakkaRewardPoolAddress]?.decimal || 18],
   );
   const depositedBalance = account
-    ? rewardData.depositBalances[currentShakkaRewardPoolAddress]?.toFixed(2)
+    ? new BigNumber(rewardData.depositBalances?.[currentShakkaRewardPoolAddress] ?? 0).toFixed(2)
     : '-';
 
   const totalSHakkaObtained =
-    (+formatUnits(votingPowerInfo[activeChainTab] ?? Zero)).toFixed(2) || '-';
+    (+formatUnits(votingPowerInfo[activeChainTab] ?? 0n, 18)).toFixed(2) || '-';
 
   const { sHakkaBalanceInfo } = useSHakkaBalance();
   const { stakedHakka } = useStakedHakka();
@@ -112,41 +114,43 @@ const Staking = () => {
     <div sx={styles.container}>
       <div sx={styles.stakingPageWrapper}>
         <div sx={styles.headingBlock}>
-          <h1 className="heading-title">Staking</h1>
-          <div className="heading-comment">
+          <h1 className='heading-title'>Staking</h1>
+          <div className='heading-comment'>
             <NavigateLink />
           </div>
-          <div className="heading-wallet">
+          <div className='heading-wallet'>
             <Web3Status unsupported={!isCorrectNetwork} />
           </div>
-          <div className="heading-voting-power">
+          <div className='heading-voting-power'>
             <VotingPowerContainer />
           </div>
 
           {/* governance navigation */}
-          <div className="heading-switch-btn">
+          <div className='heading-switch-btn'>
             <a
               data-tip
-              data-for="governance"
-              className="governance"
+              data-for='governance'
+              className='governance'
               href={governanceLink}
-              rel="noreferrer noopener"
-              target="_blank"
+              rel='noreferrer noopener'
+              target='_blank'
               sx={styles.governanceButton}
             >
               <img src={images.iconToGovernance} />
             </a>
             <ReactTooltip
-              place="bottom"
-              id="governance"
-              effect="solid"
-              backgroundColor="#253E47"
+              place='bottom'
+              id='governance'
+              float={true}
+              style={{
+                backgroundColor: '#253E47',
+              }}
             >
               <span>Go to governance</span>
             </ReactTooltip>
             <a onClick={() => navigate('/staking-v1')} sx={styles.normalButton}>
               Switch to v1
-              <img className="icon" src={images.iconArrowRight} />
+              <img className='icon' src={images.iconArrowRight} />
             </a>
           </div>
         </div>
@@ -164,16 +168,16 @@ const Staking = () => {
                 totalStakedHakka={
                   stakedHakka?.[activeChainTab]
                     ? parseFloat(
-                      formatUnits(stakedHakka[activeChainTab], 18)
-                    ).toFixed(2)
+                        formatUnits(stakedHakka[activeChainTab], 18),
+                      ).toFixed(2)
                     : '-'
                 }
                 totalSHakkaObtained={totalSHakkaObtained}
                 sHakkaBalance={
                   sHakkaBalanceInfo?.[activeChainTab]
                     ? parseFloat(
-                      formatUnits(sHakkaBalanceInfo[activeChainTab], 18)
-                    ).toFixed(2)
+                        formatUnits(sHakkaBalanceInfo[activeChainTab], 18),
+                      ).toFixed(2)
                     : '-'
                 }
                 farmingSHakka={depositedBalance}
@@ -190,9 +194,9 @@ const Staking = () => {
           key={`redeem-${positionIndex}`}
           vaults={vault}
           chainId={activeChainTab}
-          account={account}
-          index={positionIndex}
-          sHakkaBalance={formatUnits(sHakkaBalanceInfo?.[chainId] ?? Zero, 18)}
+          account={account!}
+          index={positionIndex!}
+          sHakkaBalance={formatUnits(sHakkaBalanceInfo?.[chainId as ChainId] ?? 0n, 18)}
           sHakkaBalanceInFarming={depositedBalance}
           toggleWalletModal={toggleWalletModal}
           isCorrectNetwork={isTabInCorrectNetwork}
@@ -200,8 +204,8 @@ const Staking = () => {
         <RestakeModal
           key={`restake-${positionIndex}`}
           chainId={activeChainTab}
-          account={account}
-          index={positionIndex}
+          account={account!}
+          index={positionIndex!}
           vaults={vault}
           toggleWalletModal={toggleWalletModal}
           isCorrectNetwork={isTabInCorrectNetwork}
@@ -215,7 +219,7 @@ const Staking = () => {
             <a
               sx={styles.sHakkaRewardLinkBtn}
               href={`/farms/${currentShakkaRewardPoolAddress}`}
-              rel="noreferrer"
+              rel='noreferrer'
             >
               <span>sHAKKA Pool</span>
               <img src={images.iconForwardGreen} />

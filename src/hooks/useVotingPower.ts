@@ -1,8 +1,4 @@
-import { AddressZero } from '@ethersproject/constants';
-import {
-  Contract as MulticallContract,
-  Provider as MulticallProvider,
-} from '@pelith/ethers-multicall';
+import { zeroAddress, type Address } from 'viem';
 import { useWeb3React } from '@web3-react/core';
 import {
   ChainDataFetchingState,
@@ -11,13 +7,12 @@ import {
   ChainId,
 } from '../constants';
 import throttle from 'lodash/throttle';
-import { BigNumber } from '@ethersproject/bignumber';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBlockNumber } from '../state/application/hooks';
-import STAKING_ABI from '../constants/abis/shakka.json';
+import STAKING_ABI from '../constants/abis/shakka';
 
 export type VotingPowerType = {
-  [chainId in ChainId]: BigNumber;
+  [chainId in ChainId]: bigint;
 };
 
 export default function useVotingPower(): {
@@ -39,25 +34,21 @@ export default function useVotingPower(): {
   const getVotingPower = useCallback(
     async (
       chainId: ChainId,
-      account: string
-    ): Promise<[ChainId, BigNumber]> => {
-      if (NEW_SHAKKA_ADDRESSES[chainId] === AddressZero)
+      account: string,
+    ): Promise<[ChainId, bigint | undefined]> => {
+      if (NEW_SHAKKA_ADDRESSES[chainId] === zeroAddress)
         return [chainId, undefined];
-      if (account === AddressZero || !account) return [chainId, undefined];
-      const multicallProvider = new MulticallProvider(
-        providers[chainId],
-        chainId
-      );
-      const sHakkaContract = new MulticallContract(
-        NEW_SHAKKA_ADDRESSES[chainId],
-        STAKING_ABI
-      );
-      const [votingPower] = await multicallProvider.all([
-        sHakkaContract.votingPower(account),
-      ]);
-      return [chainId, votingPower as BigNumber];
+      if (account === zeroAddress || !account) return [chainId, undefined];
+      const client = providers[chainId];
+      const votingPower = (await client.readContract({
+        address: NEW_SHAKKA_ADDRESSES[chainId] as Address,
+        abi: STAKING_ABI as any,
+        functionName: 'votingPower',
+        args: [account as Address],
+      })) as bigint;
+      return [chainId, votingPower];
     },
-    []
+    [],
   );
 
   const fetchVotingPower = useCallback(async (account: string) => {
@@ -71,7 +62,7 @@ export default function useVotingPower(): {
       const votingPowerList = await Promise.all(fetchingList);
 
       setVotingPowerInfo(
-        Object.fromEntries(votingPowerList) as typeof votingPowerInfo
+        Object.fromEntries(votingPowerList) as typeof votingPowerInfo,
       );
       setTransactionSuccess(true);
     } catch (e) {
@@ -82,11 +73,11 @@ export default function useVotingPower(): {
 
   const throttledFetchVotingPower = useMemo(
     () => throttle(fetchVotingPower, 2000),
-    []
+    [],
   );
 
   useEffect(() => {
-    if (account === AddressZero || !account) return;
+    if (account === zeroAddress || !account) return;
     throttledFetchVotingPower(account);
   }, [latestBlockNumber, account]);
 

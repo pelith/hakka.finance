@@ -1,6 +1,6 @@
-import { ThemeUICSSObject } from 'theme-ui';
 import { NormalButton } from './StakePositionItem/buttonStyle';
-export default {
+import createSX from 'src/utils/createSX';
+export default createSX({
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -59,7 +59,8 @@ export default {
 
   headingBlock: {
     display: 'grid',
-    gridTemplateAreas: '\'title wallet\' \'comment comment\' \'voting-power switch-btn\'',
+    gridTemplateAreas:
+      "'title wallet' 'comment comment' 'voting-power switch-btn'",
     gridTemplateColumns: '1fr auto',
     '.heading-title': {
       gridArea: 'title',
@@ -67,23 +68,24 @@ export default {
     },
     '.heading-wallet': {
       gridArea: 'wallet',
-      alignSelf: 'center'
+      alignSelf: 'center',
     },
     '.heading-comment': {
       gridArea: 'comment',
     },
     '.heading-voting-power': {
       gridArea: 'voting-power',
-      margin: '36px 0 60px'
+      margin: '36px 0 60px',
     },
     '.heading-switch-btn': {
       gridArea: 'switch-btn',
       display: 'flex',
       alignSelf: 'center',
-      justifySelf: 'end'
+      justifySelf: 'end',
     },
     '@media screen and (max-width: 576px)': {
-      gridTemplateAreas: '\'comment comment\' \'title switch-btn\' \'voting-power voting-power\'',
+      gridTemplateAreas:
+        "'comment comment' 'title switch-btn' 'voting-power voting-power'",
       gridTemplateColumns: '1fr auto',
       girdTemplateRows: '1fr 1fr auto',
 
@@ -92,8 +94,8 @@ export default {
       },
       '.heading-wallet': {
         display: 'none',
-      }
-    }
+      },
+    },
   },
 
   body: {
@@ -103,21 +105,23 @@ export default {
   normalButton: {
     ...NormalButton,
     '& .icon': {
-      ml: '6px'
+      ml: '6px',
     },
   },
 
   governanceButton: {
-    ...NormalButton, ml: 'auto', mr: '1rem',
-  } as ThemeUICSSObject,
+    ...NormalButton,
+    ml: 'auto',
+    mr: '1rem',
+  },
 
   gridBlock: {
     display: 'grid',
-    gridTemplateAreas: '\'1fr 1fr\'',
+    gridTemplateAreas: "'1fr 1fr'",
     '@media screen and (max-width: 1190px)': {
-      gridTemplateAreas: '\'1fr\' \'1fr\'',
-    }
-  } as ThemeUICSSObject,
+      gridTemplateAreas: "'1fr' '1fr'",
+    },
+  },
 
   stakeInfoWrapper: {
     paddingTop: '40px',
@@ -174,4 +178,4 @@ export default {
       marginLeft: '4px',
     },
   },
-};
+});

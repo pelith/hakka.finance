@@ -1,6 +1,6 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import React from 'react'
+import React from 'react';
 import _omit from 'lodash/omit';
 import { useWeb3React } from '@web3-react/core';
 import styles from './styles';
@@ -8,28 +8,39 @@ import withWrongNetworkCheckWrapper from '../../../hoc/withWrongNetworkCheckWrap
 import withConnectWalletCheckWrapper from '../../../hoc/withConnectWalletCheckWrapper';
 import { MyButton } from '../../Common';
 import { ChainId, ChainNameWithIcon } from '../../../constants';
-import { useWalletModalToggle, useYearlyReviewScoreModalToggle } from '../../../state/application/hooks';
+import {
+  useWalletModalToggle,
+  useYearlyReviewScoreModalToggle,
+} from '../../../state/application/hooks';
 import ReviewItem from '../ReviewItem';
 import ScoreModal from '../ScoreModal';
 import EmptyState from './EmptyState';
 import Spinner from '../../Common/Spinner';
-import useYearlyReviewData, { ReviewResultType } from '../../../hooks/useYearlyReviewData';
+import useYearlyReviewData, {
+  ReviewResultType,
+} from '../../../hooks/useYearlyReviewData';
 
 interface YearlyReviewMainSectionProps {
-  reviewResult: ReviewResultType[]
-  p2eLv: number | undefined
-  userRank: string
+  reviewResult: ReviewResultType[];
+  p2eLv: number | undefined;
+  userRank: string;
 }
 
-const YearlyReviewMainSection = ({ reviewResult, p2eLv, userRank }: YearlyReviewMainSectionProps) => {
+const YearlyReviewMainSection = ({
+  reviewResult,
+  p2eLv,
+  userRank,
+}: YearlyReviewMainSectionProps) => {
   const { account, chainId } = useWeb3React();
   const toggleWalletModal = useWalletModalToggle();
   const isConnected = !!account;
   const supportedChain = Object.keys(ChainNameWithIcon).map((ele) =>
-    parseInt(ele)
+    parseInt(ele),
   );
   const isCorrectNetwork = chainId ? supportedChain.includes(chainId) : false;
-  const CountScoreButton = withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton));
+  const CountScoreButton = withWrongNetworkCheckWrapper(
+    withConnectWalletCheckWrapper(MyButton),
+  );
   const toggleScoreModal = useYearlyReviewScoreModalToggle();
 
   return (
@@ -38,18 +49,18 @@ const YearlyReviewMainSection = ({ reviewResult, p2eLv, userRank }: YearlyReview
       <div sx={styles.reviewList}>
         {reviewResult.map((ele, index) => (
           <div key={index}>
-            <ReviewItem 
-              title={ele.title} 
-              icon={ele.icon} 
-              performance={ele.performance} 
-              comment={ele.comment} 
+            <ReviewItem
+              title={ele.title}
+              icon={ele.icon}
+              performance={ele.performance}
+              comment={ele.comment}
             />
           </div>
         ))}
       </div>
       <div sx={styles.countScoreButton}>
         <CountScoreButton
-          onClick={toggleScoreModal} 
+          onClick={toggleScoreModal}
           styleKit='green'
           isConnected={isConnected}
           connectWallet={toggleWalletModal}
@@ -59,30 +70,36 @@ const YearlyReviewMainSection = ({ reviewResult, p2eLv, userRank }: YearlyReview
           Count your score
         </CountScoreButton>
       </div>
-      <ScoreModal p2eLevel={p2eLv} performanceList={reviewResult} userRank={userRank} />
+      <ScoreModal
+        p2eLevel={p2eLv}
+        performanceList={reviewResult}
+        userRank={userRank}
+      />
     </div>
-  )
-}
-
+  );
+};
 
 const YearlyReviewDetailSection = () => {
   const { account } = useWeb3React();
-  const { reviewResult, isLoading, p2eLv, userRank } = useYearlyReviewData(account)
+  const { reviewResult, isLoading, p2eLv, userRank } =
+    useYearlyReviewData(account);
 
-  let displayContent
+  let displayContent;
   if (isLoading) {
-    displayContent = <Spinner />
+    displayContent = <Spinner />;
   } else if (reviewResult.length === 0) {
-    displayContent = <EmptyState /> 
+    displayContent = <EmptyState />;
   } else {
-    displayContent = <YearlyReviewMainSection reviewResult={reviewResult} p2eLv={p2eLv} userRank={userRank || 'S'} />
+    displayContent = (
+      <YearlyReviewMainSection
+        reviewResult={reviewResult}
+        p2eLv={p2eLv}
+        userRank={userRank || 'S'}
+      />
+    );
   }
 
-  return (
-    <div>
-      {displayContent}
-    </div>
-  )
-}
+  return <div>{displayContent}</div>;
+};
 
-export default YearlyReviewDetailSection
+export default YearlyReviewDetailSection;

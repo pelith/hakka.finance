@@ -1,4 +1,4 @@
-export function getExpectedDay(base = new Date, totalTime = 0) {
+export function getExpectedDay(base = new Date(), totalTime = 0) {
   const date = new Date(base.getTime() + totalTime);
   return date.toLocaleDateString('en-US', {
     year: 'numeric',

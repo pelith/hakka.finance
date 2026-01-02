@@ -7,9 +7,7 @@ export default {
       marginRight: '20px',
     },
 
-    '@media screen and (max-width: 576px)': {
-      
-    },
+    '@media screen and (max-width: 576px)': {},
   },
 
   hintItem: {
@@ -31,4 +29,4 @@ export default {
     height: '17px',
     borderRadius: '50%',
   },
-}
+};

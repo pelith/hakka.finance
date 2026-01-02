@@ -21,7 +21,6 @@ export default {
   normal_text: {
     color: 'black',
     fontSize: [1, 2, 3, 4],
-
   },
   responsive_cards: {
     display: 'grid',

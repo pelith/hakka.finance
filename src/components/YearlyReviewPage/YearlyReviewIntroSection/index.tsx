@@ -1,6 +1,6 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import React from 'react'
+import React from 'react';
 import _omit from 'lodash/omit';
 import { useWeb3React } from '@web3-react/core';
 import styles from './styles';
@@ -11,33 +11,38 @@ import { ChainId, ChainNameWithIcon } from '../../../constants';
 import { useWalletModalToggle } from '../../../state/application/hooks';
 import images from '../../../images';
 
-const StartButton = withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton));
+const StartButton = withWrongNetworkCheckWrapper(
+  withConnectWalletCheckWrapper(MyButton),
+);
 
 type Props = {
-  setIsShowDetailPage: (boolean) => void
-}
+  setIsShowDetailPage: (boolean) => void;
+};
 
 const YearlyReviewIntroSection = ({ setIsShowDetailPage }: Props) => {
   const { account, chainId } = useWeb3React();
   const toggleWalletModal = useWalletModalToggle();
   const isConnected = !!account;
   const supportedChain = Object.keys(ChainNameWithIcon).map((ele) =>
-    parseInt(ele)
+    parseInt(ele),
   );
   const isCorrectNetwork = chainId ? supportedChain.includes(chainId) : false;
-  
+
   return (
     <div sx={styles.mainContentWrapper}>
       <img src={images.imageHowHakka} sx={styles.howHakkaIcon} />
       <div>
-        <p sx={styles.title}>Track your performance and engagement level on Hakka Finance!</p>
+        <p sx={styles.title}>
+          Track your performance and engagement level on Hakka Finance!
+        </p>
         <p sx={styles.content}>
-          The Hakka Finance Year in Review is a personalized report that provides 
-          insights about your activity, earned rewards, and achieved milestones on the Hakka platform.
+          The Hakka Finance Year in Review is a personalized report that
+          provides insights about your activity, earned rewards, and achieved
+          milestones on the Hakka platform.
         </p>
         <div sx={styles.startBtn}>
           <StartButton
-            onClick={() => setIsShowDetailPage(true)} 
+            onClick={() => setIsShowDetailPage(true)}
             styleKit='green'
             isConnected={isConnected}
             connectWallet={toggleWalletModal}
@@ -49,7 +54,7 @@ const YearlyReviewIntroSection = ({ setIsShowDetailPage }: Props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default YearlyReviewIntroSection
+export default YearlyReviewIntroSection;

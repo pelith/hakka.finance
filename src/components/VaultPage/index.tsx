@@ -1,17 +1,12 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import {
-  useEffect, useState, useMemo,
-} from 'react';
-import { Token } from '@uniswap/sdk';
-import { AddressZero, WeiPerEther } from '@ethersproject/constants';
-import { parseUnits } from '@ethersproject/units';
+import { useEffect, useState, useMemo } from 'react';
+import { isAddressEqual, parseUnits, zeroAddress, type Address } from 'viem';
 import BigNumber from 'bignumber.js';
 import { useWeb3React } from '@web3-react/core';
 import images from '../../images/index';
 import styles from './styles';
 import { MyButton } from '../Common';
-import RewardListItem from './RewardListItem/index';
 import NumericalInputField from '../NumericalInputField/index';
 import NewTokenAddressInput from './NewTokenAddressInput';
 import Web3Status from '../Web3Status';
@@ -19,8 +14,6 @@ import RewardValue from './RewardValue';
 import { useTokenApprove, ApprovalState } from '../../hooks/useTokenApprove';
 import { useHakkaBurn, BurnState } from '../../hooks/guildbank/useHakkaBurn';
 import { shortenAddress, getEtherscanLink } from '../../utils';
-import { useTokenBalance, useTokenBalances, useETHBalances } from '../../state/wallet/hooks';
-import { useTotalSupply } from '../../data/TotalSupply';
 import { useWalletModalToggle } from '../../state/application/hooks';
 import withConnectWalletCheckWrapper from '../../hoc/withConnectWalletCheckWrapper';
 import withApproveTokenCheckWrapper from '../../hoc/withApproveTokenCheckWrapper';
@@ -32,32 +25,32 @@ import {
   BURNER_ADDRESS,
   VAULT_TOKENS,
   GUILDBANK,
-  ETHADDRESS,
 } from '../../constants';
+import { useConnections } from 'wagmi';
+import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance';
+import useTokenTotalSupply from 'src/hooks/contracts/token/useTokenTotalSupply';
+import RewardListItemContainer from 'src/containers/Vault/RewardListItemContainer';
+import { createBigNumberSort } from 'src/utils/sort';
 
 const getRewardTokenById = (chainId: ChainId | undefined) => {
   return VAULT_TOKENS[chainId || 1] || VAULT_TOKENS[1];
 };
 
 const VaultPage = () => {
-  const { account, chainId } = useWeb3React();
+  const { account } = useWeb3React();
+  const chainId = useConnections()[0].chainId as ChainId
 
-  const hakkaBalance = useTokenBalance(
-    account as string,
-    HAKKA[chainId as ChainId],
-  );
-
-  // 1e18
-  const bignumber1e18 = new BigNumber(WeiPerEther.toString());
+  const hakkaBalanceAmount = useTokenInfoAndBalance(account as Address, HAKKA[chainId as ChainId].address as Address, chainId as ChainId)
 
   // burn amount
   const [inputAmount, setInputAmount] = useState('0');
-  const [rewardTokens, setRewardTokens] = useState(getRewardTokenById(chainId));
+  const [rewardTokens, setRewardTokens] = useState<{ [x: string]: { name: string; symbol: string; decimals: number } }>(() => getRewardTokenById(chainId));
   const [isShowNewTokenArea, setIsShowNewTokenArea] = useState(false);
-  const [newRewardAddressInput, setNewRewardAddressInput] = useState<string>('');
+  const [newRewardAddressInput, setNewRewardAddressInput] =
+    useState<string>('');
 
   const [approveState, approve] = useTokenApprove(
-    HAKKA[chainId as ChainId],
+    HAKKA[chainId as ChainId].address,
     BURNER_ADDRESS[chainId as ChainId],
     inputAmount,
   );
@@ -68,84 +61,29 @@ const VaultPage = () => {
   }, [chainId]);
 
   // sort the reward tokens address
-  const [pickedRewardTokensAddress, setPickedRewardTokensAddress] = useState([
-    ...Object.keys(rewardTokens).sort((a, b) => parseInt(a) - parseInt(b)),
+  const [pickedRewardTokensAddress, setPickedRewardTokensAddress] = useState(() => [
+    ...Object.keys(rewardTokens).sort(createBigNumberSort('asc')),
   ]);
 
   // when new token added sort again.
   useEffect(() => {
-    const newSortedTokens = Object.keys(rewardTokens).sort(
-      (a, b) => parseInt(a) - parseInt(b),
-    );
+    const newSortedTokens = Object.keys(rewardTokens).sort();
     setPickedRewardTokensAddress(newSortedTokens);
   }, [rewardTokens]);
 
   // haddle checklist click
   const toggleToken = (tokenAddress: string) => {
     const selectedTokenList = pickedRewardTokensAddress.includes(tokenAddress)
-      ? pickedRewardTokensAddress.filter((sortedAddress) => sortedAddress !== tokenAddress)
+      ? pickedRewardTokensAddress.filter(
+          (sortedAddress) => sortedAddress !== tokenAddress,
+        )
       : [...pickedRewardTokensAddress, tokenAddress];
-    const sortedAddress = selectedTokenList.sort(
-      (a, b) => parseInt(a) - parseInt(b),
-    );
+    const sortedAddress = selectedTokenList.sort();
     setPickedRewardTokensAddress(sortedAddress);
   };
 
-  const ethBalance = useETHBalances([GUILDBANK[chainId as ChainId]]);
-
-  // get reward tokens balance in guild bank
-  const [tokens, setTokens] = useState<Token[]>();
-  useEffect(() => {
-    const tokens: Token[] = [];
-    Object.keys(rewardTokens).map((address) => {
-      tokens.push(
-        new Token(
-          chainId,
-          address,
-          rewardTokens[address].decimals,
-          rewardTokens[address].symbol,
-          rewardTokens[address].name,
-        ),
-      );
-    });
-    setTokens(tokens);
-  }, [rewardTokens, chainId, account]);
-
-  const tokensBalanceInBank = useTokenBalances(
-    GUILDBANK[chainId as ChainId],
-    tokens,
-  );
-
   // get HAKKA totalSupply
-  const totalSupplyTokenAmount = useTotalSupply(HAKKA[chainId as ChainId]);
-  const hakkaTotalSupply = new BigNumber(totalSupplyTokenAmount?.raw.toString());
-
-  // calculate the rewardAmount
-  const localRewardAmount: { [key: string]: BigNumber } = {};
-  if (inputAmount && rewardTokens && hakkaTotalSupply) {
-    const amountBigNumber = new BigNumber(inputAmount);
-    Object.keys(rewardTokens).map((tokenAddress) => {
-      // Input should not be greater than HAKKA totalSupply
-      if (hakkaTotalSupply.div(bignumber1e18).isGreaterThanOrEqualTo(amountBigNumber)) {
-        const balanceBigNumber = tokenAddress === ETHADDRESS
-          ? new BigNumber(ethBalance[GUILDBANK[chainId as ChainId]]?.raw.toString())
-          : new BigNumber(tokensBalanceInBank[tokenAddress]?.raw.toString());
-        const decimalBigNumber = new BigNumber(10).pow(
-          new BigNumber(rewardTokens[tokenAddress].decimals),
-        );
-
-        let num: BigNumber;
-        num = amountBigNumber
-          .multipliedBy(bignumber1e18)
-          .div(hakkaTotalSupply)
-          .multipliedBy(balanceBigNumber)
-          .div(decimalBigNumber);
-        localRewardAmount[tokenAddress] = num.isNaN() ? new BigNumber(0) : num;
-      } else {
-        localRewardAmount[tokenAddress] = new BigNumber(0);
-      }
-    });
-  }
+  const hakkaTotalSupplyAmount = useTokenTotalSupply(HAKKA[chainId as ChainId].address as Address, chainId as ChainId)
 
   const amountParsed = useMemo(() => {
     if (inputAmount) {
@@ -164,26 +102,55 @@ const VaultPage = () => {
   const toggleWalletModal = useWalletModalToggle();
 
   const BurnButton = withApproveTokenCheckWrapper(
-    withWrongNetworkCheckWrapper(
-      withConnectWalletCheckWrapper(MyButton)
-    )
-  )
+    withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton)),
+  );
 
   const isCorrectNetwork = useMemo<boolean>(() => {
-    if(!chainId || !BURNER_ADDRESS[chainId as ChainId]) {
+    if (!chainId || !BURNER_ADDRESS[chainId as ChainId]) {
       return false;
     }
-    return BURNER_ADDRESS[chainId as ChainId] !== AddressZero;
-  }, [chainId])
+    return BURNER_ADDRESS[chainId as ChainId] !== zeroAddress;
+  }, [chainId]);
 
   const isConnected = !!account;
 
   // error message
-  const noTokenError = useMemo(() => !pickedRewardTokensAddress.length, [pickedRewardTokensAddress]);
+  const noTokenError = useMemo(
+    () => !pickedRewardTokensAddress.length,
+    [pickedRewardTokensAddress],
+  );
   const [isCorrectInput, setIsCorrectInput] = useState<boolean>(true);
 
-  const errorStatus = noTokenError
-    || !isCorrectInput
+  const errorStatus = noTokenError || !isCorrectInput;
+
+  function addRewardToken(input: { address: Address; name: string; symbol: string; decimals: number }) {
+    for (const [rewardTokenAddress, rewardTokenInfo] of Object.entries(rewardTokens)) {
+      if (isAddressEqual(rewardTokenAddress as Address, input.address)) {
+        return;
+      }
+    }
+    setRewardTokens(prevState => ({
+      ...prevState,
+      [input.address]: input,
+    }));
+  }
+
+  function onRewardListItemDelete(tokenAddress: Address) {
+    setRewardTokens(prevState => {
+      const newState = { ...prevState };
+      delete newState[tokenAddress];
+      return newState;
+    });
+  }
+
+  const [localRewardAmount, setLocalRewardAmount] = useState<{ [x: string]: BigNumber }>({});
+  function onRewardCalculated(tokenAddress: Address, receiveAmount: BigNumber) {
+    const _address = tokenAddress.toLowerCase();
+    setLocalRewardAmount((prevState: { [x: string]: BigNumber }) => ({
+      ...prevState,
+      [_address]: receiveAmount,
+    }));
+  }
 
   return (
     <div sx={styles.container}>
@@ -198,32 +165,37 @@ const VaultPage = () => {
             <div sx={styles.contract}>
               <span>Guild Bank Contract</span>
               <a
-                sx={!isCorrectNetwork ? styles.contractAddressDisabled : styles.contractAddress}
-                href={getEtherscanLink(chainId, GUILDBANK[chainId], 'address')}
-                target={"_blank"}
-                rel="noreferrer noopener"
-              >
-                {(!chainId || !isCorrectNetwork)
-                  ? '-'
-                  : shortenAddress(GUILDBANK[chainId])
+                sx={
+                  !isCorrectNetwork
+                    ? styles.contractAddressDisabled
+                    : styles.contractAddress
                 }
+                href={getEtherscanLink(chainId, GUILDBANK[chainId], 'address')}
+                target={'_blank'}
+                rel='noreferrer noopener'
+              >
+                {!chainId || !isCorrectNetwork
+                  ? '-'
+                  : shortenAddress(GUILDBANK[chainId])}
               </a>
             </div>
-            <p>An interface for Hakka holders to call ragequit() function to burn their HAKKA and draw funds from Guild Bank proportionally.</p>
+            <p>
+              An interface for Hakka holders to call ragequit() function to burn
+              their HAKKA and draw funds from Guild Bank proportionally.
+            </p>
             <div sx={styles.hakkaBalance}>
               <span>Burn</span>
               <span>
-                HAKKA Balance:
-                {' '}
+                HAKKA Balance:{' '}
                 {isCorrectNetwork
-                  ? (hakkaBalance?.toSignificant(10) || '0.00')
+                  ? hakkaBalanceAmount.data?.balance ?? '0'
                   : '-'}
               </span>
             </div>
             <NumericalInputField
               value={inputAmount}
               onUserInput={setInputAmount}
-              tokenBalance={hakkaBalance}
+              tokenBalanceAmount={hakkaBalanceAmount.data?.balance ?? '0'}
               approve={approve}
               approveState={approveState}
               setIsCorrectInput={setIsCorrectInput}
@@ -236,45 +208,51 @@ const VaultPage = () => {
                 sx={styles.addTokenButton}
                 onClick={() => setIsShowNewTokenArea(!isShowNewTokenArea)}
               >
-                {isShowNewTokenArea
-                  ? <img src={images.iconDeleteRound} alt="Close the address input window" />
-                  : (
-                    <div sx={styles.addTokenButton}>
-                      <span sx={{ paddingBottom: '2px' }}>Add token</span>
-                      <img style={styles.addIcon} src={images.iconAdd} alt="add new token" />
-                    </div>
-                  )}
+                {isShowNewTokenArea ? (
+                  <img
+                    src={images.iconDeleteRound}
+                    alt='Close the address input window'
+                  />
+                ) : (
+                  <div sx={styles.addTokenButton}>
+                    <span sx={{ paddingBottom: '2px' }}>Add token</span>
+                    <img
+                      style={styles.addIcon}
+                      src={images.iconAdd}
+                      alt='add new token'
+                    />
+                  </div>
+                )}
               </div>
             </div>
             {/* add new token input area */}
-            {isShowNewTokenArea
-              ? (
-                <NewTokenAddressInput
-                  rewardTokens={rewardTokens}
-                  addressInputValue={newRewardAddressInput}
-                  setAddressInputValue={setNewRewardAddressInput}
-                  setIsShowNewTokenArea={setIsShowNewTokenArea}
-                  setRewardTokens={setRewardTokens}
-                />
-              )
-              : ''}
+            {isShowNewTokenArea ? (
+              <NewTokenAddressInput
+                rewardTokens={rewardTokens}
+                addressInputValue={newRewardAddressInput}
+                setAddressInputValue={setNewRewardAddressInput}
+                setIsShowNewTokenArea={setIsShowNewTokenArea}
+                addRewardToken={addRewardToken}
+              />
+            ) : (
+              ''
+            )}
             <div sx={styles.rewardListContainer}>
-              {Object.keys(rewardTokens).map((tokenAddress) => (
-                <RewardListItem
-                  key={tokenAddress}
-                  tokenAddress={tokenAddress}
-                  tokenName={rewardTokens[tokenAddress].symbol}
-                  receiveAmount={localRewardAmount[tokenAddress] || new BigNumber(0)}
-                  bankBalance={tokenAddress === ETHADDRESS
-                    ? ethBalance[GUILDBANK[chainId as ChainId]]?.toFixed(4)
-                    : tokensBalanceInBank[tokenAddress]?.toFixed(4) || '0'}
-                  isDefaultToken={Object.keys(rewardTokens).includes(tokenAddress)} // chainId
-                  checked={pickedRewardTokensAddress.includes(tokenAddress)}
-                  onChange={() => { toggleToken(tokenAddress); }}
-                  rewardTokens={rewardTokens}
-                  setRewardTokens={setRewardTokens}
-                />
-              ))}
+              {
+                Object.keys(rewardTokens).map((tokenAddress) => (
+                  <RewardListItemContainer key={tokenAddress}
+                    guildBankAddress={GUILDBANK[chainId as ChainId]}
+                    tokenAddress={tokenAddress as Address}
+                    inputAmount={inputAmount}
+                    chainId={chainId as ChainId}
+                    hakkaTotalSupply={hakkaTotalSupplyAmount.data ?? '0'}
+                    onDelete={() => onRewardListItemDelete(tokenAddress as Address)}
+                    onChange={() => toggleToken(tokenAddress as Address)}
+                    checked={pickedRewardTokensAddress.includes(tokenAddress as Address)}
+                    onRewardCalculated={(receiveAmount: BigNumber) => onRewardCalculated(tokenAddress as Address, receiveAmount)}
+                  />
+                ))
+              }
             </div>
             <hr sx={styles.hr2} />
             {/* total value */}
@@ -293,7 +271,7 @@ const VaultPage = () => {
                 connectWallet={toggleWalletModal}
                 isApproved={approveState === ApprovalState.APPROVED}
                 approveToken={approve}
-                disabled={ errorStatus || burnState === BurnState.PENDING}
+                disabled={errorStatus || burnState === BurnState.PENDING}
                 isCorrectNetwork={isCorrectNetwork}
                 targetNetwork={ChainId.MAINNET}
               >
@@ -306,9 +284,18 @@ const VaultPage = () => {
           <hr sx={styles.hr} />
           <div sx={styles.knowMoreRow}>
             <span sx={styles.knowMoreTitle}>More Information</span>
-            <div sx={styles.wikiLinkArea} onClick={() => { window.open('https://hakka-finance.gitbook.io/hakka-wiki', '_blank', 'noopener, noreferrer')}}>
+            <div
+              sx={styles.wikiLinkArea}
+              onClick={() => {
+                window.open(
+                  'https://hakka-finance.gitbook.io/hakka-wiki',
+                  '_blank',
+                  'noopener, noreferrer',
+                );
+              }}
+            >
               <span sx={styles.visitWikiLink}>Visit Wiki</span>
-              <img src={images.iconForwardGreen} alt="link" />
+              <img src={images.iconForwardGreen} alt='link' />
             </div>
           </div>
         </div>

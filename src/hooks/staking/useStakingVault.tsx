@@ -1,102 +1,127 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
-import {
-  Contract as MulticallContract,
-  Provider as MulticallProvider,
-} from '@pelith/ethers-multicall';
+
 import { useWeb3React } from '@web3-react/core';
-import throttle from 'lodash/throttle';
-import { BigNumber } from '@ethersproject/bignumber';
-import { Zero } from '@ethersproject/constants';
+import BigNumber from 'bignumber.js';
 import {
   ChainDataFetchingState,
   NEW_SHAKKA_ADDRESSES,
   ChainId,
-  JSON_RPC_PROVIDER,
+  STAKING_ADDRESSES,
 } from '../../constants';
-import STAKING_ABI from '../../constants/abis/shakka.json';
-import { useBlockNumber } from '../../state/application/hooks';
+import STAKING_ABI from '../../constants/abis/shakka';
+import STAKING_V1_ABI from '../../constants/abis/shakka_v1';
 
 import _isEqual from 'lodash/isEqual';
 import _range from 'lodash/range';
 
-import { AddressZero } from '@ethersproject/constants';
+import { useReadContract, useReadContracts } from 'wagmi';
+import { formatUnits, isAddress, type Address } from 'viem';
+import { fromUnixTime } from 'date-fns';
 
 export interface VaultType {
   hakkaAmount: BigNumber;
   wAmount: BigNumber;
   unlockTime: BigNumber;
 }
-
-const chainProviders = JSON_RPC_PROVIDER
-export default function useStakingVault(
+const ZERO = new BigNumber(0);
+export function useStakingVault(
   activeChainId: ChainId
 ): {
   vault: VaultType[];
   vaultCount: BigNumber;
   fetchDataState: ChainDataFetchingState;
 } {
-  const { account } = useWeb3React();
-  const latestBlockNumber = useBlockNumber();
-  const [{ vaultCache, vaultCount }, setVaultData] = useState({
-    vaultCache: {} as Record<ChainId, VaultType[]>,
-    vaultCount: Zero,
-  });
-  const [transactionSuccess, setTransactionSuccess] = useState(false);
+  const { account = '' } = useWeb3React();
 
-  const fetchDataState: ChainDataFetchingState = useMemo(() => {
-    return transactionSuccess
-      ? ChainDataFetchingState.SUCCESS
-      : ChainDataFetchingState.LOADING;
-  }, [transactionSuccess]);
-
-  const fetchVault = useCallback(async (chainId: ChainId, account: string) => {
-    if (NEW_SHAKKA_ADDRESSES[chainId] === AddressZero) return;
-    if (account === AddressZero || !account) return;
-    setTransactionSuccess(false);
-    const multicallProvider = new MulticallProvider(
-      chainProviders[chainId],
-      chainId
-    );
-    const sHakkaContract = new MulticallContract(
-      NEW_SHAKKA_ADDRESSES[chainId],
-      STAKING_ABI
-    );
-    try {
-      const [vaultCount] = await multicallProvider.all([
-        sHakkaContract.vaultCount(account),
-      ]);
-      const vaultsIndex = (vaultCount as BigNumber).toNumber();
-      const vaultsRequests = _range(vaultsIndex).map((vaultNum) =>
-        sHakkaContract.vaults(account, vaultNum)
-      );
-      const [...vault] = await multicallProvider.all(vaultsRequests);
-
-      setVaultData((state) => {
-        const now = Date.now();
-
-        const newVault = vault.map((ele) => ({
-          __expired: ele.unlockTime.mul(1000).lte(now),
-          ...ele,
-        }));
-        
-        if (_isEqual(state.vaultCache[chainId], newVault)) {
-          return state;
-        }
-        state.vaultCache[chainId] = newVault;
-        return { vaultCache: state.vaultCache, vaultCount };
-      });
-      setTransactionSuccess(true);
-    } catch (e) {
-      console.log(e);
-      console.log('fetch vaults data error');
+  const {data: vaultCount = ZERO, isLoading: isLoadingVaultCount} = useReadContract({
+    address: NEW_SHAKKA_ADDRESSES[activeChainId] as Address,
+    abi: STAKING_ABI,
+    functionName: 'vaultCount',
+    chainId: activeChainId,
+    args: [account as Address],
+    query: {
+      enabled: isAddress(account) && isAddress(NEW_SHAKKA_ADDRESSES[activeChainId]),
+      select (data) {
+        return new BigNumber(data);
+      },
+      initialData: 0n,
     }
-  }, []);
+  })
+  const {data: vaults, isLoading: isLoadingVaults} = useReadContracts({
+    contracts: _range(vaultCount?.toNumber() ?? 0).map((vaultNum) => ({
+      address: NEW_SHAKKA_ADDRESSES[activeChainId] as Address,
+      abi: STAKING_ABI,
+      functionName: 'vaults',
+      args: [account as Address, BigInt(vaultNum)] as const,
+      chainId: activeChainId as 1,
+    }) as const),
+    query: {
+      enabled: isAddress(account) && isAddress(NEW_SHAKKA_ADDRESSES[activeChainId]),
+      select(data) {
+        return data.filter(ele => ele.status === 'success').map(ele => {
+          const [hakkaAmount, wAmount, unlockTime] = ele.result;
+          return {
+            hakkaAmount: BigNumber(formatUnits(hakkaAmount, 18)),
+            wAmount: BigNumber(formatUnits(wAmount, 18)),
+            unlockTime: BigNumber(unlockTime),
+            __expired: fromUnixTime(Number(unlockTime)).getTime() < Date.now(),
+          } as VaultType
+        })
+      },
+      initialData: [],
+    }
+  })
 
-  const debouncedFetchVault = useMemo(() => throttle(fetchVault, 2000), []);
-
-  useEffect(() => {
-    debouncedFetchVault(activeChainId, account);
-  }, [latestBlockNumber, activeChainId, account, ~~(Date.now() / 5000)]);
-
-  return { vault: vaultCache[activeChainId] ?? [], vaultCount, fetchDataState };
+  return { vault: vaults!, vaultCount, fetchDataState: isLoadingVaults || isLoadingVaultCount ? ChainDataFetchingState.LOADING : ChainDataFetchingState.SUCCESS };
 }
+
+export function useStakingVaultV1(
+  activeChainId: ChainId
+): {
+  vault: VaultType[];
+  vaultCount: BigNumber;
+  fetchDataState: ChainDataFetchingState;
+} {
+  const { account = '' } = useWeb3React();
+
+  const {data: vaultCount = ZERO, isLoading: isLoadingVaultCount} = useReadContract({
+    address: STAKING_ADDRESSES[activeChainId] as Address,
+    abi: STAKING_V1_ABI,
+    functionName: 'vaultCount',
+    chainId: activeChainId,
+    args: [account as Address],
+    query: {
+      enabled: isAddress(account) && isAddress(STAKING_ADDRESSES[activeChainId]),
+      select (data) {
+        return new BigNumber(data);
+      },
+      initialData: 0n,
+    }
+  })
+  const {data: vaults, isLoading: isLoadingVaults} = useReadContracts({
+    contracts: _range(vaultCount?.toNumber() ?? 0).map((vaultNum) => ({
+      address: STAKING_ADDRESSES[activeChainId] as Address,
+      abi: STAKING_V1_ABI,
+      functionName: 'vaults',
+      args: [account as Address, BigInt(vaultNum)] as const,
+      chainId: activeChainId as 1,
+    }) as const),
+    query: {
+      enabled: isAddress(account) && isAddress(STAKING_ADDRESSES[activeChainId]),
+      select(data) {
+        return data.filter(ele => ele.status === 'success').map(ele => {
+          const [hakkaAmount, wAmount, unlockTime] = ele.result;
+          return {
+            hakkaAmount: BigNumber(formatUnits(hakkaAmount, 18)),
+            wAmount: BigNumber(formatUnits(wAmount, 18)),
+            unlockTime: BigNumber(unlockTime),
+            __expired: fromUnixTime(Number(unlockTime)).getTime() < Date.now(),
+          } as VaultType
+        })
+      },
+      initialData: [],
+    }
+  })
+
+  return { vault: vaults!, vaultCount, fetchDataState: isLoadingVaults || isLoadingVaultCount ? ChainDataFetchingState.LOADING : ChainDataFetchingState.SUCCESS };
+}
+

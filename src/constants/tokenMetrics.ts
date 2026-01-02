@@ -37,14 +37,14 @@ export const chainsInfo = [
     nativeTokenSymbol: 'FTM',
     shortName: 'Fantom',
   },
-];
+] as const;
 export interface TokenMetric {
   id: string;
   chainId: number;
   shortName: string;
   name: string;
   type: string;
-  address: `0x${string}`
+  address: `0x${string}`;
   addressLink: string;
   addressIcon: string;
 }
@@ -56,7 +56,8 @@ export const tokenMetrics: TokenMetric[] = [
     name: 'Hakka Finance (HAKKA)',
     type: 'ERC-20',
     address: '0x0E29e5AbbB5FD88e28b2d355774e73BD47dE3bcd',
-    addressLink: 'https://etherscan.io/token/0x0E29e5AbbB5FD88e28b2d355774e73BD47dE3bcd',
+    addressLink:
+      'https://etherscan.io/token/0x0E29e5AbbB5FD88e28b2d355774e73BD47dE3bcd',
     addressIcon: images.iconEtherscan,
   },
   {
@@ -66,7 +67,8 @@ export const tokenMetrics: TokenMetric[] = [
     name: ' Hakka Finance on xDai on BNB Chain (HAKKA)',
     type: 'BEP-20',
     address: '0x1D1eb8E8293222e1a29d2C0E4cE6C0Acfd89AaaC',
-    addressLink: 'https://bscscan.com/token/0x1D1eb8E8293222e1a29d2C0E4cE6C0Acfd89AaaC',
+    addressLink:
+      'https://bscscan.com/token/0x1D1eb8E8293222e1a29d2C0E4cE6C0Acfd89AaaC',
     addressIcon: images.iconBSCScan,
   },
   {
@@ -76,7 +78,8 @@ export const tokenMetrics: TokenMetric[] = [
     name: ' Hakka Finance (HAKKA)',
     type: 'ERC-20',
     address: '0x978338A9d2d0aa2fF388d3dc98b9bF25bfF5efB4',
-    addressLink: 'https://polygonscan.com/token/0x978338A9d2d0aa2fF388d3dc98b9bF25bfF5efB4',
+    addressLink:
+      'https://polygonscan.com/token/0x978338A9d2d0aa2fF388d3dc98b9bF25bfF5efB4',
     addressIcon: images.iconPolygon,
   },
   {
@@ -86,7 +89,8 @@ export const tokenMetrics: TokenMetric[] = [
     name: 'Hakka Finance (HAKKA)',
     type: 'ERC-20',
     address: '0xda803c6AD8078c51c5334B51aA4Cc3f440d56D5F',
-    addressLink: 'https://ftmscan.com/address/0xda803c6ad8078c51c5334b51aa4cc3f440d56d5f',
+    addressLink:
+      'https://ftmscan.com/address/0xda803c6ad8078c51c5334b51aa4cc3f440d56d5f',
     addressIcon: images.iconFantom,
-  }
+  },
 ];

@@ -1,15 +1,21 @@
-import { Contract } from '@ethersproject/contracts';
-import { getAddress } from '@ethersproject/address';
-import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
-import { BigNumber } from '@ethersproject/bignumber';
 import {
-  Currency, CurrencyAmount, JSBI, Percent, Token, TokenAmount,
+  Currency,
+  CurrencyAmount,
+  JSBI,
+  Percent,
+  Token,
+  TokenAmount,
 } from '@uniswap/sdk';
-import { ethers } from 'ethers';
-import { parseUnits } from '@ethersproject/units';
+import {
+  getAddress,
+  hexToString,
+  parseUnits,
+  type Address,
+  type PublicClient,
+} from 'viem';
 import { ChainId } from '../constants';
-import ERC20_ABI from '../constants/abis/erc20.json';
-import ERC20_BYTES32_ABI from '../constants/abis/erc20_bytes32.json';
+import ERC20_ABI from '../constants/abis/erc20';
+import ERC20_BYTES32_ABI from '../constants/abis/erc20_bytes32';
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
@@ -32,15 +38,16 @@ export function getEtherscanLink(
   data: string,
   type: 'transaction' | 'token' | 'address',
 ): string {
-  const prefix = chainId === ChainId.BSC
-    ? 'https://bscscan.com'
-    : chainId === ChainId.POLYGON
-    ? 'https://polygonscan.com'
-    : chainId === ChainId.FANTOM
-    ? 'https://ftmscan.com'
-    : `https://${
-      ETHERSCAN_PREFIXES[chainId] || ETHERSCAN_PREFIXES[1]
-    }etherscan.io`;
+  const prefix =
+    chainId === ChainId.BSC
+      ? 'https://bscscan.com'
+      : chainId === ChainId.POLYGON
+        ? 'https://polygonscan.com'
+        : chainId === ChainId.FANTOM
+          ? 'https://ftmscan.com'
+          : `https://${
+              ETHERSCAN_PREFIXES[chainId] || ETHERSCAN_PREFIXES[1]
+            }etherscan.io`;
 
   switch (type) {
     case 'transaction': {
@@ -70,49 +77,13 @@ export function shortenTxId(address: string, chars = 6): string {
 }
 
 // add 10%
-export function calculateGasMargin(value: BigNumber): BigNumber {
-  return value
-    .mul(BigNumber.from(10000).add(BigNumber.from(1000)))
-    .div(BigNumber.from(10000));
+export function calculateGasMargin(value: bigint): bigint {
+  return (value * 11000n) / 10000n;
 }
 
 // converts a basis points value to a sdk percent
 export function basisPointsToPercent(num: number): Percent {
   return new Percent(JSBI.BigInt(num), JSBI.BigInt(10000));
-}
-
-// account is not optional
-export function getSigner(
-  library: Web3Provider,
-  account: string,
-): JsonRpcSigner {
-  return library.getSigner(account).connectUnchecked();
-}
-
-// account is optional
-export function getProviderOrSigner(
-  library: Web3Provider,
-  account?: string,
-): Web3Provider | JsonRpcSigner {
-  return account ? getSigner(library, account) : library;
-}
-
-// account is optional
-export function getContract(
-  address: string,
-  ABI: any,
-  library: Web3Provider,
-  account?: string,
-): Contract {
-  if (!isAddress(address)) {
-    throw Error(`Invalid 'address' parameter '${address}'.`);
-  }
-
-  return new Contract(
-    address,
-    ABI,
-    getProviderOrSigner(library, account) as any,
-  );
 }
 
 export function escapeRegExp(string: string): string {
@@ -185,13 +156,24 @@ export const formattedNum = (
   return Number(parseFloat(num.toString()).toFixed(5));
 };
 
-export function isERC20Contract(tokenAddress: string, library: any) {
-  return getContract(tokenAddress, ERC20_ABI, library)
-    .name()
-    .catch(() => getContract(tokenAddress, ERC20_BYTES32_ABI, library)
-      .name()
-      .then((bytes32: any) => ethers.utils.parseBytes32String(bytes32)))
-    .catch(() => false);
+function bytes32ToString(bytes32: `0x${string}`): string {
+  try {
+    return hexToString(bytes32, { size: 32 }).replace(/\u0000/g, '');
+  } catch {
+    return '';
+  }
+}
+
+export async function isERC20Contract(
+  tokenAddress: string,
+  client: PublicClient,
+): Promise<boolean> {
+  try {
+    await getTokenName(tokenAddress, client);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export const ERROR_CODES = [
@@ -203,61 +185,87 @@ export const ERROR_CODES = [
   return accumulator;
 }, {});
 
-export async function getTokenName(tokenAddress: string, library: any) {
+export async function getTokenName(tokenAddress: string, client: PublicClient) {
   if (!isAddress(tokenAddress)) {
     throw Error(`Invalid 'tokenAddress' parameter '${tokenAddress}'.`);
   }
 
-  return getContract(tokenAddress, ERC20_ABI, library)
-    .name()
-    .catch(() => getContract(tokenAddress, ERC20_BYTES32_ABI, library)
-      .name()
-      .then((bytes32: any) => ethers.utils.parseBytes32String(bytes32)))
-    .catch((error: any) => {
+  try {
+    return (await client.readContract({
+      address: tokenAddress as Address,
+      abi: ERC20_ABI as any,
+      functionName: 'name',
+      args: [],
+    })) as string;
+  } catch (_e) {
+    try {
+      const bytes32 = (await client.readContract({
+        address: tokenAddress as Address,
+        abi: ERC20_BYTES32_ABI as any,
+        functionName: 'name',
+        args: [],
+      })) as `0x${string}`;
+      return bytes32ToString(bytes32);
+    } catch (error: any) {
+      error.code = ERROR_CODES.TOKEN_NAME;
+      throw error;
+    }
+  }
+}
+
+export async function getTokenSymbol(
+  tokenAddress: string,
+  client: PublicClient,
+) {
+  if (!isAddress(tokenAddress)) {
+    throw Error(`Invalid 'tokenAddress' parameter '${tokenAddress}'.`);
+  }
+
+  try {
+    return (await client.readContract({
+      address: tokenAddress as Address,
+      abi: ERC20_ABI as any,
+      functionName: 'symbol',
+      args: [],
+    })) as string;
+  } catch (_e) {
+    try {
+      const bytes32 = (await client.readContract({
+        address: tokenAddress as Address,
+        abi: ERC20_BYTES32_ABI as any,
+        functionName: 'symbol',
+        args: [],
+      })) as `0x${string}`;
+      return bytes32ToString(bytes32);
+    } catch (error: any) {
       error.code = ERROR_CODES.TOKEN_SYMBOL;
       throw error;
-    });
+    }
+  }
 }
 
-export async function getTokenSymbol(tokenAddress: string, library: any) {
+export async function getTokenDecimals(
+  tokenAddress: string,
+  client: PublicClient,
+) {
   if (!isAddress(tokenAddress)) {
     throw Error(`Invalid 'tokenAddress' parameter '${tokenAddress}'.`);
   }
 
-  return getContract(tokenAddress, ERC20_ABI, library)
-    .symbol()
-    .catch(() => {
-      const contractBytes32 = getContract(
-        tokenAddress,
-        ERC20_BYTES32_ABI,
-        library,
-      );
-      return contractBytes32
-        .symbol()
-        .then((bytes32: any) => ethers.utils.parseBytes32String(bytes32));
-    })
-    .catch((error: any) => {
-      error.code = ERROR_CODES.TOKEN_SYMBOL;
-      throw error;
-    });
-}
-
-export async function getTokenDecimals(tokenAddress: string, library: any) {
-  if (!isAddress(tokenAddress)) {
-    throw Error(`Invalid 'tokenAddress' parameter '${tokenAddress}'.`);
+  try {
+    return (await client.readContract({
+      address: tokenAddress as Address,
+      abi: ERC20_ABI as any,
+      functionName: 'decimals',
+      args: [],
+    })) as number;
+  } catch (error: any) {
+    error.code = ERROR_CODES.TOKEN_DECIMALS;
+    throw error;
   }
-
-  return getContract(tokenAddress, ERC20_ABI, library)
-    .decimals()
-    .catch((error: any) => {
-      error.code = ERROR_CODES.TOKEN_DECIMALS;
-      throw error;
-    });
 }
 
-export function tryParseAmount(
-  value?: string,
-): CurrencyAmount | undefined {
+export function tryParseAmount(value?: string): CurrencyAmount | undefined {
   if (!value) {
     return CurrencyAmount.ether(JSBI.BigInt('0'));
   }

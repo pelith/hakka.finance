@@ -54,11 +54,11 @@ export default {
       margin: '26px -16px 20px',
       padding: '0 28px 0 16px',
       '& strong': {
-        alignSelf: 'end'
+        alignSelf: 'end',
       },
       '& .navigate-link': {
-        alignSelf: 'start'
+        alignSelf: 'start',
       },
-    }
+    },
   } as ThemeUICSSObject,
 };

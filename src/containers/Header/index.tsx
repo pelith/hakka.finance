@@ -1,4 +1,4 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import React from 'react';
 import { Box, Flex } from 'rebass';
@@ -42,26 +42,32 @@ const Header = (props) => {
   const handleToggleSidebar = () => {
     toggleSidebar();
   };
-  const renderListIcon = () => listIcon.map((item, i) => (
-    <a key={i} target="_blank" href={item.href} rel="noreferrer noopener">
-      <img sx={styles.imgIcon} src={images[item.url]} />
-    </a>
-  ));
+  const renderListIcon = () =>
+    listIcon.map((item, i) => (
+      <a key={i} target='_blank' href={item.href} rel='noreferrer noopener'>
+        <img sx={styles.imgIcon} src={images[item.url]} />
+      </a>
+    ));
 
   return (
     <>
-      <Box sx={styles.headerContainer} width="100%">
+      <Box sx={styles.headerContainer} width='100%'>
         {/* <Flex ><img sx={styles.iconMenuLeft} src={images.iconMenu} alt="" /></Flex> */}
         <Box>
           <img sx={styles.headerBg} src={images.headerLogo} />
         </Box>
-        <Flex mr="28px">{renderListIcon()}</Flex>
+        <Flex mr='28px'>{renderListIcon()}</Flex>
       </Box>
 
-      <Box sx={styles.mobile_header} justifyContent="space-between">
+      <Box sx={styles.mobile_header} justifyContent='space-between'>
         <img sx={styles.headerBg} src={images.headerLogo3x} />
-        <img sx={styles.logoRespon} src={images.hakkaLogo} alt="" />
-        <img onClick={handleToggleSidebar} sx={styles.iconMenu} src={images.iconMenu} alt="" />
+        <img sx={styles.logoRespon} src={images.hakkaLogo} alt='' />
+        <img
+          onClick={handleToggleSidebar}
+          sx={styles.iconMenu}
+          src={images.iconMenu}
+          alt=''
+        />
       </Box>
       {/* </Box> */}
     </>

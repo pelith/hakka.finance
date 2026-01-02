@@ -3,9 +3,7 @@ import DappLayout from '../containers/DappLayout';
 import Staking from '../components/StakingPage';
 
 const StakingPage = () => (
-  <DappLayout
-    title="Hakka Finance | Staking"
-  >
+  <DappLayout title='Hakka Finance | Staking'>
     <Staking />
   </DappLayout>
 );

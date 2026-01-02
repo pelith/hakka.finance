@@ -1,11 +1,10 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import React, { useState } from 'react'
-import Web3Status from '../Web3Status'
+import React, { useState } from 'react';
+import Web3Status from '../Web3Status';
 import styles from './styles';
 import YearlyReviewIntroSection from './YearlyReviewIntroSection';
 import YearlyReviewDetailSection from './YearlyReviewDetailSection';
-
 
 const YearlyReviewPage = () => {
   const [isShowDetailPage, setIsShowDetailPage] = useState(false);
@@ -17,10 +16,14 @@ const YearlyReviewPage = () => {
           <p>Year in Review</p>
           <Web3Status />
         </div>
-        {isShowDetailPage ? (<YearlyReviewDetailSection />) : (<YearlyReviewIntroSection setIsShowDetailPage={setIsShowDetailPage} />)}
+        {isShowDetailPage ? (
+          <YearlyReviewDetailSection />
+        ) : (
+          <YearlyReviewIntroSection setIsShowDetailPage={setIsShowDetailPage} />
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default YearlyReviewPage
+export default YearlyReviewPage;

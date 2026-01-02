@@ -45,11 +45,11 @@ export default {
     cursor: 'pointer',
     transition: '.3s all',
     opacity: '.5',
-    WebkitTouchCallout: 'none', /* iOS Safari */
-    WebkitUserSelect: 'none', /* Safari */
-    KhtmlUserSelect: 'none', /* Konqueror HTML */
-    mozUserSelect: 'none', /* Old versions of Firefox */
-    msUserSelect: 'none', /* Internet Explorer/Edge */
+    WebkitTouchCallout: 'none' /* iOS Safari */,
+    WebkitUserSelect: 'none' /* Safari */,
+    KhtmlUserSelect: 'none' /* Konqueror HTML */,
+    mozUserSelect: 'none' /* Old versions of Firefox */,
+    msUserSelect: 'none' /* Internet Explorer/Edge */,
     userSelect: 'none',
 
     ':hover': {
@@ -62,13 +62,12 @@ export default {
     '@media screen and (max-width: 576px)': {
       flexDirection: 'column',
     },
-
   },
   wordLink: {
     position: 'relative',
     top: '-3px',
     marginRight: '12px',
-    fontSize: '14px', 
+    fontSize: '14px',
     textDecoration: 'none',
     color: '#929ea3',
     fontWeight: '600',

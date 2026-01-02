@@ -1,4 +1,4 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import { memo, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import styles from './styles';
@@ -20,8 +20,9 @@ interface ILockPeriodProps {
 
 const LockPeriod = memo((props: ILockPeriodProps) => {
   const { onClick, disabled, active, value, label } = props;
-  const classNames = `${disabled ? 'disabled' : ''} ${active ? 'active' : ''
-    } period-option`;
+  const classNames = `${disabled ? 'disabled' : ''} ${
+    active ? 'active' : ''
+  } period-option`;
   return (
     <div className={classNames} onClick={() => !disabled && onClick(value)}>
       {label}
@@ -31,7 +32,18 @@ const LockPeriod = memo((props: ILockPeriodProps) => {
 
 const yearsPeriod = [4, 3, 2, 1, 0];
 const monthsPeriod = [9, 6, 3, 0];
-const keyList = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a',];
+const keyList = [
+  'ArrowUp',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowLeft',
+  'ArrowRight',
+  'b',
+  'a',
+];
 
 const monthlyTimeSecondsTransfer = (month: number) => month * 2592000;
 const yearlyTimeSecondsTransfer = (years: number) => years * 8766 * 60 * 60;
@@ -51,13 +63,16 @@ const timestampGroups = periodsGroup
       months: month,
       timestamp:
         yearlyTimeSecondsTransfer(years) + monthlyTimeSecondsTransfer(month),
-    }))
+    })),
   )
   .flat()
-  .reduce((prev, { years, months, timestamp }) => {
-    prev[timestamp] = { years, months };
-    return prev;
-  }, {} as { [key: string]: { [x in 'years' | 'months']: number }; });
+  .reduce(
+    (prev, { years, months, timestamp }) => {
+      prev[timestamp] = { years, months };
+      return prev;
+    },
+    {} as { [key: string]: { [x in 'years' | 'months']: number } },
+  );
 const keysOfPeriod = Object.keys(timestampGroups);
 // time unit is seconds
 // minimum 30 minutes timestamp
@@ -72,7 +87,8 @@ export default function LockPeriodOptions(props: IProps) {
 
   const timeStamp = useMemo(() => {
     return (
-      monthlyTimeSecondsTransfer(lockMonth) + yearlyTimeSecondsTransfer(lockYear)
+      monthlyTimeSecondsTransfer(lockMonth) +
+      yearlyTimeSecondsTransfer(lockYear)
     );
   }, [lockMonth, lockYear]);
 
@@ -99,7 +115,7 @@ export default function LockPeriodOptions(props: IProps) {
       } else {
         prev.set(
           timestampGroups[timeStamp].years,
-          new Set([timestampGroups[timeStamp].months])
+          new Set([timestampGroups[timeStamp].months]),
         );
       }
       return prev;
@@ -110,7 +126,7 @@ export default function LockPeriodOptions(props: IProps) {
 
   useEffect(() => {
     if (!availableTree.has(lockYear)) {
-      onLockYearChange(availableTree.keys().next().value);
+      onLockYearChange(availableTree.keys().next().value ?? 0);
     }
   }, [timeLeft]);
 
@@ -145,13 +161,8 @@ export default function LockPeriodOptions(props: IProps) {
   const onLockYearChange = useCallback((year: number) => {
     setLockYear(year);
 
-    if (!availableTree.get(year).has(lockMonthRef.current)) {
-      setLockMonth(
-        availableTree
-          .get(year)
-          .values()
-          .next().value
-      );
+    if (!availableTree.get(year)?.has(lockMonthRef.current)) {
+      setLockMonth(availableTree.get(year)?.values().next().value ?? 0);
     }
   }, []);
 
@@ -166,7 +177,7 @@ export default function LockPeriodOptions(props: IProps) {
       if (keyList[keyIndex + 1] === e.key) {
         keyIndex += 1;
         if (keyIndex === keyList.length - 1) {
-          toast('30 mins lock period is available', {containerId: 'tx'});
+          toast('30 mins lock period is available', { containerId: 'tx' });
           setDisplay30mins(true);
           clearKeyIndex();
         }
@@ -177,7 +188,7 @@ export default function LockPeriodOptions(props: IProps) {
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-    }
+    };
   }, []);
 
   return (
@@ -185,7 +196,8 @@ export default function LockPeriodOptions(props: IProps) {
       <p sx={styles.title}>
         Locked period until <strong>{until}</strong>
         {display30mins && (
-          <button sx={styles.btn}
+          <button
+            sx={styles.btn}
             onClick={() => {
               onChange(30 * 60 + 70);
             }}
@@ -195,7 +207,7 @@ export default function LockPeriodOptions(props: IProps) {
         )}
       </p>
       <div sx={styles.optionContainer}>
-        <div sx={styles.wrapper} className="option-block" data-label="Year(s)">
+        <div sx={styles.wrapper} className='option-block' data-label='Year(s)'>
           {yearOptions.map((option) => (
             <LockPeriod
               key={option.value}
@@ -207,10 +219,10 @@ export default function LockPeriodOptions(props: IProps) {
             />
           ))}
         </div>
-        <div sx={styles.wrapper} data-label="" style={{ margin: '0 8px' }}>
+        <div sx={styles.wrapper} data-label='' style={{ margin: '0 8px' }}>
           +
         </div>
-        <div sx={styles.wrapper} className="option-block" data-label="Month(s)">
+        <div sx={styles.wrapper} className='option-block' data-label='Month(s)'>
           {monthOptions.map((option) => (
             <LockPeriod
               key={option.value}

@@ -8,7 +8,6 @@ const pageStyles = {
   fontFamily: '-apple-system, Roboto, sans-serif, serif',
 };
 const headingStyles = {
-
   maxWidth: 320,
 };
 
@@ -29,29 +28,22 @@ const NotFoundPage = () => (
     <title>Not found</title>
     <h1 style={headingStyles}>Page not found</h1>
     <p style={paragraphStyles}>
-      Sorry
-      {' '}
-      <span role="img" aria-label="Pensive emoji">
+      Sorry{' '}
+      <span role='img' aria-label='Pensive emoji'>
         😔
-      </span>
-      {' '}
+      </span>{' '}
       we couldn’t find what you were looking for.
       <br />
-      {process.env.GATSBY_ENV === 'development'
-        ? (
-          <>
-            <br />
-            Try creating a page in
-            {' '}
-            <code style={codeStyles}>src/pages/</code>
-            .
-            <br />
-          </>
-        )
-        : null}
+      {import.meta.env.VITE_ENV === 'development' ? (
+        <>
+          <br />
+          Try creating a page in <code style={codeStyles}>src/pages/</code>
+          .
+          <br />
+        </>
+      ) : null}
       <br />
-      <Link to="/">Go home</Link>
-      .
+      <Link to='/'>Go home</Link>.
     </p>
   </main>
 );

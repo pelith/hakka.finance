@@ -1,38 +1,40 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { BigNumber } from 'ethers';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
 
-import { useStakeContract } from '../useContract';
-import { calculateGasMargin, getEtherscanLink, shortenTxId } from '../../utils';
-import { useEffect } from 'react';
+import { getEtherscanLink, shortenTxId } from '../../utils';
+import { usePublicClient, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import type { ChainId } from 'src/constants';
+import STAKING_ABI from 'src/constants/abis/shakka';
 
 export enum StakeState {
   UNKNOWN,
-  PENDING
+  PENDING,
 }
 
 export function useHakkaStake(
   stakeAddress: string,
   spender: string,
-  amountParsed: BigNumber,
+  amountParsedRaw: bigint,
   lockSec: number,
 ): [StakeState, () => Promise<void>] {
   const { chainId } = useWeb3React();
-  const [currentTransaction, setCurrentTransaction] = useState(null);
+  const publicClient = usePublicClient({chainId: chainId as ChainId})
+  const {writeContractAsync, data, isPending: isWritePending, isSuccess: isWriteSuccess, isError: isWriteError, error: writeError, reset,} = useWriteContract()
+  const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
+    hash: data,
+    query: {
+      enabled: isWriteSuccess,
+    },
+  })
 
   const stakeState: StakeState = useMemo(() => {
-    if (!spender) return StakeState.UNKNOWN;
-
-    return currentTransaction
-      ? StakeState.PENDING
-      : StakeState.UNKNOWN;
-  }, [currentTransaction, spender]);
-
-  const stakeContract = useStakeContract(stakeAddress);
+    if (isWritePending || isWaitForLoading) return StakeState.PENDING;
+    return StakeState.UNKNOWN;
+  }, [isWritePending, isWaitForLoading]);
 
   const stake = useCallback(async (): Promise<void> => {
     if (!spender) {
@@ -41,33 +43,44 @@ export function useHakkaStake(
     }
 
     try {
-      const estimatedGas = await stakeContract.estimateGas.stake(spender, amountParsed, lockSec);
-      const tx = await stakeContract.stake(spender, amountParsed, lockSec, {
-        gasLimit: estimatedGas.mul(BigNumber.from(15000)).div(BigNumber.from(10000)),  // * 1.5
-      });
-      setCurrentTransaction(tx.hash);
+      const estimatedGas = await publicClient.estimateContractGas({
+        address: stakeAddress as `0x${string}`,
+        abi: STAKING_ABI,
+        functionName: 'stake',
+        args: [spender as `0x${string}`, BigInt(amountParsedRaw.toString()), BigInt(lockSec)],
+      })
+
+      const increaseGas = estimatedGas * 15000n / 10000n;
+      const txHash = await writeContractAsync({
+        address: stakeAddress as `0x${string}`,
+        abi: STAKING_ABI,
+        functionName: 'stake',
+        args: [spender as `0x${string}`, BigInt(amountParsedRaw.toString()), BigInt(lockSec)],
+        gas: increaseGas
+      })
       toast(
         <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
+          target='_blank'
+          href={getEtherscanLink(chainId ?? 1, txHash, 'transaction')}
+          rel='noreferrer noopener'
           sx={{ textDecoration: 'none', color: '#253e47' }}
         >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-      , { containerId: 'tx' });
-      await tx.wait();
+          {shortenTxId(txHash)} <ExternalLink size={16} />
+        </a>,
+        { containerId: 'tx' },
+      );
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+      });
     } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>,  { containerId: 'error' });
+      console.error(err);
+      if (err instanceof Error) {
+        toast.error(<div>{err.message}</div>, { containerId: 'error' });
+      }
     } finally {
-      setCurrentTransaction(null);
+      reset();
     }
-  }, [
-    stakeContract,
-    spender,
-    amountParsed,
-    lockSec,
-  ]);
+  }, [spender, amountParsedRaw, lockSec]);
 
   return [stakeState, stake];
 }

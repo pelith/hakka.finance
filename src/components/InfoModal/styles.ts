@@ -1,4 +1,6 @@
-export default {
+import createSX from 'src/utils/createSX';
+
+export default createSX({
   closeIcon: {
     position: 'absolute',
     right: '1rem',
@@ -113,7 +115,7 @@ export default {
 
     icon: {
       marginLeft: '10px',
-    }
+    },
   },
   divider: {
     height: '1px',
@@ -153,4 +155,4 @@ export default {
     letterSpacing: 'normal',
     color: '#253e47',
   },
-};
+});

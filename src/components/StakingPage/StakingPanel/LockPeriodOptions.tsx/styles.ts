@@ -6,8 +6,8 @@ export default {
     alignItems: 'flex-end',
     '@media screen and (max-width: 576px)': {
       flexWrap: 'wrap',
-      rowGap: '12px'
-    }
+      rowGap: '12px',
+    },
   },
 
   wrapper: {
@@ -43,7 +43,6 @@ export default {
         color: 'rgba(37, 62, 71, 0.25)',
       },
     },
-    
   },
 
   title: {
@@ -55,6 +54,6 @@ export default {
     ...NormalButton,
     '&:active': {
       background: 'rgba(62, 189, 147, 0.1)',
-    }
-  }
+    },
+  },
 } as Record<string, ThemeUICSSObject>;

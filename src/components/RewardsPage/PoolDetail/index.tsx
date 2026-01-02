@@ -1,52 +1,63 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
+/** @jsxFrag React.Fragment */
 import { jsx } from 'theme-ui';
-import { Token, TokenAmount } from '@uniswap/sdk';
 import { useWeb3React } from '@web3-react/core';
 import React, { useState, useMemo, useEffect } from 'react';
-import { formatUnits, parseUnits } from '@ethersproject/units';
-import { Zero } from '@ethersproject/constants';
+import { formatUnits, parseUnits } from 'viem';
 import styles from './styles';
 import useTokenPrice from '../../../hooks/useTokenPrice';
 import useTokensPrice from '../../../hooks/useTokensPrice';
 import images from '../../../images/index';
 import { MyButton } from '../../Common';
 import NumericalInputField from '../../NumericalInputField/index';
-import { ChainId, HAKKA, VESTING_ADDRESSES } from '../../../constants';
+import { ChainId } from '../../../constants';
 import { REWARD_POOLS } from '../../../constants/rewards';
 import { POOL_ASSETES } from '../../../constants/rewards/assets';
-import { useTokenBalance } from '../../../state/wallet/hooks';
 import { useTokenApprove, ApprovalState } from '../../../hooks/useTokenApprove';
-import { useSingleCallResult } from '../../../state/multicall/hooks';
-import { tryParseAmount, shortenAddress, getEtherscanLink } from '../../../utils';
+import {
+  tryParseAmount,
+  shortenAddress,
+  getEtherscanLink,
+} from '../../../utils';
 import { useRewardsData } from '../../../data/RewardsData';
-import { useVestingContract } from '../../../hooks/useContract';
-import { useRewardsClaim, ClaimState } from '../../../hooks/farm/useRewardsClaim';
+import {
+  useRewardsClaim,
+  ClaimState,
+} from '../../../hooks/farm/useRewardsClaim';
 import { useRewardsExit, ExitState } from '../../../hooks/farm/useRewardsExit';
-import { useRewardsDeposit, DepositState } from '../../../hooks/farm/useRewardsDeposit';
-import { useRewardsWithdraw, WithdrawState } from '../../../hooks/farm/useRewardsWithdraw';
+import {
+  useRewardsDeposit,
+  DepositState,
+} from '../../../hooks/farm/useRewardsDeposit';
+import {
+  useRewardsWithdraw,
+  WithdrawState,
+} from '../../../hooks/farm/useRewardsWithdraw';
 import ClaimModal from '../../ClaimModal';
-import { useClaimModalToggle, useWalletModalToggle } from '../../../state/application/hooks';
+import {
+  useClaimModalToggle,
+  useWalletModalToggle,
+} from '../../../state/application/hooks';
 import withConnectWalletCheckWrapper from '../../../hoc/withConnectWalletCheckWrapper';
 import withApproveTokenCheckWrapper from '../../../hoc/withApproveTokenCheckWrapper';
 import withWrongNetworkCheckWrapper from '../../../hoc/withWrongNetworkCheckWrapper';
+import { useVestingBalance } from 'src/hooks/contracts/vesting/useVestingBalance';
+import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance';
+import BigNumber from 'bignumber.js';
+import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
 
-const PoolDetail = ({ pool }) => {
+const PoolDetail = ({ pool }: { pool: string }) => {
   const { account, chainId } = useWeb3React();
-  const rewardData = useRewardsData([pool], [POOL_ASSETES[pool]?.decimal || 18]);
+  const rewardData = useRewardsData(
+    [pool],
+    [POOL_ASSETES[pool]?.decimal || 18],
+  );
   const toggleClaimModal = useClaimModalToggle();
-  const vestingContract = useVestingContract(VESTING_ADDRESSES[chainId]);
-  const vestingValue = useSingleCallResult(
-    vestingContract,
-    'balanceOf',
-    [account],
-  );
 
-  const vestingValueAmount = useMemo(
-    () => (vestingValue.result && chainId
-      ? new TokenAmount(HAKKA[chainId || 1], vestingValue.result.toString())
-      : new TokenAmount(HAKKA[chainId || 1], '0')),
-    [vestingValue, chainId],
-  );
+  const {data: vestingValueAmount = '0'} = useVestingBalance(account as string, chainId as ChainId);
+  const formattedVestingValueAmount = useMemo(() => {
+    return new BigNumber(vestingValueAmount).toFixed(4);
+  }, [vestingValueAmount]);
 
   const hakkaPrice = useTokenPrice('hakka-finance');
   const tokenPrice = useTokensPrice();
@@ -56,20 +67,29 @@ const PoolDetail = ({ pool }) => {
   useEffect(() => {
     let active = true;
     try {
-      loadApr()
+      loadApr();
     } catch (e) {
       console.error(e);
     }
-    return () => { active = false }
+    return () => {
+      active = false;
+    };
 
     async function loadApr() {
-      if (!active || !hakkaPrice || !tokenPrice) { return }
+      if (!active || !hakkaPrice || !tokenPrice) {
+        return;
+      }
       try {
         const newApr = await POOL_ASSETES[pool].getApr(
           parseUnits(hakkaPrice.toString(), 18),
-          POOL_ASSETES[pool].tokenPriceKey ? (tokenPrice?.[POOL_ASSETES[pool].tokenPriceKey]?.usd || 1) : 1
+          POOL_ASSETES[pool].tokenPriceKey
+            ? tokenPrice?.[POOL_ASSETES[pool].tokenPriceKey]?.usd || 1
+            : 1,
         );
-        setApr(tryParseAmount(formatUnits(newApr?.mul(100), 18)).toFixed(2));
+        setApr(
+          new BigNumber(formatUnits((newApr ?? 0n) * 100n, 18)).toFixed(2) ??
+            '-',
+        );
       } catch (e) {
         console.error(e);
 
@@ -83,66 +103,78 @@ const PoolDetail = ({ pool }) => {
   useEffect(() => {
     let active = true;
     try {
-      loadTvl()
+      loadTvl();
     } catch (e) {
       console.error(e);
     }
-    return () => { active = false }
+    return () => {
+      active = false;
+    };
 
     async function loadTvl() {
-      if (!active || !tokenPrice) { return }
+      if (!active || !tokenPrice) {
+        return;
+      }
       const newTvl = await POOL_ASSETES[pool].getTvl(tokenPrice);
-      setTvl(tryParseAmount(formatUnits(newTvl, POOL_ASSETES[pool]?.decimal || 18)).toFixed(2));
+      setTvl(
+        tryParseAmount(
+          formatUnits(newTvl, POOL_ASSETES[pool]?.decimal || 18),
+        )?.toFixed(2) ?? '-',
+      );
     }
   }, [tokenPrice]);
 
   const [stakeInputAmount, setStakeInputAmount] = useState<string>('');
   const [withdrawInputAmount, setWithdrawInputAmount] = useState<string>('');
 
-  const token = new Token(1, REWARD_POOLS[pool].tokenAddress, REWARD_POOLS[pool]?.decimal || 18);
-  const stakedToken = new Token(1, pool, REWARD_POOLS[pool]?.decimal || 18);
-  const tokenBalance = useTokenBalance(
-    account as string,
-    token,
-  );
-  const stakedBalance = useTokenBalance(
-    account as string,
-    stakedToken,
-  );
-
+  const tokenBalance = useTokenInfoAndBalance(account as string, REWARD_POOLS[pool].tokenAddress);
+  const stakedTokenBalance = useTokenInfoAndBalance(account as string, pool);
   const [approveState, approve] = useTokenApprove(
-    token,
+    REWARD_POOLS[pool].tokenAddress,
     pool,
-    stakeInputAmount > withdrawInputAmount ? stakeInputAmount : withdrawInputAmount,
+    stakeInputAmount > withdrawInputAmount
+      ? stakeInputAmount
+      : withdrawInputAmount,
   );
 
   enum SwitchOption {
     DEPOSIT,
-    WITHDRAW
+    WITHDRAW,
   }
 
-  const [switchPick, setSwitchPick] = useState<SwitchOption>(SwitchOption.DEPOSIT);
-  const [claimState, claim] = useRewardsClaim(pool, account);
+  const [switchPick, setSwitchPick] = useState<SwitchOption>(
+    SwitchOption.DEPOSIT,
+  );
+  const [claimState, claim] = useRewardsClaim(pool, chainId as ChainId);
   const [exitState, exit] = useRewardsExit(pool, account);
-  const [depositState, deposit] = useRewardsDeposit(pool, stakeInputAmount, POOL_ASSETES[pool]?.decimal || 18, account);
-  const [withdrawState, withdraw] = useRewardsWithdraw(pool, withdrawInputAmount, POOL_ASSETES[pool]?.decimal || 18, account);
+  const [depositState, deposit] = useRewardsDeposit(
+    pool,
+    stakeInputAmount,
+    POOL_ASSETES[pool]?.decimal || 18,
+    account,
+  );
+  const [withdrawState, withdraw] = useRewardsWithdraw(
+    pool,
+    withdrawInputAmount,
+    POOL_ASSETES[pool]?.decimal || 18,
+    account,
+  );
   const toggleWalletModal = useWalletModalToggle();
 
-  const CheckWrongNetworkConnectWalletApproveTokenButton = withApproveTokenCheckWrapper(
-    withWrongNetworkCheckWrapper(
-      withConnectWalletCheckWrapper(MyButton)
-    )
-  );
+  const CheckWrongNetworkConnectWalletApproveTokenButton =
+    withApproveTokenCheckWrapper(
+      withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton)),
+    );
 
   const CheckWrongNetworkAndConnectWalletButton = withWrongNetworkCheckWrapper(
-    withConnectWalletCheckWrapper(MyButton)
+    withConnectWalletCheckWrapper(withApproveTokenCheckWrapper(MyButton)),
   );
 
   const isWrongNetwork = REWARD_POOLS[pool].chain !== chainId;
 
   const [isCorrectInput, setIsCorrectInput] = useState<boolean>(true);
 
-  const depositButtonRenderer = () =>
+  const depositButtonRenderer = () => (
     <CheckWrongNetworkConnectWalletApproveTokenButton
       styleKit={'green'}
       isDisabledWhenNotPrepared={false}
@@ -157,13 +189,14 @@ const PoolDetail = ({ pool }) => {
     >
       Deposit
     </CheckWrongNetworkConnectWalletApproveTokenButton>
+  );
 
   const withdrawButtonRenderer = () => (
     <div sx={styles.withdrawBtnContainer}>
       <div>
         <MyButton
           onClick={withdraw}
-          styleKit="green"
+          styleKit='green'
           disabled={withdrawState === WithdrawState.PENDING || !isCorrectInput}
         >
           <p sx={styles.withdrawContent}>Withdraw</p>
@@ -172,11 +205,14 @@ const PoolDetail = ({ pool }) => {
       <div>
         <MyButton
           onClick={exit}
-          disabled={exitState === ExitState.PENDING || !(parseFloat(stakedBalance?.toExact() || '0') > 0)}
+          disabled={
+            exitState === ExitState.PENDING ||
+            !(((stakedTokenBalance.data?.balanceRaw ?? 0n) > 0n))
+          }
         >
           <div sx={styles.exitBtnContent}>
             <p>Exit</p>
-            <p className="exitContent">Withdraw all and claim</p>
+            <p className='exitContent'>Withdraw all and claim</p>
           </div>
         </MyButton>
       </div>
@@ -184,21 +220,30 @@ const PoolDetail = ({ pool }) => {
   );
 
   const withdrawButtonContainerRenderer = () =>
-    (!account || isWrongNetwork) ? (
+    !account || isWrongNetwork ? (
       <CheckWrongNetworkAndConnectWalletButton
-        styleKit={"green"}
+        styleKit={'green'}
         isDisabledWhenNotPrepared={false}
         isConnected={!!account}
+        onClick={deposit}
+        isApproved={approveState === ApprovalState.APPROVED}
+        approveToken={approve}
+        disabled={depositState === DepositState.PENDING || !isCorrectInput}
         connectWallet={toggleWalletModal}
         isCorrectNetwork={!isWrongNetwork}
         targetNetwork={REWARD_POOLS[pool].chain}
       />
-    ) : withdrawButtonRenderer();
+    ) : (
+      withdrawButtonRenderer()
+    );
 
   return (
     <>
       <div>
-        <a sx={{ display: 'inline-block', textDecoration: 'none', }} href='/farms'>
+        <a
+          sx={{ display: 'inline-block', textDecoration: 'none' }}
+          href='/farms'
+        >
           <div sx={styles.btnBack}>
             <img src={images.iconBack} />
             <span>Back</span>
@@ -207,21 +252,39 @@ const PoolDetail = ({ pool }) => {
         <div sx={styles.title}>
           <div sx={{ display: 'flex', alignItems: 'flex-end' }}>
             <p>{REWARD_POOLS[pool].name}</p>
-            {REWARD_POOLS[pool]?.subtitle && <b sx={{ marginLeft: '16px', paddingBottom: '2px' }}>{REWARD_POOLS[pool]?.subtitle}</b>}
+            {REWARD_POOLS[pool]?.subtitle && (
+              <b sx={{ marginLeft: '16px', paddingBottom: '2px' }}>
+                {REWARD_POOLS[pool]?.subtitle}
+              </b>
+            )}
           </div>
 
           <div sx={styles.infoWrapper}>
             <div sx={styles.infoItem}>
-              {tvl && parseUnits(tvl, REWARD_POOLS[pool]?.decimal || 18).gt(Zero)
-                ? <>
+              {tvl &&
+              parseUnits(tvl, REWARD_POOLS[pool]?.decimal || 18) > 0n ? (
+                <React.Fragment>
                   <span>TVL</span>
                   <span sx={styles.infoValue}> ${tvl} </span>
-                </>
-                : <></>}
+                </React.Fragment>
+              ) : (
+                <React.Fragment />
+              )}
             </div>
             <div sx={styles.infoItem}>
               <span>Contract</span>
-              <a sx={styles.contractAddress} target='_blank' rel="noreferrer noopener" href={getEtherscanLink(REWARD_POOLS[pool]?.chain || ChainId.MAINNET, pool, 'address')}>{shortenAddress(pool)}</a>
+              <a
+                sx={styles.contractAddress}
+                target='_blank'
+                rel='noreferrer noopener'
+                href={getEtherscanLink(
+                  REWARD_POOLS[pool]?.chain || ChainId.MAINNET,
+                  pool,
+                  'address',
+                )}
+              >
+                {shortenAddress(pool)}
+              </a>
             </div>
           </div>
           <img src={POOL_ASSETES[pool].icon} sx={styles.infoIcon} />
@@ -230,8 +293,15 @@ const PoolDetail = ({ pool }) => {
           <div sx={styles.depositInfoItem}>
             <p>Deposit</p>
             <div sx={styles.lpTokenLinkContainer}>
-              <span sx={styles.depositInfoValue}>{REWARD_POOLS[pool].name}</span>
-              <a sx={styles.lpTokenLink} target='_blank' rel="noreferrer noopener" href={REWARD_POOLS[pool].url}>
+              <span sx={styles.depositInfoValue}>
+                {REWARD_POOLS[pool].name}
+              </span>
+              <a
+                sx={styles.lpTokenLink}
+                target='_blank'
+                rel='noreferrer noopener'
+                href={REWARD_POOLS[pool].url}
+              >
                 <span> Get Token </span>
                 <img src={images.iconLinkNormal} />
               </a>
@@ -239,9 +309,7 @@ const PoolDetail = ({ pool }) => {
           </div>
           <div sx={styles.depositInfoItem}>
             <p>APR</p>
-            <span sx={styles.depositInfoValue}>
-              {apr}%
-            </span>
+            <span sx={styles.depositInfoValue}>{apr}%</span>
           </div>
         </div>
         <div sx={styles.operateArea}>
@@ -251,7 +319,9 @@ const PoolDetail = ({ pool }) => {
             <span>You deposited</span>
             <div sx={styles.rewardAmountContainer}>
               {/* if amount === 0 sx={styles.amountIsZero} */}
-              <span>{account ? rewardData.depositBalances[pool]?.toFixed(4) : '-'}</span>
+              <span>
+                {account ? formatCommonNumber(rewardData.depositBalances?.[pool]) : '-'}
+              </span>
               <span>{REWARD_POOLS[pool].tokenSymbol}</span>
             </div>
             <div sx={styles.rewardInfoContainer}>
@@ -260,12 +330,17 @@ const PoolDetail = ({ pool }) => {
                 <div>
                   <p>Claimable reward</p>
                   {/* if amount !== 0 sx={styles.rewardAmount} */}
-                  <p sx={styles.amountIsZero}>{account ? rewardData.earnedBalances[pool]?.toFixed(4) : '-'} HAKKA</p>
+                  <p sx={styles.amountIsZero}>
+                    {account
+                      ? formatCommonNumber(rewardData.earnedBalances?.[pool])
+                      : '-'}{' '}
+                    HAKKA
+                  </p>
                 </div>
               </div>
               <div sx={styles.rewardBtn}>
                 <CheckWrongNetworkAndConnectWalletButton
-                  styleKit={"green"}
+                  styleKit={'green'}
                   isDisabledWhenNotPrepared={true}
                   onClick={toggleClaimModal}
                   isConnected={!!account}
@@ -284,7 +359,9 @@ const PoolDetail = ({ pool }) => {
                 <div>
                   <p>Vesting balance</p>
                   {/* if amount !== 0 remove the style */}
-                  <p sx={styles.amountIsZero}>{vestingValueAmount.toFixed(4)} HAKKA</p>
+                  <p sx={styles.amountIsZero}>
+                    {formattedVestingValueAmount} HAKKA
+                  </p>
                 </div>
               </div>
               <a sx={styles.viewBtn} href={'/vesting'}>
@@ -295,8 +372,16 @@ const PoolDetail = ({ pool }) => {
             <div sx={styles.learnMoreLinkWrapper}>
               <img src={images.iconInform} />
               <span>
-                Claim means your HAKKA rewards will be locked in vesting contract.
-                <a sx={styles.learnMoreLink} target='_blank' rel="noreferrer noopener" href='https://medium.com/hakkafinance/vesting-contract-9ab2ff24bf76'>learn more</a>
+                Claim means your HAKKA rewards will be locked in vesting
+                contract.
+                <a
+                  sx={styles.learnMoreLink}
+                  target='_blank'
+                  rel='noreferrer noopener'
+                  href='https://medium.com/hakkafinance/vesting-contract-9ab2ff24bf76'
+                >
+                  learn more
+                </a>
               </span>
             </div>
           </div>
@@ -306,56 +391,59 @@ const PoolDetail = ({ pool }) => {
             <div sx={styles.switch}>
               <div
                 onClick={() => setSwitchPick(SwitchOption.DEPOSIT)}
-                sx={switchPick === SwitchOption.DEPOSIT && styles.switchFocus}
+                sx={switchPick === SwitchOption.DEPOSIT ? styles.switchFocus : undefined}
               >
                 Deposit
               </div>
               <div
                 onClick={() => setSwitchPick(SwitchOption.WITHDRAW)}
-                sx={switchPick === SwitchOption.WITHDRAW && styles.switchFocus}
+                sx={switchPick === SwitchOption.WITHDRAW ? styles.switchFocus : undefined}
               >
                 Withdraw
               </div>
             </div>
             <div sx={styles.stakeBalanceContainer}>
               <span>Amount</span>
-              <span>Balance:{' '}{switchPick === SwitchOption.DEPOSIT ? (tokenBalance?.toExact() || '0.00') : (stakedBalance?.toExact() || '0.00')}</span>
+              <span>
+                Balance:{' '}
+                {switchPick === SwitchOption.DEPOSIT
+                  ? tokenBalance?.data?.balance || '0.00'
+                  : stakedTokenBalance?.data?.balance || '0.00'}
+              </span>
             </div>
             <div sx={styles.numericalInputWrapper}>
-              {switchPick === SwitchOption.DEPOSIT
-                ? (
-                  <NumericalInputField
-                    value={stakeInputAmount}
-                    onUserInput={setStakeInputAmount}
-                    tokenBalance={tokenBalance}
-                    approve={approve}
-                    approveState={approveState}
-                    setIsCorrectInput={setIsCorrectInput}
-                    decimal={POOL_ASSETES[pool]?.decimal}
-                  />
-                ) : (
-                  <NumericalInputField
-                    value={withdrawInputAmount}
-                    onUserInput={setWithdrawInputAmount}
-                    tokenBalance={stakedBalance}
-                    approve={approve}
-                    approveState={approveState}
-                    setIsCorrectInput={setIsCorrectInput}
-                    decimal={POOL_ASSETES[pool]?.decimal}
-                  />
-                )}
+              {switchPick === SwitchOption.DEPOSIT ? (
+                <NumericalInputField
+                  value={stakeInputAmount}
+                  onUserInput={setStakeInputAmount}
+                  tokenBalanceAmount={tokenBalance?.data?.balance || '0.00'}
+                  approve={approve}
+                  approveState={approveState}
+                  setIsCorrectInput={setIsCorrectInput}
+                />
+              ) : (
+                <NumericalInputField
+                  value={withdrawInputAmount}
+                  onUserInput={setWithdrawInputAmount}
+                  tokenBalanceAmount={stakedTokenBalance?.data?.balance || '0.00'}
+                  approve={approve}
+                  approveState={approveState}
+                  setIsCorrectInput={setIsCorrectInput}
+                />
+              )}
             </div>
             {switchPick === SwitchOption.DEPOSIT
               ? depositButtonRenderer()
-              : withdrawButtonContainerRenderer()
-            }
+              : withdrawButtonContainerRenderer()}
           </div>
         </div>
       </div>
-      <ClaimModal 
+      <ClaimModal
         claim={claim}
         claimState={claimState}
-        claimableReward={account ? rewardData.earnedBalances[pool]?.toFixed(4) : '-'}
+        claimableReward={
+          account ? formatCommonNumber(rewardData.earnedBalances?.[pool]) : '-'
+        }
       />
     </>
   );

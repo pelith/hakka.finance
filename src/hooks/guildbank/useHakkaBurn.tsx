@@ -1,16 +1,17 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import { useState, useCallback, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { BigNumber } from 'ethers';
-import { useBurnContract } from '../useContract';
-import { getEtherscanLink, shortenTxId } from '../../utils';
 import { toast } from 'react-toastify';
-import { ExternalLink } from 'react-feather';
+import useAppWriteContract from '../contracts/useAppWriteContract';
+import type { ChainId } from 'src/constants';
+import { useWaitForTransactionReceipt } from 'wagmi';
+import BURNER_ABI from 'src/constants/abis/burner';
+import { isAddress, type Address } from 'viem';
 
 export enum BurnState {
   UNKNOWN,
-  PENDING
+  PENDING,
 }
 
 export function useHakkaBurn(
@@ -20,17 +21,23 @@ export function useHakkaBurn(
   pickedRewardTokensAddress?: string[],
 ): [BurnState, () => Promise<void>] {
   const { chainId } = useWeb3React();
+
+  const {writeContractAsync, data, isPending} = useAppWriteContract(chainId as ChainId)
+  const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
+    hash: data,
+    chainId: chainId as ChainId,
+    query: {
+      enabled: !!data,
+    },
+  })
+
   const [currentTransaction, setCurrentTransaction] = useState(null);
 
   const burnState: BurnState = useMemo(() => {
     if (!spender) return BurnState.UNKNOWN;
 
-    return currentTransaction
-      ? BurnState.PENDING
-      : BurnState.UNKNOWN;
+    return isPending && isWaitForLoading ? BurnState.PENDING : BurnState.UNKNOWN;
   }, [currentTransaction, spender]);
-
-  const burnContract = useBurnContract(burnAddress);
 
   const burn = useCallback(async (): Promise<void> => {
     if (!spender) {
@@ -38,31 +45,20 @@ export function useHakkaBurn(
       return;
     }
 
-    try {
-      const tx = await burnContract.ragequit(pickedRewardTokensAddress, amountParsed);
-      setCurrentTransaction(tx.hash);
-      toast(
-        <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
-          sx={{ textDecoration: 'none', color: '#253e47' }}
-        >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-      , { containerId: 'tx' });
-      await tx.wait();
-    } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>,  { containerId: 'error' });
-    } finally {
-      setCurrentTransaction(null);
+    if (!burnAddress) return;
+
+    if (!isAddress(burnAddress)) {
+      toast.error(<div>Invalid burn address</div>, { containerId: 'error' });
+      return;
     }
-  }, [
-    burnContract,
-    spender,
-    amountParsed,
-    pickedRewardTokensAddress,
-  ]);
+
+    await writeContractAsync({
+    address: burnAddress,
+    abi: BURNER_ABI,
+    functionName: 'ragequit',
+    args: [pickedRewardTokensAddress as Address[], BigInt(amountParsed!.toString())],
+    });
+  }, [spender, amountParsed, pickedRewardTokensAddress]);
 
   return [burnState, burn];
 }

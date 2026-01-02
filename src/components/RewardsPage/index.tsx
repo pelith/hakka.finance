@@ -1,23 +1,25 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
+/** @jsxFrag */
 import { jsx } from 'theme-ui';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { BigNumber } from 'ethers';
+import BigNumber from 'bignumber.js';
 import { useWeb3React } from '@web3-react/core';
-import { Zero } from '@ethersproject/constants';
 import { isMobile } from 'react-device-detect';
 import useTokenPrice from '../../hooks/useTokenPrice';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits, type Address } from 'viem';
 import images from '../../images';
 import styles from './styles';
 import RewardsPoolCard from './RewardsPoolCard';
 import Web3Status from '../Web3Status';
 import { ChainId } from '../../constants';
-import { REWARD_POOLS } from '../../constants/rewards';
+import { type Pool, REWARD_POOLS } from '../../constants/rewards';
 import { POOL_ASSETES } from '../../constants/rewards/assets';
 import { tryParseAmount } from '../../utils';
 import { useRewardsData } from '../../data/RewardsData';
 import useTokensPrice from '../../hooks/useTokensPrice';
 import { CHAIN_SWITCH_TAB_INFO } from '../../constants/farm';
+import { createBigNumberSort } from 'src/utils/sort';
+import { formatCommonNumber, formatPercentageNumber } from 'src/utils/formatCommonNumbers';
 
 enum SortOptions {
   LATEST = 'latest',
@@ -26,7 +28,11 @@ enum SortOptions {
 interface RewardsPoolsContainerProps {
   pools: string[];
   active?: boolean;
-  renderPool: (pool: any, currentChain: ChainId, active?: any) => jsx.JSX.Element
+  renderPool: (
+    pool: Pool,
+    currentChain: ChainId,
+    active?: any,
+  ) => jsx.JSX.Element;
 }
 
 const RewardsPage = () => {
@@ -37,57 +43,94 @@ const RewardsPage = () => {
   const [sortBy, setSortBy] = useState(SortOptions.LATEST);
   const SORT_OPTIONS = [
     {
-      label: "Latest",
+      label: 'Latest',
       value: SortOptions.LATEST,
     },
     {
-      label: "APR",
+      label: 'APR',
       value: SortOptions.APR,
     },
   ];
 
-  const currentPoolAddresses = useMemo(() => Object.keys(REWARD_POOLS).filter((poolAddress) => REWARD_POOLS[poolAddress].chain === currentChain), [currentChain]);
-  const activePools = useMemo(() => currentPoolAddresses.filter((poolAddress) => !REWARD_POOLS[poolAddress].archived), [currentPoolAddresses]);
-  const archivedPools = useMemo(() => currentPoolAddresses.filter((poolAddress) => REWARD_POOLS[poolAddress].archived), [currentPoolAddresses]);
-  const decimals = useMemo(() => currentPoolAddresses.map((pool) => POOL_ASSETES[pool]?.decimal || 18), [currentPoolAddresses])
+  const currentPoolAddresses = useMemo(
+    () =>
+      Object.keys(REWARD_POOLS).filter(
+        (poolAddress) => REWARD_POOLS[poolAddress].chain === currentChain,
+      ),
+    [currentChain],
+  );
+  const activePools = useMemo(
+    () =>
+      currentPoolAddresses.filter(
+        (poolAddress) => !REWARD_POOLS[poolAddress].archived,
+      ),
+    [currentPoolAddresses],
+  );
+  const archivedPools = useMemo(
+    () =>
+      currentPoolAddresses.filter(
+        (poolAddress) => REWARD_POOLS[poolAddress].archived,
+      ),
+    [currentPoolAddresses],
+  );
+  const decimals = useMemo(
+    () => currentPoolAddresses.map((pool) => POOL_ASSETES[pool]?.decimal || 18),
+    [currentPoolAddresses],
+  );
 
   const tokenPrice = useTokensPrice();
   const hakkaPrice = useTokenPrice('hakka-finance');
   const rewardData = useRewardsData(currentPoolAddresses, decimals);
-  const [apr, setApr] = useState({});
+  const [apr, setApr] = useState<Record<Address, bigint | undefined>>({});
   const [isShowStakedOnly, setIsShowStakedOnly] = useState(false);
 
-  const stakedPoolAddresses = useMemo(() => Object.keys(REWARD_POOLS).filter((poolAddress) => !!rewardData.depositBalances && rewardData.depositBalances[poolAddress]?.toSignificant() > 0), [rewardData]);
-  const stakedActivePools = useMemo(() => activePools.filter((poolAddress) => stakedPoolAddresses.indexOf(poolAddress) > -1), [activePools, stakedPoolAddresses]);
-  const stakedArchivedPools = useMemo(() => archivedPools.filter((poolAddress) => stakedPoolAddresses.indexOf(poolAddress) > -1), [archivedPools, stakedPoolAddresses]);
+  const stakedPoolAddresses = useMemo(
+    () =>
+      Object.keys(REWARD_POOLS).filter(
+        (poolAddress) =>
+          !!rewardData.depositBalances &&
+          BigNumber(rewardData.depositBalances[poolAddress]).gt(0),
+      ),
+    [rewardData],
+  );
+  const stakedActivePools = useMemo(
+    () =>
+      activePools.filter(
+        (poolAddress) => stakedPoolAddresses.indexOf(poolAddress) > -1,
+      ),
+    [activePools, stakedPoolAddresses],
+  );
+  const stakedArchivedPools = useMemo(
+    () =>
+      archivedPools.filter(
+        (poolAddress) => stakedPoolAddresses.indexOf(poolAddress) > -1,
+      ),
+    [archivedPools, stakedPoolAddresses],
+  );
 
-  const sortedByAprActivePools = useMemo(()=>{
+  const sortedByAprActivePools = useMemo(() => {
     const copyActivePools = [...activePools];
     if (Object.keys(apr).length > 0) {
-      return copyActivePools.sort((a, b)=> {
-        return apr[b].sub(apr[a])
-      })
+      return copyActivePools.sort(createBigNumberSort('desc'));
     } else {
       return activePools;
     }
   }, [activePools, apr]);
 
-  const sortedByAprStakedActivePools = useMemo(()=>{
+  const sortedByAprStakedActivePools = useMemo(() => {
     const copyStakedActivePools = [...stakedActivePools];
     if (Object.keys(apr).length > 0) {
-      return copyStakedActivePools.sort((a, b)=> {
-        return apr[b].sub(apr[a])
-      })
+      return copyStakedActivePools.sort(createBigNumberSort('desc'));
     } else {
       return stakedActivePools;
     }
   }, [stakedActivePools, apr]);
 
   const sortedActivePools = useMemo(() => {
-    let sortedActivePools:string[] = [];
+    let sortedActivePools: string[] = [];
     switch (sortBy) {
-      case SortOptions.LATEST : {
-        sortedActivePools = activePools
+      case SortOptions.LATEST: {
+        sortedActivePools = activePools;
         break;
       }
       case SortOptions.APR: {
@@ -96,25 +139,30 @@ const RewardsPage = () => {
       }
     }
     return sortedActivePools;
-  } ,[activePools, sortedByAprActivePools, sortBy]);
+  }, [activePools, sortedByAprActivePools, sortBy]);
 
   const sortedStakedActivePools = useMemo(() => {
     let sortedStakedActivePools: string[] = [];
     switch (sortBy) {
-      case SortOptions.LATEST : {
+      case SortOptions.LATEST: {
         sortedStakedActivePools = stakedActivePools;
         break;
       }
       case SortOptions.APR: {
-        sortedStakedActivePools = sortedByAprStakedActivePools
+        sortedStakedActivePools = sortedByAprStakedActivePools;
         break;
       }
     }
     return sortedStakedActivePools;
-  } ,[stakedActivePools, sortedByAprStakedActivePools, sortBy]);
+  }, [stakedActivePools, sortedByAprStakedActivePools, sortBy]);
 
   useEffect(() => {
-    if (chainId === ChainId.MAINNET || chainId === ChainId.BSC || chainId === ChainId.POLYGON || chainId === ChainId.FANTOM) {
+    if (
+      chainId === ChainId.MAINNET ||
+      chainId === ChainId.BSC ||
+      chainId === ChainId.POLYGON ||
+      chainId === ChainId.FANTOM
+    ) {
       setCurrentChain(chainId);
     }
   }, [chainId]);
@@ -125,35 +173,44 @@ const RewardsPage = () => {
       loadApr(Object.keys(REWARD_POOLS));
     }
 
-    async function loadApr(poolAddresses: string[], prevResult: any = {}) {
-      let newApr = {...prevResult}
-      const failAddress: string[] = []
+    async function loadApr(poolAddresses: string[], prevResult: Record<Address, bigint | undefined> = {}) {
+      let newApr = { ...prevResult };
+      const failAddress: string[] = [];
       try {
         setApr(newApr);
-        newApr = {...newApr};
-        const apyPromiseList = await Promise.all(poolAddresses.map((address) => {
-          if(!POOL_ASSETES[address]){
-            return Zero;
-          }
-          return POOL_ASSETES[address].getApr(
-            parseUnits(hakkaPrice.toString(), 18),
-            POOL_ASSETES[address].tokenPriceKey ? (tokenPrice?.[POOL_ASSETES[address].tokenPriceKey]?.usd || 1) : 1
-          )
-        }));
+        newApr = { ...newApr };
+        const apyPromiseList = await Promise.all(
+          poolAddresses.map((address) => {
+            if (!POOL_ASSETES[address]) {
+              return 0n;
+            }
+            return POOL_ASSETES[address].getApr(
+              parseUnits(hakkaPrice.toString(), 18),
+              POOL_ASSETES[address].tokenPriceKey
+                ? tokenPrice?.[POOL_ASSETES[address].tokenPriceKey]?.usd || 1
+                : 1,
+            );
+          }),
+        );
 
         const settledApyList = await Promise.allSettled(apyPromiseList);
-        const reasonList: string[] = []
+        const reasonList: string[] = [];
         settledApyList.map((aprResult, index) => {
-          if (aprResult.status === "fulfilled") {
-            newApr[REWARD_POOLS[poolAddresses[index]].rewardsAddress] = (aprResult as PromiseFulfilledResult<BigNumber>).value
+          if (aprResult.status === 'fulfilled') {
+            newApr[REWARD_POOLS[poolAddresses[index]].rewardsAddress] = (
+              aprResult
+            ).value;
           } else {
-            reasonList.push((aprResult as PromiseRejectedResult).reason)
+            reasonList.push((aprResult as PromiseRejectedResult).reason);
             failAddress.push(REWARD_POOLS[poolAddresses[index]].rewardsAddress);
-            newApr[REWARD_POOLS[poolAddresses[index]].rewardsAddress] = undefined;
+            newApr[REWARD_POOLS[poolAddresses[index]].rewardsAddress] =
+              undefined;
           }
         });
 
-        if (!active) { return }
+        if (!active) {
+          return;
+        }
         setApr(newApr);
         if (reasonList.length > 0) {
           throw reasonList;
@@ -166,48 +223,88 @@ const RewardsPage = () => {
       }
     }
 
-    return () => { active = false }
+    return () => {
+      active = false;
+    };
   }, [hakkaPrice, tokenPrice]);
 
-  const rewardsPoolRenderer = useCallback((pool,  currentChain, active = false) => {
-    if (!pool?.rewardsAddress) {
-      return <></>
-    }
-    return <RewardsPoolCard
-      key={pool.rewardsAddress}
-      tokenImage={POOL_ASSETES[pool.rewardsAddress].icon}
-      title={pool.name}
-      subtitle={pool.subtitle}
-      url={pool.url}
-      linkContent={pool.website}
-      btnContent={active ? 'Deposit / Withdraw' : 'Withdraw'}
-      depositedTokenSymbol={pool.tokenSymbol}
-      rewardsAddress={pool.rewardsAddress}
-      apr={apr[pool.rewardsAddress] ? tryParseAmount(formatUnits(apr[pool.rewardsAddress]?.mul(100), 18)).toFixed(2) : '-'}
-      depositedBalance={account ? rewardData.depositBalances[pool.rewardsAddress]?.toFixed(2) : '-'}
-      earnedBalance={account ? rewardData.earnedBalances[pool.rewardsAddress]?.toFixed(2) : '-'}
-      currentChain={currentChain}
-    />
-  }, [account, apr, rewardData]);
+  const rewardsPoolRenderer = useCallback(
+    (pool: Pool, currentChain: ChainId, active = false) => {
+      if (!pool?.rewardsAddress) {
+        return <></>;
+      }
+      return (
+        <RewardsPoolCard
+          key={pool.rewardsAddress}
+          tokenImage={POOL_ASSETES[pool.rewardsAddress].icon}
+          title={pool.name}
+          subtitle={pool.subtitle}
+          url={pool.url}
+          linkContent={pool.website}
+          btnContent={active ? 'Deposit / Withdraw' : 'Withdraw'}
+          depositedTokenSymbol={pool.tokenSymbol}
+          rewardsAddress={pool.rewardsAddress}
+          apr={
+            apr[pool.rewardsAddress]
+              ? formatPercentageNumber(
+                  formatUnits((apr[pool.rewardsAddress] ?? 0n) * (100n), 18),
+                )
+              : '-'
+          }
+          depositedBalance={
+            account
+              ? formatCommonNumber(rewardData.depositBalances?.[pool.rewardsAddress])
+              : '-'
+          }
+          earnedBalance={
+            account
+              ? formatCommonNumber(rewardData.earnedBalances?.[pool.rewardsAddress])
+              : '-'
+          }
+          currentChain={currentChain}
+        />
+      );
+    },
+    [account, apr, rewardData],
+  );
 
-
-  const RewardsPoolsContainer = ({ pools, active, renderPool}: RewardsPoolsContainerProps) => {
-    return(
+  const RewardsPoolsContainer = ({
+    pools,
+    active,
+    renderPool,
+  }: RewardsPoolsContainerProps) => {
+    return (
       <>
-        {pools.filter((poolAddress) => REWARD_POOLS[poolAddress].chain === currentChain)
-        .map((poolAddress) => renderPool(REWARD_POOLS[poolAddress], currentChain, active))}
+        {pools
+          .filter(
+            (poolAddress) => REWARD_POOLS[poolAddress].chain === currentChain,
+          )
+          .map((poolAddress) =>
+            renderPool(REWARD_POOLS[poolAddress], currentChain, active),
+          )}
       </>
-    )
-  }
+    );
+  };
 
   const ChainSwitchButton = ({ chainId }: { chainId: ChainId }) => {
     return (
-      <div onClick={() => setCurrentChain(chainId)} sx={currentChain === chainId ? styles.chainActive : ''}>
-        {isMobile 
-          ? <img src={currentChain === chainId ? CHAIN_SWITCH_TAB_INFO[chainId].img : CHAIN_SWITCH_TAB_INFO[chainId].imgGray } />
-          : CHAIN_SWITCH_TAB_INFO[chainId].displayName}
+      <div
+        onClick={() => setCurrentChain(chainId)}
+        sx={currentChain === chainId ? styles.chainActive : {}}
+      >
+        {isMobile ? (
+          <img
+            src={
+              currentChain === chainId
+                ? CHAIN_SWITCH_TAB_INFO[chainId].img
+                : CHAIN_SWITCH_TAB_INFO[chainId].imgGray
+            }
+          />
+        ) : (
+          CHAIN_SWITCH_TAB_INFO[chainId].displayName
+        )}
       </div>
-    )
+    );
   };
 
   return (
@@ -228,17 +325,26 @@ const RewardsPage = () => {
             <label sx={styles.checkBoxLabel}>
               <input
                 sx={styles.checkBox}
-                type="checkbox"
-                onChange={()=>setIsShowStakedOnly(!isShowStakedOnly)}
+                type='checkbox'
+                onChange={() => setIsShowStakedOnly(!isShowStakedOnly)}
               />
-              {isShowStakedOnly ? <img src={images.iconChekBoxChecked} /> : <img src={images.iconChekBoxUnchecked} />}
+              {isShowStakedOnly ? (
+                <img src={images.iconChekBoxChecked} />
+              ) : (
+                <img src={images.iconChekBoxUnchecked} />
+              )}
               <span>Staked Only</span>
             </label>
             <div>
               <span>Sort by: </span>
-              <select sx={styles.menu} onChange={(e)=> setSortBy(e.target.value)}>
+              <select
+                sx={styles.menu}
+                onChange={(e) => setSortBy(e.target.value as SortOptions)}
+              >
                 {SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -247,21 +353,33 @@ const RewardsPage = () => {
         <div>
           <p sx={styles.activeTitle}>Active ({activePools.length})</p>
           <div sx={styles.poolContainer}>
-            <RewardsPoolsContainer pools={isShowStakedOnly ? sortedStakedActivePools : sortedActivePools} active renderPool={rewardsPoolRenderer} />
+            <RewardsPoolsContainer
+              pools={
+                isShowStakedOnly ? sortedStakedActivePools : sortedActivePools
+              }
+              active
+              renderPool={rewardsPoolRenderer}
+            />
           </div>
         </div>
         <div>
           <div sx={{ display: 'inline-block' }}>
-            <div onClick={() => setIsShowArchived(!isShowArchived)} sx={styles.archivedTitle}>
+            <div
+              onClick={() => setIsShowArchived(!isShowArchived)}
+              sx={styles.archivedTitle}
+            >
               <p>Archived ({archivedPools.length})</p>
               <img src={isShowArchived ? images.iconUp : images.iconDown} />
             </div>
           </div>
-          {isShowArchived &&
+          {isShowArchived && (
             <div sx={styles.poolContainer}>
-              <RewardsPoolsContainer pools={isShowStakedOnly ? stakedArchivedPools : archivedPools} renderPool={rewardsPoolRenderer} />
+              <RewardsPoolsContainer
+                pools={isShowStakedOnly ? stakedArchivedPools : archivedPools}
+                renderPool={rewardsPoolRenderer}
+              />
             </div>
-          }
+          )}
         </div>
       </div>
     </div>

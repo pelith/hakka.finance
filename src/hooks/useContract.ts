@@ -1,42 +1,52 @@
-import { Contract } from '@ethersproject/contracts';
+import { Contract } from 'ethers';
+import { getContract } from 'viem'
 import { ChainId } from '@uniswap/sdk';
 import { useMemo } from 'react';
-import ENS_ABI from '../constants/abis/ens-registrar.json';
-import ENS_PUBLIC_RESOLVER_ABI from '../constants/abis/ens-public-resolver.json';
-import ERC20_BYTES32_ABI from '../constants/abis/erc20.json';
-import ERC20_ABI from '../constants/abis/erc20.json';
-import VESTING_ABI from '../constants/abis/vesting.json';
-import BURNER_ABI from '../constants/abis/burner.json';
-import STAKE_V1_ABI from '../constants/abis/shakka_v1.json';
-import STAKE_ABI from '../constants/abis/shakka.json';
-import REWARDS_ABI from '../constants/abis/staking_rewards.json';
+import { useConnectorClient, usePublicClient } from 'wagmi';
+import ENS_ABI from '../constants/abis/ens-registrar';
+import ENS_PUBLIC_RESOLVER_ABI from '../constants/abis/ens-public-resolver';
+import ERC20_BYTES32_ABI from '../constants/abis/erc20';
+import ERC20_ABI from '../constants/abis/erc20';
+import VESTING_ABI from '../constants/abis/vesting';
+import BURNER_ABI from '../constants/abis/burner';
+import STAKE_V1_ABI from '../constants/abis/shakka_v1';
+import STAKE_ABI from '../constants/abis/shakka';
+import REWARDS_ABI from '../constants/abis/staking_rewards';
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../constants/multicall';
-import { getContract } from '../utils';
 import { useActiveWeb3React } from './web3Manager';
+import { clientToProvider, clientToSigner } from '../utils/viemToEthers';
 import isZero from '../utils/isZero';
 
 // returns null on errors
+/**
+ * @deprecated
+ */
 export function useContract(
   address: string | undefined,
   ABI: any,
   withSignerIfPossible = true,
 ): Contract | null {
-  const { provider: library, account } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useConnectorClient();
 
   return useMemo(() => {
-    if (!address || isZero(address) || !ABI || !library) return null;
+    if (!address || isZero(address) || !ABI) return null;
     try {
-      return getContract(
-        address,
-        ABI,
-        library,
-        withSignerIfPossible && account ? account : undefined,
-      );
+      if (withSignerIfPossible && account && walletClient) {
+        const signer = clientToSigner(walletClient as any);
+        return new Contract(address, ABI, signer);
+      }
+      if (publicClient) {
+        const provider = clientToProvider(publicClient as any);
+        return new Contract(address, ABI, provider);
+      }
+      return null;
     } catch (error) {
       console.error('Failed to get contract', error);
       return null;
     }
-  }, [address, ABI, library, withSignerIfPossible, account]);
+  }, [address, ABI, publicClient, walletClient, withSignerIfPossible, account]);
 }
 
 export function useTokenContract(

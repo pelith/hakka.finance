@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo, useReducer } from 'react';
 import { createContext } from 'use-context-selector';
-import reducer, { initialApplicationState, ApplicationState } from './reducer';
+import reducer, { initialApplicationState, type ApplicationState } from './reducer';
 import {
-  UpdateBlockNumberPayload,
-  AddPopupPayload,
-  RemovePopupPayload,
+  type UpdateBlockNumberPayload,
+  type AddPopupPayload,
+  type RemovePopupPayload,
   updateBlockNumberAction,
   toggleWalletModalAction,
   toggleInfoModalAction,
@@ -22,11 +22,11 @@ interface ApplicationContextProps {
   updateBlockNumber: (payload: UpdateBlockNumberPayload) => void;
   toggleWalletModal: () => void;
   toggleInfoModal: () => void;
-  toggleClaimModal: ()=> void;
-  toggleRedeemModal: ()=> void;
-  toggleRestakeModal: ()=> void;
-  togglePlayToEarnLevelUpModal: ()=> void;
-  toggleYearlyReviewScoreModal: ()=> void;
+  toggleClaimModal: () => void;
+  toggleRedeemModal: () => void;
+  toggleRestakeModal: () => void;
+  togglePlayToEarnLevelUpModal: () => void;
+  toggleYearlyReviewScoreModal: () => void;
   addPopup: (payload: AddPopupPayload) => void;
   removePopup: (payload: RemovePopupPayload) => void;
 }
@@ -35,10 +35,12 @@ const ApplicationContext = createContext<ApplicationContextProps>(
   {} as ApplicationContextProps,
 );
 
-const ApplicationContextProvider: React.FC = ({ children }) => {
+const ApplicationContextProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [state, dispatch] = useReducer(reducer, initialApplicationState);
 
-  const updateBlockNumber = useCallback((payload) => {
+  const updateBlockNumber = useCallback((payload: UpdateBlockNumberPayload) => {
     dispatch(updateBlockNumberAction(payload));
   }, []);
 
@@ -70,11 +72,11 @@ const ApplicationContextProvider: React.FC = ({ children }) => {
     dispatch(toggleYearlyReviewScoreModalAction());
   }, []);
 
-  const addPopup = useCallback((payload) => {
+  const addPopup = useCallback((payload: AddPopupPayload) => {
     dispatch(addPopupAction(payload));
   }, []);
 
-  const removePopup = useCallback((payload) => {
+  const removePopup = useCallback((payload: RemovePopupPayload) => {
     dispatch(removePopupAction(payload));
   }, []);
 

@@ -1,11 +1,15 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import { useState, useCallback, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { useVestingContract } from '../useContract';
 import { getEtherscanLink, shortenTxId } from '../../utils';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
+import useAppWriteContract from '../contracts/useAppWriteContract';
+import type { ChainId } from 'src/constants';
+import { useWaitForTransactionReceipt } from 'wagmi';
+import VESTING_ABI from 'src/constants/abis/vesting';
+import { isAddress } from 'viem';
 
 export enum VestingState {
   UNKNOWN,
@@ -17,17 +21,22 @@ export function useVestingWithdraw(
   spender?: string,
 ): [VestingState, () => Promise<void>] {
   const { chainId } = useWeb3React();
-  const [currentTransaction, setCurrentTransaction] = useState(null);
+
+  const {writeContractAsync, data, isPending} = useAppWriteContract(chainId as ChainId)
+  const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
+    hash: data,
+    chainId: chainId as ChainId,
+    query: {
+      enabled: !!data,
+    },
+  })
+
 
   const vestingState: VestingState = useMemo(() => {
     if (!spender) return VestingState.UNKNOWN;
 
-    return currentTransaction
-      ? VestingState.PENDING
-      : VestingState.UNKNOWN;
-  }, [currentTransaction, spender]);
-
-  const vestingContract = useVestingContract(vestingAddress);
+    return isPending && isWaitForLoading ? VestingState.PENDING : VestingState.UNKNOWN;
+  }, [isPending, isWaitForLoading, spender]);
 
   const withdraw = useCallback(async (): Promise<void> => {
     if (!spender) {
@@ -35,29 +44,16 @@ export function useVestingWithdraw(
       return;
     }
 
-    try {
-      const tx = await vestingContract.withdraw();
-      setCurrentTransaction(tx.hash);
-      toast(
-        <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
-          sx={{ textDecoration: 'none', color: '#253e47' }}
-        >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-      , { containerId: 'tx' });
-      await tx.wait();
-    } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>,  { containerId: 'error' });
-    } finally {
-      setCurrentTransaction(null);
-    }
-  }, [
-    vestingContract,
-    spender,
-  ]);
+    if (!vestingAddress) return;
+    if (!isAddress(vestingAddress)) return;
+
+      await writeContractAsync({
+        address: vestingAddress,
+        abi: VESTING_ABI,
+        functionName: 'withdraw',
+        args: [],
+      })
+  }, [spender, vestingAddress, writeContractAsync]);
 
   return [vestingState, withdraw];
 }

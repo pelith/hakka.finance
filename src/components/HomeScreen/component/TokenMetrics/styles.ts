@@ -26,7 +26,6 @@ export default {
       '& .chain-text': {
         paddingLeft: '0px',
         paddingTop: '12px',
-
       },
       '& .icon-right': {
         opacity: '0',
@@ -90,7 +89,6 @@ export default {
     color: '#253e47',
     fontWeight: 600,
     paddingLeft: '12px',
-
   },
   chainName: {
     fontSize: [1, 3, 4, 5],
@@ -117,7 +115,6 @@ export default {
     maxWidth: '1200px',
     '@media screen and (max-width: 960px)': {
       gridTemplateColumns: '1fr',
-
     },
   },
   tokenMetricsChain: {
@@ -169,7 +166,6 @@ export default {
     fontSize: [1, 1, 2, 3],
     fontWeight: 600,
     color: '#253e47',
-
   },
 
   tokenMetricsInfoAddress: {

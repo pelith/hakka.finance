@@ -1,11 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Contract as MulticallContract,
-  Provider as MulticallProvider,
-} from '@pelith/ethers-multicall';
 import { useWeb3React } from '@web3-react/core';
-import { BigNumber } from '@ethersproject/bignumber';
-import { AddressZero } from '@ethersproject/constants';
+import { zeroAddress, type Address } from 'viem';
 import {
   ChainDataFetchingState,
   NEW_SHAKKA_ADDRESSES,
@@ -13,10 +8,10 @@ import {
   JSON_RPC_PROVIDER,
 } from '../constants';
 import { useBlockNumber } from '../state/application/hooks';
-import STAKING_ABI from '../constants/abis/shakka.json';
+import STAKING_ABI from '../constants/abis/shakka';
 import throttle from 'lodash/throttle';
 export type StakedHakkaType = {
-  [chainId in ChainId]?: BigNumber;
+  [chainId in ChainId]?: bigint;
 };
 
 export default function useStakedHakka(): {
@@ -25,7 +20,7 @@ export default function useStakedHakka(): {
 } {
   const { account } = useWeb3React();
   const latestBlockNumber = useBlockNumber();
-  const [stakedHakka, setStakedHakka] = useState<StakedHakkaType>();
+  const [stakedHakka, setStakedHakka] = useState<StakedHakkaType>({});
   const [transactionSuccess, setTransactionSuccess] = useState(false);
 
   const fetchDataState: ChainDataFetchingState = useMemo(() => {
@@ -38,21 +33,17 @@ export default function useStakedHakka(): {
 
   const getStakedHakka = async (
     chainId: ChainId,
-    account: string
-  ): Promise<[ChainId, BigNumber]> => {
-    const multicallProvider = new MulticallProvider(
-      providers[chainId],
-      chainId
-    );
-    if (NEW_SHAKKA_ADDRESSES[chainId] === AddressZero)
+    account: string,
+  ): Promise<[ChainId, bigint | undefined]> => {
+    const client = providers[chainId];
+    if (NEW_SHAKKA_ADDRESSES[chainId] === zeroAddress)
       return [chainId, undefined];
-    const sHakkaContract = new MulticallContract(
-      NEW_SHAKKA_ADDRESSES[chainId],
-      STAKING_ABI
-    );
-    const [stakedHakka] = await multicallProvider.all([
-      sHakkaContract.stakedHakka(account),
-    ]);
+    const stakedHakka = (await client.readContract({
+      address: NEW_SHAKKA_ADDRESSES[chainId] as Address,
+      abi: STAKING_ABI as any,
+      functionName: 'stakedHakka',
+      args: [account as Address],
+    })) as bigint;
     return [chainId, stakedHakka];
   };
 
@@ -76,11 +67,11 @@ export default function useStakedHakka(): {
 
   const throttledFetchStakedHakka = useMemo(
     () => throttle(fetchStakedHakka, 2000),
-    []
+    [],
   );
 
   useEffect(() => {
-    if (account === AddressZero || !account) return;
+    if (account === zeroAddress || !account) return;
     throttledFetchStakedHakka(account);
   }, [latestBlockNumber, account]);
 

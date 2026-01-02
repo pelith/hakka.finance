@@ -1,11 +1,12 @@
-import { ThemeUIStyleObject } from "theme-ui";
+import createSX from 'src/utils/createSX';
+import type { ThemeUIStyleObject } from 'theme-ui';
 
-export default {
+export default createSX({
   flexSpaceBetween: {
     display: 'flex',
     justifyContent: 'space-between',
-  },  
-  
+  },
+
   container: {
     width: '100%',
     position: 'relative',
@@ -86,7 +87,6 @@ export default {
 
     p: {
       fontWeight: 'bold',
-
     },
   },
 
@@ -121,7 +121,7 @@ export default {
       marginTop: '10px',
     },
   },
-};
+});
 
 export const headerWrapper: ThemeUIStyleObject = {
   '--theme-ui-colors-primary': '#3EBD93',
@@ -152,4 +152,3 @@ export const headerWrapper: ThemeUIStyleObject = {
     alignItems: 'flex-start',
   },
 };
-    

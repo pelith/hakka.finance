@@ -11,21 +11,14 @@ interface IProps {
 }
 
 const MyButton = (props: IProps) => {
-  const {
-    disabled,
-    onClick,
-    styleKit,
-    children
-  } = props;
-  
+  const { disabled, onClick, styleKit, children } = props;
+
   return (
-    <Button 
-      disabled={disabled} 
-      onClick={onClick} 
-      sx={styleKit === 'green' 
-          ? styles.mybutton_green 
-          : styles.mybutton
-      }>
+    <Button
+      disabled={disabled}
+      onClick={onClick}
+      sx={styleKit === 'green' ? styles.mybutton_green : styles.mybutton}
+    >
       <Box>{children}</Box>
     </Button>
   );
@@ -33,7 +26,7 @@ const MyButton = (props: IProps) => {
 
 MyButton.propTypes = {
   disabled: types.bool,
-  styleKit: types.oneOf(['green','default']),
+  styleKit: types.oneOf(['green', 'default']),
   onClick: types.func,
 };
 

@@ -1,10 +1,5 @@
-import { BigNumber } from 'ethers';
-import { useSingleCallResult } from '../state/multicall/hooks';
-import { useMulticallContract } from './useContract';
-
+import { getUnixTime } from 'date-fns';
 // gets the current timestamp from the blockchain
-export default function useCurrentBlockTimestamp(): BigNumber | undefined {
-  const multicall = useMulticallContract();
-  return useSingleCallResult(multicall, 'getCurrentBlockTimestamp')
-    ?.result?.[0] || BigNumber.from(~~(Date.now() / 1000));
+export default function useCurrentBlockTimestamp(): bigint {
+  return BigInt(getUnixTime(Date.now()))
 }

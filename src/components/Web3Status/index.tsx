@@ -1,10 +1,13 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import { useWeb3React } from '@web3-react/core';
 import React, { memo } from 'react';
 import useENSName from '../../hooks/useENSName';
 import useUnstoppableDomains from '../../hooks/useUnstoppableDomains';
-import { useWalletModalToggle, useInfoModalToggle } from '../../state/application/hooks';
+import {
+  useWalletModalToggle,
+  useInfoModalToggle,
+} from '../../state/application/hooks';
 import { shortenAddress } from '../../utils';
 import { MyButton } from '../../components/Common';
 import WalletModal from '../WalletModal';
@@ -39,16 +42,21 @@ const Web3Status = ({ unsupported }: { unsupported?: boolean }) => {
               onClick={toggleWalletModal}
               disabled={isUnsupportedChainError}
             >
-              {account ? ENSName || unstoppableDomain || shortenAddress(account) : 'Connect'}
+              {account
+                ? ENSName || unstoppableDomain || shortenAddress(account)
+                : 'Connect'}
             </MyButton>
           </div>
-          <img onClick={toggleInfoModal} sx={styles.accountIconWrapper} src={images.iconAccount} alt="Account Icon" />
+          <img
+            onClick={toggleInfoModal}
+            sx={styles.accountIconWrapper}
+            src={images.iconAccount}
+            alt='Account Icon'
+          />
         </div>
       </div>
 
-      <WalletModal
-        ENSName={ENSName || unstoppableDomain || undefined}
-      />
+      <WalletModal ENSName={ENSName || unstoppableDomain || undefined} />
 
       <InfoModal />
     </div>

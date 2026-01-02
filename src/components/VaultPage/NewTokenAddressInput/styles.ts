@@ -33,7 +33,6 @@ export default {
   container: {
     display: 'flex',
     marginTop: '20px',
-
   },
 
   addButton: {

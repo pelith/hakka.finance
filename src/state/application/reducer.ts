@@ -1,16 +1,16 @@
 import { nanoid } from 'nanoid';
 import {
-  PopupContent,
-  UpdateBlockNumberAction,
-  ToggleWalletModalAction,
-  ToggleInfoModalAction,
-  ToggleClaimModalAction,
-  ToggleRedeemModalAction,
-  ToggleRestakeModalAction,
-  TogglePlayToEarnLevelUpModalAction,
-  ToggleYearlyReviewScoreModalAction,
-  AddPopupAction,
-  RemovePopupAction,
+  type PopupContent,
+  type UpdateBlockNumberAction,
+  type ToggleWalletModalAction,
+  type ToggleInfoModalAction,
+  type ToggleClaimModalAction,
+  type ToggleRedeemModalAction,
+  type ToggleRestakeModalAction,
+  type TogglePlayToEarnLevelUpModalAction,
+  type ToggleYearlyReviewScoreModalAction,
+  type AddPopupAction,
+  type RemovePopupAction,
   UPDATE_BLOCK_NUMBER,
   TOGGLE_WALLET_MODAL,
   TOGGLE_INFO_MODAL,
@@ -140,9 +140,10 @@ export default function reducer(
       const { content } = payload;
       const removeAfterMs = payload.removeAfterMs ?? 1500;
 
-      _state.popupList = (key
-        ? state.popupList.filter((popup) => popup.key !== key)
-        : state.popupList
+      _state.popupList = (
+        key
+          ? state.popupList.filter((popup) => popup.key !== key)
+          : state.popupList
       ).concat([
         {
           key: key || nanoid(),

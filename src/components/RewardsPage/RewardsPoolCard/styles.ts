@@ -1,4 +1,6 @@
-export default {
+import createSX from 'src/utils/createSX';
+
+export default createSX({
   container: {
     position: 'relative',
     width: '268px',
@@ -92,10 +94,9 @@ export default {
     display: 'flex',
     justifyContent: 'space-between',
     fontWeight: '600',
-
   },
 
   amount: {
     color: 'rgba(37, 62, 71, 0.5)',
   },
-};
+});

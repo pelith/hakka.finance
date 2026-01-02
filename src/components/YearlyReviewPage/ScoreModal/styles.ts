@@ -1,4 +1,4 @@
-import images from "../../../images";
+import images from '../../../images';
 
 export default {
   container: {
@@ -117,7 +117,7 @@ export default {
       fontSize: '12px',
       color: 'rgba(82, 102, 109, 1)',
       whiteSpace: 'nowrap',
-    }
+    },
   },
 
   shareCardPerformanceContainer: {
@@ -153,7 +153,7 @@ export default {
 
     '@media screen and (max-width: 576px)': {
       width: '98%',
-    }
+    },
   },
 
   shareSection: {
@@ -170,4 +170,4 @@ export default {
       },
     },
   },
-}
+};

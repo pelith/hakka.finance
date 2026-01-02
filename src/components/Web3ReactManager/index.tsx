@@ -1,4 +1,4 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { Spinner, jsx } from 'theme-ui';
 import React, { useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
@@ -32,7 +32,7 @@ export default function Web3ReactManager({
 
   if (!active) {
     return (
-      <div sx={styles.messageWrapper} >
+      <div sx={styles.messageWrapper}>
         <Spinner />
       </div>
     );

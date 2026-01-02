@@ -1,4 +1,6 @@
-export default {
+import createSX from 'src/utils/createSX';
+
+export default createSX({
   main: {
     display: 'flex',
 
@@ -24,7 +26,7 @@ export default {
     display: 'flex',
 
     p: {
-      marginRight: '6px'
+      marginRight: '6px',
     },
 
     '& .tooltips': {
@@ -49,7 +51,7 @@ export default {
     marginRight: '12px',
 
     img: {
-      marginRight: '4px'
+      marginRight: '4px',
     },
 
     p: {
@@ -82,5 +84,4 @@ export default {
       },
     },
   },
-};
-  
+});

@@ -1,4 +1,6 @@
-export default {
+import createSX from 'src/utils/createSX';
+
+export default createSX({
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -51,13 +53,12 @@ export default {
     display: 'flex',
     marginBottom: '16px',
     width: '50%',
-    gap: '2px'
+    gap: '2px',
   },
 
   decorativeThread: {
     height: '4px',
     flexGrow: '1',
-    borderRadius: '3px'
+    borderRadius: '3px',
   },
-};
-  
+});

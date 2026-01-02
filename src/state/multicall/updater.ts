@@ -1,7 +1,6 @@
-import { Contract } from '@ethersproject/contracts';
 import { useEffect, useMemo, useRef } from 'react';
 import { useActiveWeb3React } from '../../hooks/web3Manager';
-import { useMulticallContract } from '../../hooks/useContract';
+import { usePublicClient } from 'wagmi';
 import useDebounce from '../../hooks/useDebounce';
 import chunkArray from '../../utils/chunkArray';
 import { CancelledError, retry, RetryableError } from '../../utils/retry';
@@ -9,6 +8,8 @@ import { useBlockNumber } from '../application/hooks';
 import { useMulticallContext } from './hooks';
 import { Call, parseCallKey } from './actions';
 import { MulticallState } from './reducer';
+import type { Address, PublicClient } from 'viem';
+import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../../constants/multicall';
 
 // chunk calls so we do not exceed the gas limit
 const CALL_CHUNK_SIZE = 500;
@@ -18,30 +19,42 @@ const CALL_CHUNK_SIZE = 500;
  * @param multicallContract multicall contract to fetch against
  * @param chunk chunk of calls to make
  * @param minBlockNumber minimum block number of the result set
+ * @deprecated
  */
 async function fetchChunk(
-  multicallContract: Contract,
+  publicClient: PublicClient,
+  multicallAddress: Address,
   chunk: Call[],
   minBlockNumber: number,
 ): Promise<{ results: string[]; blockNumber: number }> {
-  console.debug('Fetching chunk', multicallContract, chunk, minBlockNumber);
-  let resultsBlockNumber; let
-    returnData;
+  console.debug('Fetching chunk', multicallAddress, chunk, minBlockNumber);
+  let resultsBlockNumber: bigint;
+  let returnData: readonly string[];
   try {
-    [resultsBlockNumber, returnData] = await multicallContract.aggregate(
-      chunk.map((obj) => [obj.address, obj.callData]),
-    );
+    // MULTICALL aggregate((address target, bytes callData)[] calls) returns (uint256 blockNumber, bytes[] returnData)
+    [resultsBlockNumber, returnData] = (await publicClient.readContract({
+      address: multicallAddress,
+      abi: MULTICALL_ABI as any,
+      functionName: 'aggregate',
+      args: [
+        chunk.map((obj) => ({
+          target: obj.address as Address,
+          callData: obj.callData as `0x${string}`,
+        })),
+      ],
+    })) as any;
   } catch (error) {
     console.debug('Failed to fetch chunk inside retry', error);
     throw error;
   }
-  if (resultsBlockNumber.toNumber() < minBlockNumber) {
+  const blockNumber = Number(resultsBlockNumber);
+  if (blockNumber < minBlockNumber) {
     console.debug(
       `Fetched results for old block number: ${resultsBlockNumber.toString()} vs. ${minBlockNumber}`,
     );
     throw new RetryableError('Fetched for old block number');
   }
-  return { results: returnData, blockNumber: resultsBlockNumber.toNumber() };
+  return { results: [...returnData], blockNumber };
 }
 
 /**
@@ -68,7 +81,10 @@ export function activeListeningKeys(
           if (blocksPerFetch <= 0) return false;
           return keyListeners[blocksPerFetch] > 0;
         })
-        .reduce((previousMin, current) => Math.min(previousMin, parseInt(current)), Infinity);
+        .reduce(
+          (previousMin, current) => Math.min(previousMin, parseInt(current)),
+          Infinity,
+        );
       return memo;
     },
     {},
@@ -104,9 +120,10 @@ export function outdatedListeningKeys(
 
     // already fetching it for a recent enough block, don't refetch it
     if (
-      data.fetchingBlockNumber
-      && data.fetchingBlockNumber >= minDataBlockNumber
-    ) return false;
+      data.fetchingBlockNumber &&
+      data.fetchingBlockNumber >= minDataBlockNumber
+    )
+      return false;
 
     // if data is older than minDataBlockNumber, fetch it
     return !data.blockNumber || data.blockNumber < minDataBlockNumber;
@@ -125,20 +142,33 @@ export default function Updater(): null {
   const debouncedListeners = useDebounce(state.callListeners, 100);
   const latestBlockNumber = useBlockNumber();
   const { chainId } = useActiveWeb3React();
-  const multicallContract = useMulticallContract();
+  const publicClient = usePublicClient({ chainId });
+  const multicallAddress = useMemo(() => {
+    if (!chainId) return undefined;
+    return MULTICALL_NETWORKS[chainId as keyof typeof MULTICALL_NETWORKS] as
+      | Address
+      | undefined;
+  }, [chainId]);
   const cancellations = useRef<{
     blockNumber: number;
-    cancellations:(() => void)[];
+    cancellations: (() => void)[];
   }>();
 
-  const listeningKeys: { [callKey: string]: number } = useMemo(() => activeListeningKeys(debouncedListeners, chainId), [debouncedListeners, chainId]);
+  const listeningKeys: { [callKey: string]: number } = useMemo(
+    () => activeListeningKeys(debouncedListeners, chainId),
+    [debouncedListeners, chainId],
+  );
 
-  const unserializedOutdatedCallKeys = useMemo(() => outdatedListeningKeys(
-    state.callResults,
-    listeningKeys,
-    chainId,
-    latestBlockNumber,
-  ), [chainId, state.callResults, listeningKeys, latestBlockNumber]);
+  const unserializedOutdatedCallKeys = useMemo(
+    () =>
+      outdatedListeningKeys(
+        state.callResults,
+        listeningKeys,
+        chainId,
+        latestBlockNumber,
+      ),
+    [chainId, state.callResults, listeningKeys, latestBlockNumber],
+  );
 
   const serializedOutdatedCallKeys = useMemo(
     () => JSON.stringify(unserializedOutdatedCallKeys.sort()),
@@ -146,7 +176,8 @@ export default function Updater(): null {
   );
 
   useEffect(() => {
-    if (!latestBlockNumber || !chainId || !multicallContract) return;
+    if (!latestBlockNumber || !chainId || !publicClient || !multicallAddress)
+      return;
 
     const outdatedCallKeys: string[] = JSON.parse(serializedOutdatedCallKeys);
     if (outdatedCallKeys.length === 0) return;
@@ -168,7 +199,7 @@ export default function Updater(): null {
       blockNumber: latestBlockNumber,
       cancellations: chunkedCalls.map((chunk, index) => {
         const { cancel, promise } = retry(
-          () => fetchChunk(multicallContract, chunk, latestBlockNumber),
+          () => fetchChunk(publicClient, multicallAddress, chunk, latestBlockNumber),
           {
             n: Infinity,
             minWait: 2500,
@@ -227,8 +258,9 @@ export default function Updater(): null {
     };
   }, [
     chainId,
-    multicallContract,
+    multicallAddress,
     fetchingMulticallResults,
+    publicClient,
     updateMulticallResults,
     errorFetchingMulticallResults,
     serializedOutdatedCallKeys,

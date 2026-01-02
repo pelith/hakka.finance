@@ -1,4 +1,4 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import React from 'react';
 import { jsx } from 'theme-ui';
 import { Box, Flex, Text } from 'rebass';
@@ -37,22 +37,30 @@ function Footer() {
     },
   ];
 
-  const renderListIcon = () => listIcon.map((item, i) => (
-    <Box key={i}>
-      <a target="_blank" href={item.href} rel="noreferrer noopener">
-        <img sx={styles.imgIcon} src={images[item.url]} />
-      </a>
-    </Box>
-  ));
+  const renderListIcon = () =>
+    listIcon.map((item, i) => (
+      <Box key={i}>
+        <a target='_blank' href={item.href} rel='noreferrer noopener'>
+          <img sx={styles.imgIcon} src={images[item.url]} />
+        </a>
+      </Box>
+    ));
   return (
     <Box sx={styles.footerContainer}>
-      <Flex
-        sx={styles.footerContent}
-      >
-        <Box><img sx={styles.logoFooter} src={images.logoGray} alt="" /></Box>
+      <Flex sx={styles.footerContent}>
+        <Box>
+          <img sx={styles.logoFooter} src={images.logoGray} alt='' />
+        </Box>
         <Flex sx={styles.linkArea}>
           <Flex>
-            <a sx={styles.wordLink} href="https://github.com/hakkafinance/audit-reports" target="_blank" rel="noreferrer noopener">Audit Reports</a>  
+            <a
+              sx={styles.wordLink}
+              href='https://github.com/hakkafinance/audit-reports'
+              target='_blank'
+              rel='noreferrer noopener'
+            >
+              Audit Reports
+            </a>
             {/* <a sx={styles.wordLink} href="https://immunefi.com/bounty/hakkafinance/" target="_blank" rel="noreferrer noopener">Bug Bounty</a>   */}
           </Flex>
           <Flex sx={styles.footer_icons}>{renderListIcon()}</Flex>

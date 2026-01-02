@@ -1,64 +1,72 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import { useState, useCallback, useMemo } from 'react';
-import { MaxUint256 } from '@ethersproject/constants';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { Token } from '@uniswap/sdk';
-import { useTokenAllowance } from '../data/Allowances';
-import { useTokenContract } from './useContract';
+import { useTokenAllowance } from './contracts/token/useTokenAllowance';
 import { useActiveWeb3React } from './web3Manager';
-import { getEtherscanLink, shortenTxId, tryParseAmount } from '../utils';
+import { getEtherscanLink, shortenTxId  } from '../utils';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
 import isZero from '../utils/isZero';
+import { erc20Abi, formatUnits, isAddress, type Address } from 'viem';
+import { useTokenInfoAndBalance } from './contracts/token/useTokenInfoAndBalance';
+import BigNumber from 'bignumber.js';
+import type { ChainId, TokenInfo } from 'src/constants';
+import { usePublicClient, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
 export enum ApprovalState {
-  UNKNOWN,
-  NOT_APPROVED,
-  PENDING,
-  APPROVED,
+  UNKNOWN = 'UNKNOWN',
+  NOT_APPROVED = 'NOT_APPROVED',
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
 }
 
 export function useTokenApprove(
-  tokenToApprove: Token,
+  tokenToApprove: string,
   spender: string,
   requiredAllowance: string,
 ): [ApprovalState, () => Promise<void>] {
   const { account } = useActiveWeb3React();
   const { chainId } = useWeb3React();
-  const token = tokenToApprove;
-  const currentAllowance = useTokenAllowance(
-    token,
-    account ?? undefined,
+  const {data: currentAllowance = 0n} = useTokenAllowance(
+    tokenToApprove,
+    account as string,
     spender,
   );
-  const [currentTransaction, setCurrentTransaction] = useState(null);
+  const {data: tokenInfoAndBalance} = useTokenInfoAndBalance(account as string, tokenToApprove);
+  const publicClient = usePublicClient({chainId: chainId as ChainId})
+
+
+  const { writeContractAsync,reset: resetWriteContract, isSuccess: isWriteSuccess } = useWriteContract()
 
   const approvalState: ApprovalState = useMemo(() => {
     if (!tokenToApprove || !spender) return ApprovalState.UNKNOWN;
     if (!currentAllowance) return ApprovalState.UNKNOWN;
 
-    return currentAllowance.lessThan(tryParseAmount(requiredAllowance)) || currentAllowance.equalTo(tryParseAmount('0'))
-      ? currentTransaction
+    const currentAllowanceAmount = new BigNumber(formatUnits(currentAllowance, tokenInfoAndBalance?.decimals ?? 18));
+
+    return currentAllowanceAmount.lte(requiredAllowance) ||
+      currentAllowanceAmount.eq(0)
+      ? isWriteSuccess
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [currentTransaction, tokenToApprove, currentAllowance, spender]);
+  }, [isWriteSuccess, tokenToApprove, currentAllowance, spender]);
 
-  const tokenContract = useTokenContract(token?.address);
 
   const approve = useCallback(async (): Promise<void> => {
+    const MAX_UINT256 = (2n ** 256n) - 1n;
     if (approvalState !== ApprovalState.NOT_APPROVED) {
       console.error('approve was called unnecessarily');
       return;
     }
-    if (!token) {
+    if (!tokenToApprove) {
       console.error('no token');
       return;
     }
 
-    if (!tokenContract) {
-      console.error('tokenContract is null');
+    if (!isAddress(tokenToApprove)) {
+      console.error('invalid token address');
       return;
     }
 
@@ -68,31 +76,37 @@ export function useTokenApprove(
     }
 
     try {
-      const tx = await tokenContract.approve(spender, MaxUint256);
-      setCurrentTransaction(tx.hash);
+      const txHash = await writeContractAsync({
+        address: tokenToApprove as Address,
+        abi:erc20Abi,
+        functionName: 'approve',
+        args: [spender as Address, MAX_UINT256],
+      });
       toast(
         <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
+          target='_blank'
+          href={getEtherscanLink(chainId ?? 1, txHash, 'transaction')}
+          rel='noreferrer noopener'
           sx={{ textDecoration: 'none', color: '#253e47' }}
         >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-      , { containerId: 'tx' });
-      await tx.wait();
+          {shortenTxId(txHash)} <ExternalLink size={16} />
+        </a>,
+        { containerId: 'tx' },
+      );
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+      });
+      resetWriteContract()
     } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>,  { containerId: 'error' });
-    } finally {
-      setCurrentTransaction(null);
+      console.error(err);
+      if (err instanceof Error) {
+        toast.error(
+          <div>{err.message}</div>,
+          { containerId: 'error' },
+        );
+      }
     }
-  }, [
-    approvalState,
-    token,
-    tokenContract,
-    tokenToApprove,
-    spender,
-  ]);
+  }, [approvalState, tokenToApprove, writeContractAsync, spender]);
 
   return [approvalState, approve];
 }

@@ -1,4 +1,6 @@
-export default {
+import createSX from 'src/utils/createSX';
+
+export default createSX({
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -46,7 +48,6 @@ export default {
       display: 'block',
       marginBottom: '20px',
     },
-
   },
 
   displayOption: {
@@ -98,7 +99,7 @@ export default {
       paddingTop: '10px',
     },
   },
- 
+
   checkBox: {
     display: 'none',
   },
@@ -167,4 +168,4 @@ export default {
       paddingRight: '4px',
     },
   },
-};
+});

@@ -1,4 +1,4 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import { useActiveWeb3React } from '../../hooks/web3Manager';
 import { shortenAddress } from '../../utils';
@@ -7,11 +7,7 @@ import Copy from './Copy';
 import { SUPPORTED_WALLETS } from '../../constants';
 import images from '../../../src/images';
 import CurrentNetwork from '../CurrentNetwork';
-import {
-  injected,
-  walletlink,
-  uauth,
-} from '../../connectors';
+import { injected, walletlink, uauth } from '../../connectors';
 import { MyButton } from '../Common';
 import styles from './styles';
 
@@ -23,19 +19,20 @@ interface AccountDetailsProps {
   openOptions: () => void;
 }
 
-export default function AccountDetails ({
+export default function AccountDetails({
   toggleWalletModal,
   ENSName,
   openOptions,
 }: AccountDetailsProps) {
-  const { chainId, account, connector } = useActiveWeb3React();
+  const { account, connector } = useActiveWeb3React();
 
-  function formatConnectorName () {
+  function formatConnectorName() {
     const { ethereum } = window;
     const isMetaMask = !!(ethereum && ethereum.isMetaMask);
     const name = Object.keys(SUPPORTED_WALLETS)
       .filter(
-        (k) => SUPPORTED_WALLETS[k].connector === connector &&
+        (k) =>
+          SUPPORTED_WALLETS[k].connector === connector &&
           (connector !== injected || isMetaMask === (k === 'METAMASK')),
       )
       .map((k) => SUPPORTED_WALLETS[k].name)[0];
@@ -58,22 +55,18 @@ export default function AccountDetails ({
         <div sx={styles.accountSection}>
           <div sx={styles.yourAccount}>
             <div sx={styles.infoCard}>
-              <div sx={styles.accountGroupingRow}>
-                {formatConnectorName()}
-              </div>
-              <div sx={styles.accountGroupingRow} id="web3-account-identifier-row">
+              <div sx={styles.accountGroupingRow}>{formatConnectorName()}</div>
+              <div
+                sx={styles.accountGroupingRow}
+                id='web3-account-identifier-row'
+              >
                 <div sx={styles.accountControl}>
-                  <p>
-                    {' '}
-                    {ENSName ? account : shortenAddress(account)}
-                  </p>
+                  <p> {ENSName ? account : shortenAddress(account)}</p>
                 </div>
                 {account && (
-                <Copy toCopy={account}>
-                  <span style={{ marginLeft: '4px' }}>
-                    Copy
-                  </span>
-                </Copy>
+                  <Copy toCopy={account}>
+                    <span style={{ marginLeft: '4px' }}>Copy</span>
+                  </Copy>
                 )}
               </div>
               <div sx={styles.accountGroupingRow}>
@@ -81,8 +74,9 @@ export default function AccountDetails ({
                 <CurrentNetwork />
               </div>
               <div sx={styles.buttonSection}>
-                {connector !== injected && connector !== walletlink && connector !== uauth
-                  ? (
+                {connector !== injected &&
+                connector !== walletlink &&
+                connector !== uauth ? (
                   <MyButton
                     onClick={() => {
                       (connector as any).close();
@@ -90,8 +84,7 @@ export default function AccountDetails ({
                   >
                     Disconnect
                   </MyButton>
-                    )
-                  : (
+                ) : (
                   <MyButton
                     onClick={() => {
                       openOptions();
@@ -99,7 +92,7 @@ export default function AccountDetails ({
                   >
                     Change
                   </MyButton>
-                    )}
+                )}
               </div>
             </div>
           </div>

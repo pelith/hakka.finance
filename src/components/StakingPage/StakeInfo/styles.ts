@@ -1,9 +1,9 @@
 export default {
   head: {
-    fontSize: '24px', 
+    fontSize: '24px',
     fontWeight: 'bold',
   },
-  
+
   title: {
     margin: '0',
     fontSize: '14px',
@@ -11,7 +11,7 @@ export default {
 
   infoItemWrapper: {
     marginBottom: '20px',
-    display: 'flex', 
+    display: 'flex',
     justifyContent: 'space-between',
   },
 
@@ -20,6 +20,6 @@ export default {
   },
 
   icon: {
-    marginRight: '7px'
+    marginRight: '7px',
   },
 };

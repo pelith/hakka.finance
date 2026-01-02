@@ -1,4 +1,4 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import images from '../../../../images';
 import styles from './styles';
@@ -19,9 +19,7 @@ export default function VotingPowerSection(props: IProps) {
     <div sx={styles.wrapper}>
       <img sx={styles.img} src={images.iconSealedHakka} />
       <span className={className}>{displayValue}</span>
-      {hasTotal && (
-        <span sx={styles.total}>Total: {total?.toFixed(4)}</span>
-      )}
+      {hasTotal && <span sx={styles.total}>Total: {total?.toFixed(4)}</span>}
     </div>
   );
 }

@@ -1,6 +1,4 @@
-import React, {
-  createContext, useCallback, useMemo, useReducer,
-} from 'react';
+import React, { createContext, useCallback, useMemo, useReducer } from 'react';
 
 import reducer, { initialMulticallState, MulticallState } from './reducer';
 
@@ -23,7 +21,7 @@ interface MulticallContextProps {
   removeMulticallListeners: (payload: RemoveMulticallListenersPayload) => void;
   fetchingMulticallResults: (payload: FetchingMulticallResultsPayload) => void;
   errorFetchingMulticallResults: (
-    payload: ErrorFetchingMulticallResultsPayload
+    payload: ErrorFetchingMulticallResultsPayload,
   ) => void;
   updateMulticallResults: (payload: UpdateMulticallResultsPayload) => void;
 }
@@ -32,7 +30,13 @@ const MulticallContext = createContext<MulticallContextProps>(
   {} as MulticallContextProps,
 );
 
-const MulticallContextProvider: React.FC = ({ children }) => {
+/**
+ * 
+ * @deprecated 
+ */
+const MulticastContextProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [state, dispatch] = useReducer(reducer, initialMulticallState);
 
   const addMulticallListeners = useCallback((payload) => {
@@ -82,4 +86,4 @@ const MulticallContextProvider: React.FC = ({ children }) => {
 };
 
 export { MulticallContext };
-export default MulticallContextProvider;
+export default MulticastContextProvider;

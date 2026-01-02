@@ -1,17 +1,19 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import { useState, useCallback, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
-import { useRewardsContract } from '../useContract';
 import { getEtherscanLink, shortenTxId } from '../../utils';
-import { parseUnits } from '@ethersproject/units';
+import { parseUnits } from 'viem';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
 import { REWARD_POOLS } from '../../constants/rewards';
+import { ChainId } from 'src/constants';
+import { usePublicClient, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import STAKING_REWARDS_ABI from 'src/constants/abis/staking_rewards';
 
 export enum DepositState {
   UNKNOWN,
-  PENDING
+  PENDING,
 }
 
 export function useRewardsDeposit(
@@ -21,17 +23,20 @@ export function useRewardsDeposit(
   spender?: string,
 ): [DepositState, () => Promise<void>] {
   const { chainId } = useWeb3React();
-  const [currentTransaction, setCurrentTransaction] = useState(null);
+  const publicClient = usePublicClient({chainId: chainId as ChainId})
+  const {writeContractAsync, data, isPending: isWritePending, isSuccess: isWriteSuccess, isError: isWriteError, error: writeError, reset,} = useWriteContract()
+  const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
+    hash: data,
+    query: {
+      enabled: isWriteSuccess,
+    }
+  })
 
   const depositState: DepositState = useMemo(() => {
     if (!spender) return DepositState.UNKNOWN;
 
-    return currentTransaction
-      ? DepositState.PENDING
-      : DepositState.UNKNOWN;
-  }, [currentTransaction, spender]);
-
-  const depositContract = useRewardsContract(depositAddress);
+    return isWritePending && isWaitForLoading ? DepositState.PENDING : DepositState.UNKNOWN;
+  }, [isWritePending, isWaitForLoading, spender]);
 
   const deposit = useCallback(async (): Promise<void> => {
     if (!spender) {
@@ -39,36 +44,42 @@ export function useRewardsDeposit(
       return;
     }
 
-    if (REWARD_POOLS[depositAddress].chain !== chainId) {
-      toast.error(<div>Wrong Network</div>,  { containerId: 'error' });
+    if (REWARD_POOLS[depositAddress ?? '']?.chain !== chainId) {
+      toast.error(<div>Wrong Network</div>, { containerId: 'error' });
       return;
     }
 
     try {
-      const amountParsed = parseUnits(amount || '0', decimal);
-      const tx = await depositContract.stake(amountParsed);
-      setCurrentTransaction(tx.hash);
+      const amountParsed = parseUnits(amount || '0', decimal ?? 18);
+      const txHash = await writeContractAsync({
+        address: depositAddress as `0x${string}`,
+        abi: STAKING_REWARDS_ABI,
+        functionName: 'stake',
+        args: [amountParsed],
+      })
+    
       toast(
         <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
+          target='_blank'
+          href={getEtherscanLink(chainId ?? 1, txHash, 'transaction')}
+          rel='noreferrer noopener'
           sx={{ textDecoration: 'none', color: '#253e47' }}
         >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-      , { containerId: 'tx' });
-      await tx.wait();
-    } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>,  { containerId: 'error' });
+          {shortenTxId(txHash)} <ExternalLink size={16} />
+        </a>,
+        { containerId: 'tx' },
+      );
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+      });
+    } catch (err) { 
+      if (err instanceof Error) {
+        toast.error(<div>{err.message}</div>, { containerId: 'error' });
+      }
     } finally {
-      setCurrentTransaction(null);
+      reset();
     }
-  }, [
-    depositContract,
-    amount,
-    spender,
-  ]);
+  }, [amount, decimal, spender, chainId, depositAddress, writeContractAsync, publicClient, reset]);
 
   return [depositState, deposit];
 }

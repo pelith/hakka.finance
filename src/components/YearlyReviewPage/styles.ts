@@ -47,4 +47,4 @@ export default {
       marginBottom: '40px',
     },
   },
-}
+};

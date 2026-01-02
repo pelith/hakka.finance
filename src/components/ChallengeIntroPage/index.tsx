@@ -1,7 +1,6 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import { useWeb3React } from '@web3-react/core';
-import _omit from 'lodash/omit';
 import { MyButton } from '../Common';
 import styles from './styles';
 import withConnectWalletCheckWrapper from '../../hoc/withConnectWalletCheckWrapper';
@@ -13,7 +12,7 @@ import { ChainId, ChainNameWithIcon } from '../../constants';
 import { CHAIN_URL_MAP } from '../../constants/chainDetail';
 
 const StartButton = withWrongNetworkCheckWrapper(
-  withConnectWalletCheckWrapper(MyButton)
+  withConnectWalletCheckWrapper(MyButton),
 );
 
 const ChallengeIntroPage = () => {
@@ -21,7 +20,7 @@ const ChallengeIntroPage = () => {
   const toggleWalletModal = useWalletModalToggle();
   const isConnected = !!account || CHAIN_URL_MAP.has(chainId || -1);
   const supportedChain = Object.keys(ChainNameWithIcon).map((ele) =>
-    parseInt(ele)
+    Number.parseInt(ele),
   );
   const isCorrectNetwork = chainId ? supportedChain.includes(chainId) : false;
 
@@ -46,7 +45,7 @@ const ChallengeIntroPage = () => {
             <div sx={styles.startBtn}>
               <StartButton
                 onClick={() => navigate('/play2earn')}
-                styleKit="green"
+                styleKit='green'
                 isConnected={isConnected}
                 connectWallet={toggleWalletModal}
                 isCorrectNetwork={isCorrectNetwork}

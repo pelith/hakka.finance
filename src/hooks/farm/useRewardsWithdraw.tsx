@@ -1,17 +1,18 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import { useState, useCallback, useMemo } from 'react';
-import { useWeb3React } from '@web3-react/core';
-import { useRewardsContract } from '../useContract';
-import { getEtherscanLink, shortenTxId } from '../../utils';
-import { parseUnits } from '@ethersproject/units';
+import { useCallback, useMemo } from 'react';
+import { isAddress, parseUnits } from 'viem';
 import { toast } from 'react-toastify';
-import { ExternalLink } from 'react-feather';
 import { REWARD_POOLS } from '../../constants/rewards';
+import type { ChainId } from 'src/constants';
+import useAppWriteContract from '../contracts/useAppWriteContract';
+import STAKING_REWARDS_ABI from 'src/constants/abis/staking_rewards';
+import { useWaitForTransactionReceipt } from 'wagmi';
+import { useActiveWeb3React } from '../useActiveWeb3React';
 
 export enum WithdrawState {
   UNKNOWN,
-  PENDING
+  PENDING,
 }
 
 export function useRewardsWithdraw(
@@ -20,18 +21,23 @@ export function useRewardsWithdraw(
   decimal?: number,
   spender?: string,
 ): [WithdrawState, () => Promise<void>] {
-  const { chainId } = useWeb3React();
-  const [currentTransaction, setCurrentTransaction] = useState(null);
+  const { chainId } = useActiveWeb3React();
+  const {writeContractAsync, data, isPending} = useAppWriteContract(chainId as ChainId)
+
+  const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
+    hash: data,
+    chainId: chainId as ChainId,
+    query: {
+      enabled: !!data,
+    },
+  })
 
   const withdrawState: WithdrawState = useMemo(() => {
     if (!spender) return WithdrawState.UNKNOWN;
 
-    return currentTransaction
-      ? WithdrawState.PENDING
-      : WithdrawState.UNKNOWN;
-  }, [currentTransaction, spender]);
+    return isPending && isWaitForLoading ? WithdrawState.PENDING : WithdrawState.UNKNOWN;
+  }, [isPending, isWaitForLoading, spender]);
 
-  const withdrawContract = useRewardsContract(withdrawAddress);
 
   const withdraw = useCallback(async (): Promise<void> => {
     if (!spender) {
@@ -39,36 +45,27 @@ export function useRewardsWithdraw(
       return;
     }
 
-    if (REWARD_POOLS[withdrawAddress].chain !== chainId) {
-      toast.error(<div>Wrong Network</div>,  { containerId: 'error' });
+    if (!withdrawAddress) return;
+
+    if (!isAddress(withdrawAddress)) {
+      toast.error(<div>Invalid withdraw address</div>, { containerId: 'error' });
       return;
     }
 
-    try {
-      const amountParsed = parseUnits(amount || '0', decimal);
-      const tx = await withdrawContract.withdraw(amountParsed);
-      setCurrentTransaction(tx.hash);
-      toast(
-        <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
-          sx={{ textDecoration: 'none', color: '#253e47' }}
-        >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-      , { containerId: 'tx' });
-      await tx.wait();
-    } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>,  { containerId: 'error' });
-    } finally {
-      setCurrentTransaction(null);
+    if (REWARD_POOLS[withdrawAddress].chain !== chainId) {
+      toast.error(<div>Wrong Network</div>, { containerId: 'error' });
+      return;
     }
-  }, [
-    withdrawContract,
-    amount,
-    spender,
-  ]);
+      const amountParsed = parseUnits(amount || '0', decimal ?? 18);
+      await writeContractAsync({
+        address: withdrawAddress,
+        abi: STAKING_REWARDS_ABI,
+        functionName: 'withdraw',
+        args: [amountParsed],
+      })
+      
+
+  }, [amount, decimal, spender, chainId, withdrawAddress, writeContractAsync]);
 
   return [withdrawState, withdraw];
 }

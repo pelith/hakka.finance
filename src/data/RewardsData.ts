@@ -1,50 +1,63 @@
 import { useMemo } from 'react';
-import { formatUnits } from '@ethersproject/units';
-import { Interface } from '@ethersproject/abi';
+import { formatUnits, type Address } from 'viem';
 import { useActiveWeb3React } from '../hooks/web3Manager';
 
-import { tryParseAmount } from '../utils';
-import { useMultipleContractSingleData } from '../state/multicall/hooks';
-import STAKING_REWARDS_ABI from '../constants/abis/staking_rewards.json';
+import STAKING_REWARDS_ABI from '../constants/abis/staking_rewards';
+import type { ChainId } from 'src/constants';
+import { useReadContracts } from 'wagmi';
 
-export function useRewardsData(addresses: string[], decimals: number[]) {
-  const { chainId, account } = useActiveWeb3React();
-  const REWARDS_INTERFACE = new Interface(STAKING_REWARDS_ABI);
+export function useRewardsData(addresses: string[], decimals: number[], chainId?: ChainId) {
+  const { chainId: activeChainId, account } = useActiveWeb3React();
+  const usingChainId = chainId ?? activeChainId;
 
-  const depositBalances = useMultipleContractSingleData(
-    addresses,
-    REWARDS_INTERFACE,
-    'balanceOf',
-    [account],
-  );
+  const depositBalancesContracts = useMemo(() => {
+    return addresses.map((address) => ({
+      address: address as Address,
+      abi: STAKING_REWARDS_ABI,
+      functionName: 'balanceOf',
+      args: [account],
+      chainId: usingChainId,
+    }))
+  }, [addresses.join(','), usingChainId])
 
-  const earnedBalances = useMultipleContractSingleData(
-    addresses,
-    REWARDS_INTERFACE,
-    'earned',
-    [account],
-  );
-
-  return useMemo(
-    () => {
-      if (!account || !depositBalances || !earnedBalances) {
-        return {
-          depositBalances: undefined,
-          earnedBalances: undefined,
-        }
+  const {data: depositBalances } = useReadContracts({
+    contracts: depositBalancesContracts,
+    query: {
+      select(data) {
+        return Object.fromEntries(data.map((ele, i) => {
+          return [
+            addresses[i],
+            formatUnits(ele.result as bigint, decimals[i]),
+          ] as const
+        }))
       }
-      
-      const balance = {}
-      const earned = {}
-      addresses.map((address) => {
-        balance[address] = tryParseAmount(formatUnits(depositBalances[addresses.indexOf(address)].result?.[0] ?? 0, decimals[addresses.indexOf(address)]))
-        earned[address] = tryParseAmount(formatUnits(earnedBalances[addresses.indexOf(address)].result?.[0] ?? 0))
-      })
-      return {
-        depositBalances: balance,
-        earnedBalances: earned,
+    }
+  })
+
+  const {data: earnedBalances} = useReadContracts({
+    contracts: addresses.map((address) => ({
+      address: address as Address,
+      abi: STAKING_REWARDS_ABI,
+      functionName: 'earned',
+      args: [account],
+      chainId: usingChainId,
+    })),
+    query: {
+      select(data) {
+        return Object.fromEntries(data.map((ele, i) => {
+          return [
+            addresses[i],
+            formatUnits(ele.result as bigint, decimals[i]),
+          ] as const
+        }))
       }
-    },
-    [chainId, depositBalances, earnedBalances, addresses, decimals],
-  );
+    }
+  })
+
+  return useMemo(() => {
+    return {
+      depositBalances: depositBalances,
+      earnedBalances: earnedBalances,
+    }
+  }, [depositBalances, earnedBalances])
 }

@@ -1,4 +1,4 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
 import { useState, useEffect } from 'react';
 import BigNumber from 'bignumber.js';
@@ -33,14 +33,16 @@ const RewardValue = (props: RewardValueProps) => {
     }
   }, [newTokenId.id]);
 
-  const tokensPrice = useTokensPriceByAddress(tokensId);
+  const {data: tokensPrice} = useTokensPriceByAddress(tokensId);
   const [rewardValue, setRewardValue] = useState<BigNumber>(new BigNumber(0));
 
   useEffect(() => {
     let rewardValueSum = new BigNumber(0);
-    pickedRewardTokensAddress.map((address) => {
+    pickedRewardTokensAddress.forEach((address) => {
       if (localRewardAmount && tokensPrice) {
-        const value = localRewardAmount[address]?.multipliedBy(new BigNumber(tokensPrice[address] ? tokensPrice[address] : 0));
+        const value = localRewardAmount[address]?.multipliedBy(
+          new BigNumber(tokensPrice[address] ? tokensPrice[address] : 0),
+        );
         rewardValueSum = rewardValueSum.plus(value);
       }
     });
@@ -51,9 +53,7 @@ const RewardValue = (props: RewardValueProps) => {
     <div sx={styles.totalValueWrapper}>
       <span>Total Value</span>
       <span sx={styles.totalValueAmount}>
-        {rewardValue.isNaN() ? '0' : rewardValue.toFixed(3)}
-        {' '}
-        USD
+        {rewardValue.isNaN() ? '0' : rewardValue.toFixed(3)} USD
       </span>
     </div>
   );

@@ -6,18 +6,20 @@ export default function useRequestNetworkConfig(targetNetwork: ChainId): any {
     if (targetNetwork === ChainId.BSC) {
       return {
         method: 'wallet_addEthereumChain',
-        params: [{
-          chainId: '0x38',
-          chainName: 'BSC Mainnet',
-          nativeCurrency: {
-            name: 'Binance Coin',
-            symbol: 'BNB',
-            decimals: 18,
+        params: [
+          {
+            chainId: '0x38',
+            chainName: 'BSC Mainnet',
+            nativeCurrency: {
+              name: 'Binance Coin',
+              symbol: 'BNB',
+              decimals: 18,
+            },
+            rpcUrls: [import.meta.env.VITE_BSC_NETWORK_URL],
+            blockExplorerUrls: ['https://bscscan.com/'],
           },
-          rpcUrls: [process.env.GATSBY_BSC_NETWORK_URL],
-          blockExplorerUrls: ['https://bscscan.com/'],
-        }],
-      }
+        ],
+      };
     } else if (targetNetwork === ChainId.FANTOM) {
       return {
         method: 'wallet_addEthereumChain',
@@ -30,7 +32,7 @@ export default function useRequestNetworkConfig(targetNetwork: ChainId): any {
               symbol: 'FTM',
               decimals: 18,
             },
-            rpcUrls: [process.env.GATSBY_FANTOM_NETWORK_URL],
+            rpcUrls: [import.meta.env.VITE_FANTOM_NETWORK_URL],
             blockExplorerUrls: ['https://ftmscan.com/'],
           },
         ],
@@ -55,10 +57,12 @@ export default function useRequestNetworkConfig(targetNetwork: ChainId): any {
     } else {
       return {
         method: 'wallet_switchEthereumChain',
-        params: [{
-          chainId: '0x1'
-        }]
-      }
+        params: [
+          {
+            chainId: '0x1',
+          },
+        ],
+      };
     }
   }, [targetNetwork]);
 

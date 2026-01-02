@@ -1,159 +1,64 @@
-import {
-  Currency,
-  CurrencyAmount,
-  ETHER,
-  JSBI,
-  Token,
-  TokenAmount,
-} from '@uniswap/sdk';
 import { useMemo } from 'react';
-import { Interface } from '@ethersproject/abi';
-import { useMulticallContract } from '../../hooks/useContract';
-import { isAddress } from '../../utils';
-import {
-  useSingleContractMultipleData,
-  useMultipleContractSingleData,
-} from '../multicall/hooks';
-import ERC20_ABI from '../../constants/abis/erc20.json';
 
-/**
- * Returns a map of the given addresses to their eventually consistent ETH balances.
- */
-export function useETHBalances(
-  uncheckedAddresses?: (string | undefined)[],
-): { [address: string]: CurrencyAmount | undefined } {
-  const multicallContract = useMulticallContract();
-
-  const addresses: string[] = useMemo(
-    () => (uncheckedAddresses
-      ? uncheckedAddresses
-        .map(isAddress)
-        .filter((a): a is string => a !== false)
-        .sort()
-      : []),
-    [uncheckedAddresses],
-  );
-
-  const results = useSingleContractMultipleData(
-    multicallContract,
-    'getEthBalance',
-    addresses.map((address) => [address]),
-  );
-
-  return useMemo(
-    () => addresses.reduce<{ [address: string]: CurrencyAmount }>(
-      (memo, address, i) => {
-        const value = results?.[i]?.result?.[0];
-        if (value) memo[address] = CurrencyAmount.ether(JSBI.BigInt(value.toString()));
-        return memo;
-      },
-      {},
-    ),
-    [addresses, results],
-  );
-}
+import ERC20_ABI from '../../constants/abis/erc20';
+import { formatUnits, getContract, type Address } from 'viem';
+import type { ChainId } from 'src/constants';
+import { usePublicClient } from 'wagmi';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * Returns a map of token addresses to their eventually consistent token balances for a single account.
  */
 export function useTokenBalancesWithLoadingIndicator(
-  address?: string,
-  tokens?: (Token | undefined)[],
-): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
-  const validatedTokens: Token[] = useMemo(
-    () => tokens?.filter(
-      (t?: Token): t is Token => isAddress(t?.address) !== false,
-    ) ?? [],
-    [tokens],
-  );
+  address: Address,
+  tokens: {address: Address, decimals: number, symbol: string, name: string}[],
+  chainId: ChainId,
+): [{ [tokenAddress: string]: string } | undefined, boolean] {
+  const publicClient = usePublicClient({chainId,});
+  const erc20ContractInstances = useMemo(() => {
+    return tokens.map((tokenInfo) => {
+      return getContract({
+        abi: ERC20_ABI,
+        address: tokenInfo.address,
+        client: publicClient,
+      })
+    })
+  }, [tokens, chainId])
 
-  const validatedTokenAddresses = useMemo(
-    () => validatedTokens.map((vt) => vt.address),
-    [validatedTokens],
-  );
-
-  const ERC20_INTERFACE = new Interface(ERC20_ABI);
-  const balances = useMultipleContractSingleData(
-    validatedTokenAddresses,
-    ERC20_INTERFACE,
-    'balanceOf',
-    [address],
-  );
-
-  const anyLoading: boolean = useMemo(
-    () => balances.some((callState) => callState.loading),
-    [balances],
-  );
+  const {data:tokenBalances, isLoading: isLoadingTokenBalances} = useQuery({
+    queryKey: ['token-balances', chainId, address, tokens.map(tokenInfo => tokenInfo.name).sort().join()],
+    async queryFn() {
+      const balances = await Promise.all(erc20ContractInstances.map(contract => contract.read.balanceOf([address])))
+      return Object.fromEntries(balances.map((balance, index) => {
+        return [
+          tokens[index].address,
+          formatUnits(balance, tokens[index].decimals),
+        ] as const
+      }))
+    }
+  })
 
   return [
-    useMemo(
-      () => (address && validatedTokens.length > 0
-        ? validatedTokens.reduce<{
-              [tokenAddress: string]: TokenAmount | undefined;
-            }>((memo, token, i) => {
-              const value = balances?.[i]?.result?.[0];
-              const amount = value ? JSBI.BigInt(value.toString()) : undefined;
-              if (amount) {
-                memo[token.address] = new TokenAmount(token, amount);
-              }
-              return memo;
-            }, {})
-        : {}),
-      [address, validatedTokens, balances],
-    ),
-    anyLoading,
+    tokenBalances,
+    isLoadingTokenBalances,
   ];
 }
 
 export function useTokenBalances(
-  address?: string,
-  tokens?: (Token | undefined)[],
-): { [tokenAddress: string]: TokenAmount | undefined } {
-  return useTokenBalancesWithLoadingIndicator(address, tokens)[0];
+  address: Address,
+  tokens: {address: Address, decimals: number, symbol: string, name: string}[],
+  chainId: ChainId,
+): { [tokenAddress: string]: string } | undefined {
+  return useTokenBalancesWithLoadingIndicator(address, tokens, chainId)[0];
 }
 
 // get the balance for a single token/account combo
 export function useTokenBalance(
-  account?: string,
-  token?: Token,
-): TokenAmount | undefined {
-  const tokenBalances = useTokenBalances(account, [token]);
-  if (!token) return undefined;
-  return tokenBalances[token.address];
-}
-
-export function useCurrencyBalances(
-  account?: string,
-  currencies?: (Currency | undefined)[],
-): (CurrencyAmount | undefined)[] {
-  const tokens = useMemo(
-    () => currencies?.filter(
-      (currency): currency is Token => currency instanceof Token,
-    ) ?? [],
-    [currencies],
-  );
-
-  const tokenBalances = useTokenBalances(account, tokens);
-  const containsETH: boolean = useMemo(
-    () => currencies?.some((currency) => currency === ETHER) ?? false,
-    [currencies],
-  );
-  const ethBalance = useETHBalances(containsETH ? [account] : []);
-
-  return useMemo(
-    () => currencies?.map((currency) => {
-      if (!account || !currency) return undefined;
-      if (currency instanceof Token) return tokenBalances[currency.address];
-      if (currency === ETHER) return ethBalance[account];
-      return undefined;
-    }) ?? [],
-    [account, currencies, ethBalance, tokenBalances],
-  );
-}
-
-export function useCurrencyBalance(
-  account?: string,
-  currency?: Currency,
-): CurrencyAmount | undefined {
-  return useCurrencyBalances(account, [currency])[0];
+  account: Address,
+  token: {address: Address, decimals: number, symbol: string, name: string},
+  chainId: ChainId,
+): string | undefined {
+  const tokenBalances = useTokenBalances(account, [token], chainId);
+  if (!tokenBalances) return undefined;
+  return tokenBalances[token.address] ?? '0';
 }

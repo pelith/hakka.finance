@@ -1,22 +1,18 @@
-/** @jsx jsx */
+ /** @jsxImportSource theme-ui */
 import { jsx } from 'theme-ui';
-import { useEffect, useState } from 'react';
+import {  useMemo } from 'react';
 import styles from './styles';
 import { MyButton } from '../../Common';
 import { useActiveWeb3React } from '../../../hooks/web3Manager';
-import {
-  isAddress,
-  isERC20Contract,
-  getTokenDecimals,
-  getTokenName,
-  getTokenSymbol,
-} from '../../../utils/index';
+import { useReadContracts } from 'wagmi';
 
+import ERC20_ABI from '../../../constants/abis/erc20';
+import { isAddress, isAddressEqual, type Address } from 'viem';
 interface NewTokenAddressInputProps {
   addressInputValue: string;
   setAddressInputValue: (input: string) => void;
-  rewardTokens: any;
-  setRewardTokens: any;
+  rewardTokens: { [x: string]: { name: string; symbol: string; decimals: number } };
+  addRewardToken: (input: { address: Address; name: string; symbol: string; decimals: number }) => void;
   setIsShowNewTokenArea: (input: boolean) => void;
 }
 
@@ -24,77 +20,59 @@ const NewTokenAddressInput = (props: NewTokenAddressInputProps) => {
   const {
     addressInputValue,
     setIsShowNewTokenArea,
-    setRewardTokens,
+    addRewardToken,
     setAddressInputValue,
-    rewardTokens
+    rewardTokens,
   } = props;
-  const { provider: library } = useActiveWeb3React();
-  const [tokenInfo, setTokenInfo] = useState<(string | number)[]>(['']);
-  const [isAddBtnDisabled, setIsAddBtnDisabled] = useState<boolean>(true);
+  useActiveWeb3React(); // keep for backwards compatibility (side effects / wallet state)
   // const [addTokenError, setAddTokenError] = useState<string>('');
 
-  const [isErc20, setIsErc20] = useState();
-  useEffect(() => {
-    // setAddTokenError('');
-    if (addressInputValue && isAddress(addressInputValue) && library) {
-      isERC20Contract(addressInputValue, library).then((result: any) => {
-        setIsErc20(result);
-        if (!result) {
-          // setAddTokenError('This address is not an ERC20 contract');
-          setAddressInputValue('');
-        }
-      });
+  const {data: tokenInfo} = useReadContracts({
+    contracts: [
+      {
+        address: addressInputValue as Address,
+        abi: ERC20_ABI,
+        functionName: 'name',
+      },
+      {
+        address: addressInputValue as Address,
+        abi: ERC20_ABI,
+        functionName: 'symbol',
+      },
+      {
+        address: addressInputValue as Address,
+        abi: ERC20_ABI,
+        functionName: 'decimals',
+      },
+    ] as const,
+    query: {
+      enabled: isAddress(addressInputValue),
     }
-  }, [addressInputValue]);
+  })
 
-  // get the TokenName TokenSymbol TokenDecimals of the new token
-  useEffect(() => {
-    if (addressInputValue && isAddress(addressInputValue) && !!isErc20) {
-      Promise.all([
-        getTokenName(addressInputValue, library),
-        getTokenSymbol(addressInputValue, library),
-        getTokenDecimals(addressInputValue, library),
-      ])
-        .then((value) => {
-          setTokenInfo(value);
-          setIsAddBtnDisabled(false);
-        })
-        .catch((error: string) => {
-          throw error;
-        });
-    }
-  }, [isErc20]);
+  const isAddBtnDisabled = useMemo(() => {
+    if (!tokenInfo?.every(item => item.status === 'success')) return true
+    if (!isAddress(addressInputValue)) return true
+    const rewardTokensAddresses = Object.keys(rewardTokens);
+    if (rewardTokensAddresses.some(address => isAddressEqual(address as Address, addressInputValue as Address))) return true
+    return false
+  }, [Object.keys(rewardTokens).join()])
 
   const handleAddBtnClick = () => {
+    if (!tokenInfo) return;
     if (isAddress(addressInputValue)) {
       setIsShowNewTokenArea(false);
 
       const newTokenInfo = {
-        name: tokenInfo[0],
-        symbol: tokenInfo[1],
-        decimals: tokenInfo[2],
+        name: tokenInfo[0].result!,
+        symbol: tokenInfo[1].result!,
+        decimals: tokenInfo[2].result!,
       };
 
-      // Check the address is duplicate or not
-      const tokensInfoValue: { decimals: number, name: string, symbol: string }[] = Object.values(rewardTokens);
-      let duplicateTokens: (string | number)[];
-
-      for (let i = 0; i < tokensInfoValue.length; i++) {
-        const tokenInfo = Object.values(tokensInfoValue[i]);
-        duplicateTokens = tokenInfo.filter((value) => value === newTokenInfo.name);
-        if (duplicateTokens.length !== 0) {
-          break;
-        }
-      }
-
-      // Add token information to RewardTokenList
-      if (duplicateTokens.length === 0) {
-        setRewardTokens((prevState: any) => ({
-          ...prevState,
-          [addressInputValue]: newTokenInfo,
-        }));
-      }
-      setIsAddBtnDisabled(true);
+      addRewardToken({
+        address: addressInputValue as Address,
+        ...newTokenInfo,
+      });
     } else {
       console.log('It is not a address');
     }
@@ -105,7 +83,7 @@ const NewTokenAddressInput = (props: NewTokenAddressInputProps) => {
     <div sx={styles.container}>
       <div sx={styles.NewTokenAddressInputWrapper}>
         <input
-          placeholder="Token Address"
+          placeholder='Token Address'
           sx={styles.input}
           value={addressInputValue}
           onChange={(event) => setAddressInputValue(event.target.value)}
@@ -113,7 +91,7 @@ const NewTokenAddressInput = (props: NewTokenAddressInputProps) => {
       </div>
       <div sx={styles.addButton}>
         <MyButton
-          styleKit="green"
+          styleKit='green'
           disabled={isAddBtnDisabled}
           onClick={handleAddBtnClick}
         >
