@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import React, { useEffect, useState } from 'react';
 import { Box, Flex, Link } from 'rebass';
 import { navigate } from 'gatsby';

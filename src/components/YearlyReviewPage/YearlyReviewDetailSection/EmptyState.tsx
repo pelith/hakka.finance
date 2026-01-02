@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
-import React from 'react';
+
+
 import { navigate } from 'gatsby';
 import { MyButton } from '../../Common';
 import images from '../../../images';

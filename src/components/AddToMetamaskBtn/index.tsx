@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { useCallback } from 'react';
 import images from '../../images';
 import { type ChainId, HAKKA } from '../../constants';

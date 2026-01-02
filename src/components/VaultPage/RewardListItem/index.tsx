@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import BigNumber from 'bignumber.js';
 import images from '../../../images/index';
 import styles from './styles';

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import React from 'react';
+
 import Layout from '../containers/Layout';
 import HomeScreen from '../components/HomeScreen';
 

@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { useEffect, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';

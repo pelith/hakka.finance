@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { useWeb3React } from '@web3-react/core';
 import styles from './styles';
 import PoolDetail from './PoolDetail';

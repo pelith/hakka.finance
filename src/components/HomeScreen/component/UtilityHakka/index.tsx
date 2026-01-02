@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 /** @jsxFrag */
-import { jsx } from 'theme-ui';
-import React from 'react';
+
+
 import { Flex, Box } from 'rebass';
 import { navigate } from 'gatsby';
 import images from '../../../../images';

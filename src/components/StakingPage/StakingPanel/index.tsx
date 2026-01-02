@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { parseUnits } from 'viem';
-import { jsx } from 'theme-ui';
+
 import {
   HAKKA,
   NEW_SHAKKA_ADDRESSES,

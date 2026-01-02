@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 /** @jsxFrag */
 import React, { useEffect, useState } from 'react';
-import { jsx } from 'theme-ui';
+
 import { Box, Flex, Text } from 'rebass';
 import images from '../../../images';
 import styles from './styles';

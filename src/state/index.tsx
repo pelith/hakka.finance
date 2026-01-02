@@ -1,8 +1,7 @@
-import React, { Context } from 'react';
+import React, { type Context } from 'react';
 import { useContextSelector } from 'use-context-selector';
 
 import ApplicationContextProvider from './application/context';
-import MulticastContextProvider from './multicall/context';
 
 export function useContextStateSelector<
   S,
@@ -16,6 +15,6 @@ export const ContextProviders: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => (
   <ApplicationContextProvider>
-    <MulticastContextProvider>{children}</MulticastContextProvider>
+    <>{children}</>
   </ApplicationContextProvider>
 );

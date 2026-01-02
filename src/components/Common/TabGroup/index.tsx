@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { ChainId } from '../../../constants';
 import styles from './styles';
 import images from '../../../images';

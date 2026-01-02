@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { useWeb3React } from '@web3-react/core';
 import { useMemo, useState, useEffect } from 'react';
 import Countdown, { zeroPad } from 'react-countdown';

@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import React, { useEffect, useMemo } from 'react';
 import { navigate } from 'gatsby';
 import Web3Status from '../../Web3Status';

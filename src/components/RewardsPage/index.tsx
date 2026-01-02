@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 /** @jsxFrag */
-import { jsx } from 'theme-ui';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 import { useWeb3React } from '@web3-react/core';
 import { isMobile } from 'react-device-detect';

@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
 /** @jsxFrag */
-import { jsx } from 'theme-ui';
+
 import React, { useState } from 'react';
 import { Box, Flex, Heading } from 'rebass';
 import fetch from 'cross-fetch';

@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
-import React from 'react';
+
+
 import { isMobile } from 'react-device-detect';
 import { MyButton } from '../../Common';
 import Accordion from '../../Common/Accordion';

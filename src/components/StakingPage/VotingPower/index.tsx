@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 /** @jsxFrag */
-import React from 'react';
-import { jsx } from 'theme-ui';
+
+
 import styles from './style';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { StakingVersion } from '../../../containers/VotingPowerContainer';

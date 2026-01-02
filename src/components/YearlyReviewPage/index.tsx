@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import React, { useState } from 'react';
 import Web3Status from '../Web3Status';
 import styles from './styles';

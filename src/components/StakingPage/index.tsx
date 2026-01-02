@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { useState, useMemo, useEffect } from 'react';
 import { formatUnits, zeroAddress } from 'viem';
 import { useWeb3React } from '@web3-react/core';

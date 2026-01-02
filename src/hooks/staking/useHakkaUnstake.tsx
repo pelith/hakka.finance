@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { useMemo, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { getEtherscanLink, shortenTxId } from '../../utils';

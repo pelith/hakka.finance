@@ -13,7 +13,10 @@ import throttle from 'lodash/throttle';
 export type StakedHakkaType = {
   [chainId in ChainId]?: bigint;
 };
-
+/**
+ * 
+ * TODO refactor to useReadContract
+ */
 export default function useStakedHakka(): {
   stakedHakka: StakedHakkaType;
   fetchDataState: ChainDataFetchingState;

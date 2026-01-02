@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
-import React from 'react';
+
+
 import { Box, Flex } from 'rebass';
 import images from '../../images/index';
 import styles from './styles';

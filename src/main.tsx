@@ -1,4 +1,4 @@
-import React from 'react';
+import {StrictMode} from 'react';
 import ReactDOM from 'react-dom/client';
 import '@fontsource/open-sans/400.css';
 import '@fontsource/open-sans/600.css';
@@ -66,7 +66,7 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  <StrictMode>
     <App />
-  </React.StrictMode>,
+  </StrictMode>,
 );

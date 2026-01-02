@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
-import React from 'react';
+
+
 import { parseUnits } from 'viem';
 import styles from './styles';
 import { escapeRegExp } from '../../utils/index';

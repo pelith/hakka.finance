@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
-import { Spinner, jsx } from 'theme-ui';
-import React, { useEffect } from 'react';
+import { Spinner } from 'theme-ui';
+import { useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 
 import { network, networkHooks } from '../../connectors';

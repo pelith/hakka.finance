@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { useTokenAllowance } from './contracts/token/useTokenAllowance';

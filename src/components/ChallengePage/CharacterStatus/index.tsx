@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
-import React from 'react';
+
+
 import { isMobile } from 'react-device-detect';
 import styles from './styles';
 import ProgressBar from '../../Common/ProgressBar';

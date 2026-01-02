@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
 import React, { useEffect, useState } from 'react';
-import { jsx } from 'theme-ui';
+
 import { Box, Text } from 'rebass';
 import CardProduct from './CardProduct';
 import images from '../../images';

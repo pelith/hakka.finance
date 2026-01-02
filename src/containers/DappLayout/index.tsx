@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Box, Flex } from 'rebass';

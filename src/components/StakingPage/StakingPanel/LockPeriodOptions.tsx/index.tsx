@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { memo, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import styles from './styles';
 import { getExpectedDay } from '../../../../utils/dateRangeCal';

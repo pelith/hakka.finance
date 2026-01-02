@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { ChainId } from '../../constants';
 import useRequestNetworkConfig from '../../hooks/useRequestNetworkConfig';
 

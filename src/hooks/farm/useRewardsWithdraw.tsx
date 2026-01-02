@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { useCallback, useMemo } from 'react';
 import { isAddress, parseUnits } from 'viem';
 import { toast } from 'react-toastify';

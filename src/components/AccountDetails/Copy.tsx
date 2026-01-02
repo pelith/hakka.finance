@@ -1,6 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
-import React from 'react';
+
 import { CheckCircle, Copy } from 'react-feather';
 import useCopyClipboard from '../../hooks/useCopyClipboard';
 import styles from './styles';

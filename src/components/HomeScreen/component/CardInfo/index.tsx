@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { Box } from 'rebass';
 import images from '../../../../images';
 import styles from './styles';

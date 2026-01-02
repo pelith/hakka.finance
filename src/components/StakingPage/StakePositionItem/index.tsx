@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
+
 import { useState, useMemo } from 'react';
 import { parseUnits } from 'viem';
 import BigNumber from 'bignumber.js';

@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
-import { jsx } from 'theme-ui';
-import React from 'react';
+
+
 import Modal from '../../Modal';
 import {
   useYearlyReviewScoreModalOpen,

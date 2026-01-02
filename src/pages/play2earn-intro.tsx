@@ -1,4 +1,4 @@
-import React from 'react';
+
 import ChallengeIntroPage from '../components/ChallengeIntroPage';
 import DappLayout from '../containers/DappLayout';
 

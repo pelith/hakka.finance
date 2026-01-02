@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
 import { useState, useEffect } from 'react';
-import { jsx } from 'theme-ui';
+
 import BigNumber from 'bignumber.js';
 import styles from './styles';
 import NumercialInput from '../NumericalInput';

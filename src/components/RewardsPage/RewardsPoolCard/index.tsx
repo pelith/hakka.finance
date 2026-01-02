@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
 import { useWeb3React } from '@web3-react/core';
-import { jsx } from 'theme-ui';
+
 import styles from './styles';
 import images from '../../../images/index';
 import { MyButton } from '../../Common';

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import DappLayout from '../containers/DappLayout';
 import PoolPage from '../components/RewardsPage/pool';
 import type { Address } from 'viem';

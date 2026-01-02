@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 /** @jsxFrag pragma */
-import React from 'react';
-import { jsx } from 'theme-ui';
+
+
 import { Box, Flex } from 'rebass';
 import images from '../../../images';
 import { MyButton } from '../../../components/Common';

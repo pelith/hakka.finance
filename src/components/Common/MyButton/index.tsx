@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Button, Box } from 'rebass';
 import types from 'prop-types';
 import styles from './styles';
