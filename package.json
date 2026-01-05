@@ -24,7 +24,8 @@
     "lint": "biome lint --write --unsafe ./src",
     "format": "biome format --write ./src",
     "deploy": "netlify deploy --site=e3335be6-9531-4bd6-b1dc-302013899981",
-    "deploy:dev": "netlify deploy --site=510be721-6675-46d0-9306-48c3bc779345"
+    "deploy:dev": "netlify deploy --site=510be721-6675-46d0-9306-48c3bc779345",
+    "knip": "knip"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
@@ -45,7 +46,6 @@
     "date-fns": "^4.1.0",
     "ethers": "^6.16.0",
     "graphql": "^16.5.0",
-    "html-to-image": "^1.11.11",
     "jotai": "^2.16.0",
     "lodash": "^4.17.21",
     "rc-table": "^7.24.1",
@@ -67,7 +67,6 @@
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",
     "@builder.io/vite-plugin-jsx-loc": "^0.1.1",
-    "@emotion/babel-plugin": "^11.11.0",
     "@tanstack/router-cli": "^1.142.8",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.5",
@@ -76,6 +75,7 @@
     "@types/rebass": "^4.0.15",
     "@vitejs/plugin-react": "^4.2.1",
     "decimal.js": "^10.3.1",
+    "knip": "^5.80.0",
     "typescript": "^5.9.3",
     "vite": "^7",
     "vite-plugin-node-polyfills": "^0.24.0",

@@ -24,7 +24,7 @@ export default function AccountDetails({
   ENSName,
   openOptions,
 }: AccountDetailsProps) {
-  const { account, connector } = useActiveWeb3React();
+  const { account, connector, isActive } = useActiveWeb3React();
 
   function formatConnectorName() {
     const { ethereum } = window;
@@ -39,7 +39,7 @@ export default function AccountDetails({
     return (
       <div sx={styles.walletName}>
         {'Connected with '}
-        {connector === injected && isMetaMask ? 'MetaMask' : name}
+        {isMetaMask ? 'MetaMask' : name}
       </div>
     );
   }
@@ -49,7 +49,7 @@ export default function AccountDetails({
       <div sx={styles.upperSection}>
         <div sx={styles.illustration} />
         <div sx={styles.closeIcon} onClick={toggleWalletModal}>
-          <img src={images.iconDeleteRound} />
+          <img src={images.iconDeleteRound} alt='delete' />
         </div>
         <div sx={styles.headerRow}>Account</div>
         <div sx={styles.accountSection}>
@@ -74,12 +74,10 @@ export default function AccountDetails({
                 <CurrentNetwork />
               </div>
               <div sx={styles.buttonSection}>
-                {connector !== injected &&
-                connector !== walletlink &&
-                connector !== uauth ? (
+                {isActive ? (
                   <MyButton
                     onClick={() => {
-                      (connector as any).close();
+                      connector?.disconnect()
                     }}
                   >
                     Disconnect
