@@ -58,5 +58,5 @@ Thumbs.db
 public/
 
 .vscode/settings.json
-.evn*
+.env*
 !.env.example
