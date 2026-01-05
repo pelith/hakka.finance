@@ -7,7 +7,7 @@ import { MulticallContext } from './context';
 import { parseCallKey, toCallKey } from './actions';
 import type { Call, ListenerOptions } from './actions';
 /**
- * 
+ *
  * @@deprecated
  */
 export function useMulticallContext() {
@@ -61,7 +61,9 @@ type ContractLike = {
   target: unknown;
 };
 
-function getContractAddress(contract: ContractLike | null | undefined): string | undefined {
+function getContractAddress(
+  contract: ContractLike | null | undefined,
+): string | undefined {
   const address = contract?.target;
   return typeof address === 'string' ? address : undefined;
 }
@@ -178,7 +180,7 @@ function toCallState(
   if (success && data) {
     try {
       result = contractInterface.decodeFunctionResult(fragment, data);
-  } catch (_error) {
+    } catch (_error) {
       console.debug('Result data parsing failed', fragment, data);
       return {
         valid: true,
@@ -212,19 +214,16 @@ export function useSingleContractMultipleData(
     [contract, methodName],
   );
 
-  const calls = useMemo(
-    () => {
-      const address = getContractAddress(contract);
-      if (!address || address === zeroAddress) return [];
-      if (!contract || !fragment || !callInputs || callInputs.length === 0)
-        return [];
-      return callInputs.map<Call>((inputs) => ({
-        address,
-        callData: contract.interface.encodeFunctionData(fragment, inputs),
-      }));
-    },
-    [callInputs, contract, fragment],
-  );
+  const calls = useMemo(() => {
+    const address = getContractAddress(contract);
+    if (!address || address === zeroAddress) return [];
+    if (!contract || !fragment || !callInputs || callInputs.length === 0)
+      return [];
+    return callInputs.map<Call>((inputs) => ({
+      address,
+      callData: contract.interface.encodeFunctionData(fragment, inputs),
+    }));
+  }, [callInputs, contract, fragment]);
 
   const results = useCallsData(calls, options);
 
@@ -350,7 +349,7 @@ export function useMultipleContractMultipleData({
   );
 }
 /**
- * 
+ *
  * @deprecated
  */
 export function useSingleCallResult(
@@ -364,20 +363,17 @@ export function useSingleCallResult(
     [contract, methodName],
   );
 
-  const calls = useMemo<Call[]>(
-    () => {
-      const address = getContractAddress(contract);
-      if (!address || address === zeroAddress) return [];
-      if (!contract || !fragment || !isValidMethodArgs(inputs)) return [];
-      return [
-        {
-          address,
-          callData: contract.interface.encodeFunctionData(fragment, inputs),
-        },
-      ];
-    },
-    [contract, fragment, inputs],
-  );
+  const calls = useMemo<Call[]>(() => {
+    const address = getContractAddress(contract);
+    if (!address || address === zeroAddress) return [];
+    if (!contract || !fragment || !isValidMethodArgs(inputs)) return [];
+    return [
+      {
+        address,
+        callData: contract.interface.encodeFunctionData(fragment, inputs),
+      },
+    ];
+  }, [contract, fragment, inputs]);
 
   const result = useCallsData(calls, options)[0];
   const latestBlockNumber = useBlockNumber();
@@ -387,4 +383,3 @@ export function useSingleCallResult(
     [result, contract, fragment, latestBlockNumber],
   );
 }
-

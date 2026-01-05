@@ -1,6 +1,5 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 /** @jsxFrag */
-
 
 import { Flex, Box } from 'rebass';
 import { useNavigate } from '@tanstack/react-router';
@@ -23,16 +22,20 @@ function UtilityHakka() {
   const navigate = useNavigate();
   const renderDetailsInfo = () =>
     detailsInfo.map((item, i) => (
-      <Flex sx={styles.utilityInfoContainer} flexDirection='column' key={item.title}>
-        <img sx={styles.utilityImgInfo} src={images[item.image as keyof typeof images]} alt={item.image} />
+      <Flex
+        sx={styles.utilityInfoContainer}
+        flexDirection='column'
+        key={item.title}
+      >
+        <img
+          sx={styles.utilityImgInfo}
+          src={images[item.image as keyof typeof images]}
+          alt={item.image}
+        />
         <Box sx={styles.utilityTitle} mt='20px' mb='4px'>
           {item.title}
         </Box>
-        <p
-          sx={styles.utilityText}
-          >
-          {item.text}
-          </p>
+        <p sx={styles.utilityText}>{item.text}</p>
       </Flex>
     ));
 

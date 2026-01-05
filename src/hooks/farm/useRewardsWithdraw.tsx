@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useCallback, useMemo } from 'react';
 import { isAddress, parseUnits } from 'viem';
@@ -22,7 +22,9 @@ export function useRewardsWithdraw(
   spender?: string,
 ): [WithdrawState, () => Promise<void>] {
   const { chainId } = useActiveWeb3React();
-  const {writeContractAsync, data, isPending} = useAppWriteContract(chainId as ChainId)
+  const { writeContractAsync, data, isPending } = useAppWriteContract(
+    chainId as ChainId,
+  );
 
   const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
     hash: data,
@@ -30,14 +32,15 @@ export function useRewardsWithdraw(
     query: {
       enabled: !!data,
     },
-  })
+  });
 
   const withdrawState: WithdrawState = useMemo(() => {
     if (!spender) return WithdrawState.UNKNOWN;
 
-    return isPending && isWaitForLoading ? WithdrawState.PENDING : WithdrawState.UNKNOWN;
+    return isPending && isWaitForLoading
+      ? WithdrawState.PENDING
+      : WithdrawState.UNKNOWN;
   }, [isPending, isWaitForLoading, spender]);
-
 
   const withdraw = useCallback(async (): Promise<void> => {
     if (!spender) {
@@ -48,7 +51,9 @@ export function useRewardsWithdraw(
     if (!withdrawAddress) return;
 
     if (!isAddress(withdrawAddress)) {
-      toast.error(<div>Invalid withdraw address</div>, { containerId: 'error' });
+      toast.error(<div>Invalid withdraw address</div>, {
+        containerId: 'error',
+      });
       return;
     }
 
@@ -56,15 +61,13 @@ export function useRewardsWithdraw(
       toast.error(<div>Wrong Network</div>, { containerId: 'error' });
       return;
     }
-      const amountParsed = parseUnits(amount || '0', decimal ?? 18);
-      await writeContractAsync({
-        address: withdrawAddress,
-        abi: STAKING_REWARDS_ABI,
-        functionName: 'withdraw',
-        args: [amountParsed],
-      })
-      
-
+    const amountParsed = parseUnits(amount || '0', decimal ?? 18);
+    await writeContractAsync({
+      address: withdrawAddress,
+      abi: STAKING_REWARDS_ABI,
+      functionName: 'withdraw',
+      args: [amountParsed],
+    });
   }, [amount, decimal, spender, chainId, withdrawAddress, writeContractAsync]);
 
   return [withdrawState, withdraw];

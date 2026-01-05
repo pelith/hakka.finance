@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useEffect, useState } from 'react';
 import { Box, Flex, Link } from 'rebass';
@@ -23,7 +23,10 @@ const TokenMetricContent = (props: { tokenMetric: TokenMetric }) => {
         <Box sx={styles.tokenMetricsInfo}>
           <Flex sx={{ alignItems: 'center' }}>
             <span sx={styles.info}>{`NAME: ${tokenMetric.name}`}</span>
-            <AddHakkaToMetamaskBtn selectedChainId={tokenMetric.chainId} address={tokenMetric.address} />
+            <AddHakkaToMetamaskBtn
+              selectedChainId={tokenMetric.chainId}
+              address={tokenMetric.address}
+            />
           </Flex>
         </Box>
         <Box sx={styles.tokenMetricsInfo} mt='1'>

@@ -1,5 +1,3 @@
-
-
 export interface ApproveTokenCheckWrapperInterface
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isDisabledWhenNotPrepared?: boolean;

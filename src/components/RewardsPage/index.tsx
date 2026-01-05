@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 /** @jsxFrag */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -18,7 +18,10 @@ import { useRewardsData } from '../../data/RewardsData';
 import useTokensPrice from '../../hooks/useTokensPrice';
 import { CHAIN_SWITCH_TAB_INFO } from '../../constants/farm';
 import { createBigNumberSort } from 'src/utils/sort';
-import { formatCommonNumber, formatPercentageNumber } from 'src/utils/formatCommonNumbers';
+import {
+  formatCommonNumber,
+  formatPercentageNumber,
+} from 'src/utils/formatCommonNumbers';
 
 enum SortOptions {
   LATEST = 'latest',
@@ -172,7 +175,10 @@ const RewardsPage = () => {
       loadApr(Object.keys(REWARD_POOLS));
     }
 
-    async function loadApr(poolAddresses: string[], prevResult: Record<Address, bigint | undefined> = {}) {
+    async function loadApr(
+      poolAddresses: string[],
+      prevResult: Record<Address, bigint | undefined> = {},
+    ) {
       let newApr = { ...prevResult };
       const failAddress: string[] = [];
       try {
@@ -196,9 +202,8 @@ const RewardsPage = () => {
         const reasonList: string[] = [];
         settledApyList.map((aprResult, index) => {
           if (aprResult.status === 'fulfilled') {
-            newApr[REWARD_POOLS[poolAddresses[index]].rewardsAddress] = (
-              aprResult
-            ).value;
+            newApr[REWARD_POOLS[poolAddresses[index]].rewardsAddress] =
+              aprResult.value;
           } else {
             reasonList.push((aprResult as PromiseRejectedResult).reason);
             failAddress.push(REWARD_POOLS[poolAddresses[index]].rewardsAddress);
@@ -246,18 +251,22 @@ const RewardsPage = () => {
           apr={
             apr[pool.rewardsAddress]
               ? formatPercentageNumber(
-                  formatUnits((apr[pool.rewardsAddress] ?? 0n) * (100n), 18),
+                  formatUnits((apr[pool.rewardsAddress] ?? 0n) * 100n, 18),
                 )
               : '-'
           }
           depositedBalance={
             account
-              ? formatCommonNumber(rewardData.depositBalances?.[pool.rewardsAddress])
+              ? formatCommonNumber(
+                  rewardData.depositBalances?.[pool.rewardsAddress],
+                )
               : '-'
           }
           earnedBalance={
             account
-              ? formatCommonNumber(rewardData.earnedBalances?.[pool.rewardsAddress])
+              ? formatCommonNumber(
+                  rewardData.earnedBalances?.[pool.rewardsAddress],
+                )
               : '-'
           }
           currentChain={currentChain}

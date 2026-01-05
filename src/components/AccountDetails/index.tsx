@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useActiveWeb3React } from '../../hooks/web3Manager';
 import { shortenAddress } from '../../utils';

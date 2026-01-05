@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { Box, Flex, Link } from 'rebass';
 import images from '../../../images';
@@ -10,7 +10,7 @@ interface CoinComponentProps {
   coinName: string;
 }
 
-function CoinComponent({imageCoin, link, coinName}: CoinComponentProps) {
+function CoinComponent({ imageCoin, link, coinName }: CoinComponentProps) {
   return (
     <Link
       sx={styles.custom_link}

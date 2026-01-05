@@ -1,9 +1,4 @@
-import {
-  getAddress,
-  hexToString,
-  type Address,
-  type PublicClient,
-} from 'viem';
+import { getAddress, hexToString, type Address, type PublicClient } from 'viem';
 import { ChainId } from '../constants';
 import ERC20_ABI from '../constants/abis/erc20';
 import ERC20_BYTES32_ABI from '../constants/abis/erc20_bytes32';
@@ -71,7 +66,6 @@ export function shortenTxId(address: string, chars = 6): string {
 export function calculateGasMargin(value: bigint): bigint {
   return (value * 11000n) / 10000n;
 }
-
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string

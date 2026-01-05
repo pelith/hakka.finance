@@ -17,35 +17,40 @@ export default function useVotingPower(): {
 } {
   const { account } = useActiveWeb3React();
 
-
-  const {data: mainnetVotingPower} = useReadContract({
+  const { data: mainnetVotingPower } = useReadContract({
     address: NEW_SHAKKA_ADDRESSES[ChainId.MAINNET] as Address,
     abi: STAKING_ABI,
     functionName: 'votingPower',
     args: [account as Address],
     query: {
-      enabled: isAddress(account ?? '') && isAddress(NEW_SHAKKA_ADDRESSES[ChainId.MAINNET]),
-    }
-  })
-  
-  const {data: bscVotingPower} = useReadContract({
+      enabled:
+        isAddress(account ?? '') &&
+        isAddress(NEW_SHAKKA_ADDRESSES[ChainId.MAINNET]),
+    },
+  });
+
+  const { data: bscVotingPower } = useReadContract({
     address: NEW_SHAKKA_ADDRESSES[ChainId.BSC] as Address,
     abi: STAKING_ABI,
     functionName: 'votingPower',
     args: [account as Address],
     query: {
-      enabled: isAddress(account ?? '') && isAddress(NEW_SHAKKA_ADDRESSES[ChainId.BSC]),
-    }
-  })
-  const {data: polygonVotingPower} = useReadContract({
+      enabled:
+        isAddress(account ?? '') &&
+        isAddress(NEW_SHAKKA_ADDRESSES[ChainId.BSC]),
+    },
+  });
+  const { data: polygonVotingPower } = useReadContract({
     address: NEW_SHAKKA_ADDRESSES[ChainId.POLYGON] as Address,
     abi: STAKING_ABI,
     functionName: 'votingPower',
     args: [account as Address],
     query: {
-      enabled: isAddress(account ?? '') && isAddress(NEW_SHAKKA_ADDRESSES[ChainId.POLYGON]),
-    }
-  })
+      enabled:
+        isAddress(account ?? '') &&
+        isAddress(NEW_SHAKKA_ADDRESSES[ChainId.POLYGON]),
+    },
+  });
 
   const fetchDataState: ChainDataFetchingState = useMemo(() => {
     return mainnetVotingPower && bscVotingPower && polygonVotingPower
@@ -53,10 +58,13 @@ export default function useVotingPower(): {
       : ChainDataFetchingState.LOADING;
   }, [mainnetVotingPower, bscVotingPower, polygonVotingPower]);
 
-  return { votingPowerInfo: {
-    [ChainId.MAINNET]: mainnetVotingPower ?? 0n,
-    [ChainId.BSC]: bscVotingPower ?? 0n,
-    [ChainId.POLYGON]: polygonVotingPower ?? 0n,
-    [ChainId.FANTOM]: 0n,
-  }, fetchVotingPowerState: fetchDataState };
+  return {
+    votingPowerInfo: {
+      [ChainId.MAINNET]: mainnetVotingPower ?? 0n,
+      [ChainId.BSC]: bscVotingPower ?? 0n,
+      [ChainId.POLYGON]: polygonVotingPower ?? 0n,
+      [ChainId.FANTOM]: 0n,
+    },
+    fetchVotingPowerState: fetchDataState,
+  };
 }

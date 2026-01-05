@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 import { useState, useEffect } from 'react';
 
 import BigNumber from 'bignumber.js';
@@ -36,9 +36,7 @@ const NumericalInputField = (props: NumericalInputFieldProps) => {
       const bigNumberInputAmount = new BigNumber(
         new BigNumber(inputAmount).isNaN() ? 0 : inputAmount,
       );
-      const bigNumberHakkaBalance = new BigNumber(
-        tokenBalanceAmount,
-      )
+      const bigNumberHakkaBalance = new BigNumber(tokenBalanceAmount);
 
       if (bigNumberInputAmount.isGreaterThan(bigNumberHakkaBalance)) {
         console.log(
@@ -54,7 +52,11 @@ const NumericalInputField = (props: NumericalInputFieldProps) => {
   }, [tokenBalanceAmount, inputAmount, approveState, chainId]);
 
   useEffect(() => {
-    const isFalseInput = amountError || new BigNumber(inputAmount).isNaN() || new BigNumber(inputAmount).eq(0) || !inputAmount;
+    const isFalseInput =
+      amountError ||
+      new BigNumber(inputAmount).isNaN() ||
+      new BigNumber(inputAmount).eq(0) ||
+      !inputAmount;
     setIsCorrectInput(!isFalseInput);
   }, [inputAmount, amountError]);
 

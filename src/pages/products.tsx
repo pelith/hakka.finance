@@ -1,4 +1,3 @@
-
 import ProductScreen from '../components/ProductScreen';
 import Layout from '../containers/Layout';
 

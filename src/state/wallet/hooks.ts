@@ -11,42 +11,63 @@ import { useQuery } from '@tanstack/react-query';
  */
 export function useTokenBalancesWithLoadingIndicator(
   address: Address,
-  tokens: {address: Address, decimals: number, symbol: string, name: string}[],
+  tokens: {
+    address: Address;
+    decimals: number;
+    symbol: string;
+    name: string;
+  }[],
   chainId: ChainId,
 ): [{ [tokenAddress: string]: string } | undefined, boolean] {
-  const publicClient = usePublicClient({chainId,});
+  const publicClient = usePublicClient({ chainId });
   const erc20ContractInstances = useMemo(() => {
     return tokens.map((tokenInfo) => {
       return getContract({
         abi: ERC20_ABI,
         address: tokenInfo.address,
         client: publicClient,
-      })
-    })
-  }, [tokens, chainId])
+      });
+    });
+  }, [tokens, chainId]);
 
-  const {data:tokenBalances, isLoading: isLoadingTokenBalances} = useQuery({
-    queryKey: ['token-balances', chainId, address, tokens.map(tokenInfo => tokenInfo.name).sort().join()],
+  const { data: tokenBalances, isLoading: isLoadingTokenBalances } = useQuery({
+    queryKey: [
+      'token-balances',
+      chainId,
+      address,
+      tokens
+        .map((tokenInfo) => tokenInfo.name)
+        .sort()
+        .join(),
+    ],
     async queryFn() {
-      const balances = await Promise.all(erc20ContractInstances.map(contract => contract.read.balanceOf([address])))
-      return Object.fromEntries(balances.map((balance, index) => {
-        return [
-          tokens[index].address,
-          formatUnits(balance, tokens[index].decimals),
-        ] as const
-      }))
-    }
-  })
+      const balances = await Promise.all(
+        erc20ContractInstances.map((contract) =>
+          contract.read.balanceOf([address]),
+        ),
+      );
+      return Object.fromEntries(
+        balances.map((balance, index) => {
+          return [
+            tokens[index].address,
+            formatUnits(balance, tokens[index].decimals),
+          ] as const;
+        }),
+      );
+    },
+  });
 
-  return [
-    tokenBalances,
-    isLoadingTokenBalances,
-  ];
+  return [tokenBalances, isLoadingTokenBalances];
 }
 
 export function useTokenBalances(
   address: Address,
-  tokens: {address: Address, decimals: number, symbol: string, name: string}[],
+  tokens: {
+    address: Address;
+    decimals: number;
+    symbol: string;
+    name: string;
+  }[],
   chainId: ChainId,
 ): { [tokenAddress: string]: string } | undefined {
   return useTokenBalancesWithLoadingIndicator(address, tokens, chainId)[0];
@@ -55,7 +76,7 @@ export function useTokenBalances(
 // get the balance for a single token/account combo
 export function useTokenBalance(
   account: Address,
-  token: {address: Address, decimals: number, symbol: string, name: string},
+  token: { address: Address; decimals: number; symbol: string; name: string },
   chainId: ChainId,
 ): string | undefined {
   const tokenBalances = useTokenBalances(account, [token], chainId);

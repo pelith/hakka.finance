@@ -1,5 +1,4 @@
- /** @jsxImportSource theme-ui */
-
+/** @jsxImportSource theme-ui */
 
 import { useNavigate } from '@tanstack/react-router';
 import { MyButton } from '../../Common';
@@ -13,7 +12,10 @@ const EmptyState = () => {
       <img src={images.iconNoData}></img>
       <p sx={styles.noDataWarning}>No data found with this address</p>
       <div sx={styles.goToProductsBtnWrapper}>
-        <MyButton styleKit='green' onClick={() => navigate({ to: '/products' })}>
+        <MyButton
+          styleKit='green'
+          onClick={() => navigate({ to: '/products' })}
+        >
           Try our products
         </MyButton>
       </div>

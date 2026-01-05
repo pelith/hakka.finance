@@ -8,7 +8,5 @@ export const Route = createFileRoute('/play2earn')({
 });
 
 function Play2EarnPage() {
-  return (
-    <Play2Earn />
-  );
+  return <Play2Earn />;
 }

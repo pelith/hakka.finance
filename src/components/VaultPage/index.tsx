@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useEffect, useState, useMemo } from 'react';
 import { isAddressEqual, parseUnits, zeroAddress, type Address } from 'viem';
@@ -38,11 +38,17 @@ const getRewardTokenById = (chainId: ChainId | undefined) => {
 const VaultPage = () => {
   const { account, chainId } = useWeb3React();
 
-  const hakkaBalanceAmount = useTokenInfoAndBalance(account as Address, HAKKA[chainId as ChainId].address as Address, chainId as ChainId)
+  const hakkaBalanceAmount = useTokenInfoAndBalance(
+    account as Address,
+    HAKKA[chainId as ChainId].address as Address,
+    chainId as ChainId,
+  );
 
   // burn amount
   const [inputAmount, setInputAmount] = useState('0');
-  const [rewardTokens, setRewardTokens] = useState<{ [x: string]: { name: string; symbol: string; decimals: number } }>(() => getRewardTokenById(chainId));
+  const [rewardTokens, setRewardTokens] = useState<{
+    [x: string]: { name: string; symbol: string; decimals: number };
+  }>(() => getRewardTokenById(chainId));
   const [isShowNewTokenArea, setIsShowNewTokenArea] = useState(false);
   const [newRewardAddressInput, setNewRewardAddressInput] =
     useState<string>('');
@@ -60,9 +66,9 @@ const VaultPage = () => {
   }, [chainId]);
 
   // sort the reward tokens address
-  const [pickedRewardTokensAddress, setPickedRewardTokensAddress] = useState(() => [
-    ...Object.keys(rewardTokens).sort(createBigNumberSort('asc')),
-  ]);
+  const [pickedRewardTokensAddress, setPickedRewardTokensAddress] = useState(
+    () => [...Object.keys(rewardTokens).sort(createBigNumberSort('asc'))],
+  );
 
   // when new token added sort again.
   useEffect(() => {
@@ -82,7 +88,10 @@ const VaultPage = () => {
   };
 
   // get HAKKA totalSupply
-  const hakkaTotalSupplyAmount = useTokenTotalSupply(HAKKA[chainId as ChainId].address as Address, chainId as ChainId)
+  const hakkaTotalSupplyAmount = useTokenTotalSupply(
+    HAKKA[chainId as ChainId].address as Address,
+    chainId as ChainId,
+  );
 
   const amountParsed = useMemo(() => {
     if (inputAmount) {
@@ -122,27 +131,36 @@ const VaultPage = () => {
 
   const errorStatus = noTokenError || !isCorrectInput;
 
-  function addRewardToken(input: { address: Address; name: string; symbol: string; decimals: number }) {
-    for (const [rewardTokenAddress, rewardTokenInfo] of Object.entries(rewardTokens)) {
+  function addRewardToken(input: {
+    address: Address;
+    name: string;
+    symbol: string;
+    decimals: number;
+  }) {
+    for (const [rewardTokenAddress, rewardTokenInfo] of Object.entries(
+      rewardTokens,
+    )) {
       if (isAddressEqual(rewardTokenAddress as Address, input.address)) {
         return;
       }
     }
-    setRewardTokens(prevState => ({
+    setRewardTokens((prevState) => ({
       ...prevState,
       [input.address]: input,
     }));
   }
 
   function onRewardListItemDelete(tokenAddress: Address) {
-    setRewardTokens(prevState => {
+    setRewardTokens((prevState) => {
       const newState = { ...prevState };
       delete newState[tokenAddress];
       return newState;
     });
   }
 
-  const [localRewardAmount, setLocalRewardAmount] = useState<{ [x: string]: BigNumber }>({});
+  const [localRewardAmount, setLocalRewardAmount] = useState<{
+    [x: string]: BigNumber;
+  }>({});
   function onRewardCalculated(tokenAddress: Address, receiveAmount: BigNumber) {
     const _address = tokenAddress.toLowerCase();
     setLocalRewardAmount((prevState: { [x: string]: BigNumber }) => ({
@@ -187,7 +205,7 @@ const VaultPage = () => {
               <span>
                 HAKKA Balance:{' '}
                 {isCorrectNetwork
-                  ? hakkaBalanceAmount.data?.balance ?? '0'
+                  ? (hakkaBalanceAmount.data?.balance ?? '0')
                   : '-'}
               </span>
             </div>
@@ -237,24 +255,31 @@ const VaultPage = () => {
               ''
             )}
             <div sx={styles.rewardListContainer}>
-              {
-                Object.keys(rewardTokens).map((tokenAddress) => (
-                  <RewardListItemContainer key={tokenAddress}
-                    guildBankAddress={GUILDBANK[chainId as ChainId]}
-                    tokenAddress={tokenAddress as Address}
-                    inputAmount={inputAmount}
-                    chainId={chainId as ChainId}
-                    hakkaTotalSupply={hakkaTotalSupplyAmount.data ?? '0'}
-                    tokenName={rewardTokens[tokenAddress as Address]?.name}
-                    tokenSymbol={rewardTokens[tokenAddress as Address]?.symbol}
-                    tokenDecimals={rewardTokens[tokenAddress as Address]?.decimals}
-                    onDelete={() => onRewardListItemDelete(tokenAddress as Address)}
-                    onChange={() => toggleToken(tokenAddress as Address)}
-                    checked={pickedRewardTokensAddress.includes(tokenAddress as Address)}
-                    onRewardCalculated={(receiveAmount: BigNumber) => onRewardCalculated(tokenAddress as Address, receiveAmount)}
-                  />
-                ))
-              }
+              {Object.keys(rewardTokens).map((tokenAddress) => (
+                <RewardListItemContainer
+                  key={tokenAddress}
+                  guildBankAddress={GUILDBANK[chainId as ChainId]}
+                  tokenAddress={tokenAddress as Address}
+                  inputAmount={inputAmount}
+                  chainId={chainId as ChainId}
+                  hakkaTotalSupply={hakkaTotalSupplyAmount.data ?? '0'}
+                  tokenName={rewardTokens[tokenAddress as Address]?.name}
+                  tokenSymbol={rewardTokens[tokenAddress as Address]?.symbol}
+                  tokenDecimals={
+                    rewardTokens[tokenAddress as Address]?.decimals
+                  }
+                  onDelete={() =>
+                    onRewardListItemDelete(tokenAddress as Address)
+                  }
+                  onChange={() => toggleToken(tokenAddress as Address)}
+                  checked={pickedRewardTokensAddress.includes(
+                    tokenAddress as Address,
+                  )}
+                  onRewardCalculated={(receiveAmount: BigNumber) =>
+                    onRewardCalculated(tokenAddress as Address, receiveAmount)
+                  }
+                />
+              ))}
             </div>
             <hr sx={styles.hr2} />
             {/* total value */}

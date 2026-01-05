@@ -1,7 +1,10 @@
 import React, { useCallback, useMemo, useReducer } from 'react';
 import { createContext } from 'use-context-selector';
-import { useAppKit } from '@reown/appkit/react'
-import reducer, { initialApplicationState, type ApplicationState } from './reducer';
+import { useAppKit } from '@reown/appkit/react';
+import reducer, {
+  initialApplicationState,
+  type ApplicationState,
+} from './reducer';
 import {
   type AddPopupPayload,
   type RemovePopupPayload,
@@ -37,13 +40,13 @@ const ApplicationContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(reducer, initialApplicationState);
-  const appkit = useAppKit()
+  const appkit = useAppKit();
 
   const toggleWalletModal = useCallback(() => {
     // dispatch(toggleWalletModalAction());
     appkit.open({
       namespace: 'eip155',
-    })
+    });
   }, []);
 
   const toggleInfoModal = useCallback(() => {

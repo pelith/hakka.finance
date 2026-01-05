@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './styles';
@@ -37,10 +37,7 @@ const Challenge = () => {
   }, [campaignsInfo]);
 
   const userLevel = useMemo<`${number}`>(() => {
-    const levelList = [
-      LevelInfo['1'].missionList,
-      LevelInfo['2'].missionList,
-    ];
+    const levelList = [LevelInfo['1'].missionList, LevelInfo['2'].missionList];
     if (
       !campaignsInfo ||
       Object.keys(campaignsInfo).length === 0 ||

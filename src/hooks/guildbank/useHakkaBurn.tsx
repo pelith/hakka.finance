@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useState, useCallback, useMemo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
@@ -22,21 +22,25 @@ export function useHakkaBurn(
 ): [BurnState, () => Promise<void>] {
   const { chainId } = useWeb3React();
 
-  const {writeContractAsync, data, isPending} = useAppWriteContract(chainId as ChainId)
+  const { writeContractAsync, data, isPending } = useAppWriteContract(
+    chainId as ChainId,
+  );
   const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
     hash: data,
     chainId: chainId as ChainId,
     query: {
       enabled: !!data,
     },
-  })
+  });
 
   const [currentTransaction, setCurrentTransaction] = useState(null);
 
   const burnState: BurnState = useMemo(() => {
     if (!spender) return BurnState.UNKNOWN;
 
-    return isPending && isWaitForLoading ? BurnState.PENDING : BurnState.UNKNOWN;
+    return isPending && isWaitForLoading
+      ? BurnState.PENDING
+      : BurnState.UNKNOWN;
   }, [currentTransaction, spender]);
 
   const burn = useCallback(async (): Promise<void> => {
@@ -53,10 +57,10 @@ export function useHakkaBurn(
     }
 
     await writeContractAsync({
-    address: burnAddress,
-    abi: BURNER_ABI,
-    functionName: 'ragequit',
-    args: [pickedRewardTokensAddress as Address[], amountParsed!],
+      address: burnAddress,
+      abi: BURNER_ABI,
+      functionName: 'ragequit',
+      args: [pickedRewardTokensAddress as Address[], amountParsed!],
     });
   }, [spender, amountParsed, pickedRewardTokensAddress]);
 

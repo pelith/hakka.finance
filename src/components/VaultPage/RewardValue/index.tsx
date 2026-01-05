@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useState, useEffect } from 'react';
 import BigNumber from 'bignumber.js';
@@ -33,7 +33,7 @@ const RewardValue = (props: RewardValueProps) => {
     }
   }, [newTokenId.id]);
 
-  const {data: tokensPrice} = useTokensPriceByAddress(tokensId);
+  const { data: tokensPrice } = useTokensPriceByAddress(tokensId);
   const [rewardValue, setRewardValue] = useState<BigNumber>(new BigNumber(0));
 
   useEffect(() => {

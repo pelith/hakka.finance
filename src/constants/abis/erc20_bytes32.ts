@@ -1,30 +1,30 @@
 export default [
   {
-    "constant": true,
-    "inputs": [],
-    "name": "name",
-    "outputs": [
+    constant: true,
+    inputs: [],
+    name: 'name',
+    outputs: [
       {
-        "name": "",
-        "type": "bytes32"
-      }
+        name: '',
+        type: 'bytes32',
+      },
     ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
+    payable: false,
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
+    constant: true,
+    inputs: [],
+    name: 'symbol',
+    outputs: [
       {
-        "name": "",
-        "type": "bytes32"
-      }
+        name: '',
+        type: 'bytes32',
+      },
     ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
-] as const
+    payable: false,
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;

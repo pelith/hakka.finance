@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { expiredCountdownRenderer, VaultIcon } from '../TableComponent';
 import type { ITableData } from '../types';

@@ -69,9 +69,11 @@ export function restakeReceivedAmount(
     time,
     stakingRate,
   );
-  const additionalSHakkaAmount = BigNumber(receivedSHakkaAmount).minus(vault.wAmount);
+  const additionalSHakkaAmount = BigNumber(receivedSHakkaAmount).minus(
+    vault.wAmount,
+  );
   return [
     receivedSHakkaAmount.toFixed(4),
-    additionalSHakkaAmount.dp(4, BigNumber.ROUND_DOWN).toString()
+    additionalSHakkaAmount.dp(4, BigNumber.ROUND_DOWN).toString(),
   ];
 }

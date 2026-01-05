@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { Box, Flex } from 'rebass';
 import images from '../../../images';
@@ -17,7 +17,16 @@ interface InfoProductProps {
 }
 
 const InfoProduct = (props: InfoProductProps) => {
-  const { cardName, info, whitepaper, vist, visitButtonContent, infoTag, onClose, isShowInfoProduct } = props;
+  const {
+    cardName,
+    info,
+    whitepaper,
+    vist,
+    visitButtonContent,
+    infoTag,
+    onClose,
+    isShowInfoProduct,
+  } = props;
 
   const onCloseInfo = () => {
     onClose(false);
@@ -66,11 +75,7 @@ const InfoProduct = (props: InfoProductProps) => {
             <MyButton
               disabled={!whitepaper}
               onClick={() => {
-                window.open(
-                  whitepaper,
-                  '_blank',
-                  'noopener, noreferrer',
-                );
+                window.open(whitepaper, '_blank', 'noopener, noreferrer');
               }}
             >
               Whitepaper

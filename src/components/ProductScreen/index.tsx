@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 import React, { useEffect, useState } from 'react';
 
 import { Box, Text } from 'rebass';
@@ -7,7 +7,7 @@ import images from '../../images';
 import styles from './styles';
 import InfoProduct from './InfoProduct';
 interface CardItem {
-  icon: keyof typeof images
+  icon: keyof typeof images;
   cardName: string;
   info: string;
   whitepaper?: string;
@@ -201,9 +201,9 @@ const ProductScreen = () => {
   };
 
   const handleCloseInfo = (value: boolean) => {
-    setIsShowInfoProduct(value)
-    setDataInfo(null)
-  }
+    setIsShowInfoProduct(value);
+    setDataInfo(null);
+  };
 
   const renderCardProductResponsive3 = () => {
     if (screenWidth < 1195) {
@@ -279,7 +279,8 @@ const ProductScreen = () => {
         </Box>
 
         <Box>
-          {selectedCardId && selectedCardId > (screenWidth < 1195 ? 2 : 3) &&
+          {selectedCardId &&
+          selectedCardId > (screenWidth < 1195 ? 2 : 3) &&
           selectedCardId < (screenWidth < 1195 ? 5 : 7) ? (
             <InfoProduct
               onClose={handleCloseInfo}
@@ -301,7 +302,8 @@ const ProductScreen = () => {
         </Box>
 
         <Box>
-          {selectedCardId && selectedCardId > (screenWidth < 1195 ? 4 : 6) &&
+          {selectedCardId &&
+          selectedCardId > (screenWidth < 1195 ? 4 : 6) &&
           selectedCardId < (screenWidth < 1195 ? 7 : 9) ? (
             <InfoProduct
               onClose={handleCloseInfo}
@@ -323,7 +325,9 @@ const ProductScreen = () => {
         </Box>
 
         <Box>
-          {screenWidth < 1195 && selectedCardId !== null && selectedCardId > 6 ? (
+          {screenWidth < 1195 &&
+          selectedCardId !== null &&
+          selectedCardId > 6 ? (
             <InfoProduct
               onClose={handleCloseInfo}
               cardName={dataInfo?.cardName ?? ''}
@@ -347,7 +351,8 @@ const ProductScreen = () => {
           {renderComingProduct()}
         </Box>
         <Box sx={styles.coming_InfoProduct}>
-          {selectedComingProductCardId !== null && selectedComingProductCardId <= 3 ? (
+          {selectedComingProductCardId !== null &&
+          selectedComingProductCardId <= 3 ? (
             <InfoProduct
               onClose={handleCloseInfo}
               cardName={dataInfo?.cardName ?? ''}

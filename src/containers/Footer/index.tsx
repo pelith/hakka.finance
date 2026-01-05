@@ -1,5 +1,4 @@
- /** @jsxImportSource theme-ui */
-
+/** @jsxImportSource theme-ui */
 
 import { Box, Flex, Text } from 'rebass';
 import images from '../../images/index';

@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 import { Flex } from 'theme-ui';
 import { memo } from 'react';
 import Table from 'rc-table';

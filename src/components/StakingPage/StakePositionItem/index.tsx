@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useState, useMemo } from 'react';
 import { parseUnits } from 'viem';
@@ -38,7 +38,11 @@ const StakePositionItem = (props: StakePositionProps) => {
     () =>
       BigNumber(inputAmount || '0')
         .multipliedBy(stakedHakka || 0)
-        .div(!sHakkaReceived || BigNumber(sHakkaReceived).eq(0) ? 1 : sHakkaReceived),
+        .div(
+          !sHakkaReceived || BigNumber(sHakkaReceived).eq(0)
+            ? 1
+            : sHakkaReceived,
+        ),
     [inputAmount, stakedHakka, sHakkaReceived],
   );
 
@@ -58,11 +62,17 @@ const StakePositionItem = (props: StakePositionProps) => {
 
   const lockUntil = useMemo(
     () =>
-      new Date(fromUnixTime(until.toNumber())).toLocaleString('en-US', timeOption),
+      new Date(fromUnixTime(until.toNumber())).toLocaleString(
+        'en-US',
+        timeOption,
+      ),
     [until],
   );
 
-  const untilDate = useMemo(() => fromUnixTime(until.toNumber()), [until.toNumber()]);
+  const untilDate = useMemo(
+    () => fromUnixTime(until.toNumber()),
+    [until.toNumber()],
+  );
 
   const [isShowRedeem, setIsShowRedeem] = useState<boolean>(false);
   const [isCorrectInput, setIsCorrectInput] = useState<boolean>(true);
@@ -74,7 +84,15 @@ const StakePositionItem = (props: StakePositionProps) => {
     parseUnits(inputAmount || '0', 18),
   );
 
-  const countdownRenderer = ({ days, hours, minutes }: { days: number; hours: number; minutes: number }) => (
+  const countdownRenderer = ({
+    days,
+    hours,
+    minutes,
+  }: {
+    days: number;
+    hours: number;
+    minutes: number;
+  }) => (
     <div sx={styles.redeemToggleCountdown}>
       <span>
         {days
@@ -99,9 +117,7 @@ const StakePositionItem = (props: StakePositionProps) => {
         <div sx={styles.positionItem}>
           <div sx={styles.stackedHakkaWrapper}>
             <p>Staked HAKKA</p>
-            <p sx={{ color: valueColor }}>
-              {formatCommonNumber(stakedHakka)}
-            </p>
+            <p sx={{ color: valueColor }}>{formatCommonNumber(stakedHakka)}</p>
           </div>
           <div sx={styles.stackedHakkaWrapper}>
             <p>Get sHAKKA</p>
@@ -115,10 +131,7 @@ const StakePositionItem = (props: StakePositionProps) => {
           </div>
           <div sx={styles.redeemBtnWrapper}>
             {Date.now() < untilDate.getTime() ? (
-              <Countdown
-                date={untilDate}
-                renderer={countdownRenderer}
-              />
+              <Countdown date={untilDate} renderer={countdownRenderer} />
             ) : isRedeemed ? (
               <div sx={styles.redeemed}>
                 <span>Redeemed</span>

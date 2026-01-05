@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { MyButton } from '../Common';
 import styles from './styles';
@@ -22,7 +22,7 @@ const ChallengeIntroPage = () => {
     Number.parseInt(ele),
   );
   const isCorrectNetwork = chainId ? supportedChain.includes(chainId) : false;
-  
+
   const navigate = useNavigate();
   return (
     <div sx={styles.container}>

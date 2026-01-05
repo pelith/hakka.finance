@@ -1,5 +1,5 @@
 import { type Theme, merge } from 'theme-ui';
-import { makeTheme } from '@theme-ui/css/utils'
+import { makeTheme } from '@theme-ui/css/utils';
 const colorsLinear = [
   '#D9FbE3',
   '#B5F8CE',
@@ -17,7 +17,7 @@ const colorsLinear = [
   {} as { [key: string]: string },
 );
 
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 const defaultTheme = makeTheme({
   breakpoints: ['40em', '52em', '64em'],
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
@@ -164,6 +164,6 @@ const customTheme = makeTheme({
       },
     },
   },
-})
+});
 
-export const theme:Theme = merge(defaultTheme, customTheme)
+export const theme: Theme = merge(defaultTheme, customTheme);

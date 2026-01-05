@@ -31,8 +31,8 @@ const MulticallContext = createContext<MulticallContextProps>(
 );
 
 /**
- * 
- * @deprecated 
+ *
+ * @deprecated
  */
 const MulticastContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,

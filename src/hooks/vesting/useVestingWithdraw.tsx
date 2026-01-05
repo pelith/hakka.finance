@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useState, useCallback, useMemo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
@@ -22,20 +22,23 @@ export function useVestingWithdraw(
 ): [VestingState, () => Promise<void>] {
   const { chainId } = useWeb3React();
 
-  const {writeContractAsync, data, isPending} = useAppWriteContract(chainId as ChainId)
+  const { writeContractAsync, data, isPending } = useAppWriteContract(
+    chainId as ChainId,
+  );
   const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
     hash: data,
     chainId: chainId as ChainId,
     query: {
       enabled: !!data,
     },
-  })
-
+  });
 
   const vestingState: VestingState = useMemo(() => {
     if (!spender) return VestingState.UNKNOWN;
 
-    return isPending && isWaitForLoading ? VestingState.PENDING : VestingState.UNKNOWN;
+    return isPending && isWaitForLoading
+      ? VestingState.PENDING
+      : VestingState.UNKNOWN;
   }, [isPending, isWaitForLoading, spender]);
 
   const withdraw = useCallback(async (): Promise<void> => {
@@ -47,12 +50,12 @@ export function useVestingWithdraw(
     if (!vestingAddress) return;
     if (!isAddress(vestingAddress)) return;
 
-      await writeContractAsync({
-        address: vestingAddress,
-        abi: VESTING_ABI,
-        functionName: 'withdraw',
-        args: [],
-      })
+    await writeContractAsync({
+      address: vestingAddress,
+      abi: VESTING_ABI,
+      functionName: 'withdraw',
+      args: [],
+    });
   }, [spender, vestingAddress, writeContractAsync]);
 
   return [vestingState, withdraw];

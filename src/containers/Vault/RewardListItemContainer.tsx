@@ -67,17 +67,18 @@ export default function RewardListItemContainer({
     if (hakkaTotalSupplyBigNumber.lt(amountBigNumber)) {
       return new BigNumber(0);
     }
-    
-    const rewardAmount = amountBigNumber.div(hakkaTotalSupplyBigNumber)
-      .multipliedBy(bankBalance)
+
+    const rewardAmount = amountBigNumber
+      .div(hakkaTotalSupplyBigNumber)
+      .multipliedBy(bankBalance);
     if (rewardAmount.isNaN()) {
       return new BigNumber(0);
     }
     return rewardAmount;
-  }, [guildEthBalance?.value, guildTokenBalance?.balance, isEthAddress])
+  }, [guildEthBalance?.value, guildTokenBalance?.balance, isEthAddress]);
 
-const rewardCalculatedCallbackRef = useRef(onRewardCalculated);
-rewardCalculatedCallbackRef.current = onRewardCalculated;
+  const rewardCalculatedCallbackRef = useRef(onRewardCalculated);
+  rewardCalculatedCallbackRef.current = onRewardCalculated;
 
   useEffect(() => {
     rewardCalculatedCallbackRef.current?.(receiveAmount);

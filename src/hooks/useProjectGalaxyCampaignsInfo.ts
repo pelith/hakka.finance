@@ -41,10 +41,13 @@ const useProjectGalaxyCampaignsInfo = () => {
     };
   }, [projectGalaxyClient, account]);
 
-  const campaignsData = useQuery<PROJECT_GALAXY_CAMPAIGNS_INFO_QUERY_RESULT>(PROJECT_GALAXY_CAMPAIGNS_INFO, {
-    variables: { account },
-    ...querySetting,
-  });
+  const campaignsData = useQuery<PROJECT_GALAXY_CAMPAIGNS_INFO_QUERY_RESULT>(
+    PROJECT_GALAXY_CAMPAIGNS_INFO,
+    {
+      variables: { account },
+      ...querySetting,
+    },
+  );
 
   useEffect(() => {
     if (account === zeroAddress || !account || !campaignsData?.data) return;

@@ -1,4 +1,3 @@
-
 import './spinner.css';
 
 const Spinner = () => {

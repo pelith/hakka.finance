@@ -1,49 +1,49 @@
-export default[
+export default [
   {
-    "inputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    inputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'constructor',
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "bank",
-    "outputs": [
+    constant: true,
+    inputs: [],
+    name: 'bank',
+    outputs: [
       {
-        "internalType": "contract GuildBank",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'contract GuildBank',
+        name: '',
+        type: 'address',
+      },
     ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
+    payable: false,
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "constant": false,
-    "inputs": [
+    constant: false,
+    inputs: [
       {
-        "internalType": "address[]",
-        "name": "tokens",
-        "type": "address[]"
+        internalType: 'address[]',
+        name: 'tokens',
+        type: 'address[]',
       },
       {
-        "internalType": "uint256",
-        "name": "share",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: 'share',
+        type: 'uint256',
+      },
     ],
-    "name": "ragequit",
-    "outputs": [
+    name: 'ragequit',
+    outputs: [
       {
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
-      }
+        internalType: 'uint256[]',
+        name: 'amounts',
+        type: 'uint256[]',
+      },
     ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-] as const
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+] as const;

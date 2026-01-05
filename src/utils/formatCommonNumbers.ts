@@ -81,7 +81,10 @@ export function formatPercentageNumber(amount: number | string | undefined) {
   return percentageFormatter.format(processAmount);
 }
 
-export function formatProtectedUsdValue(balance: BigNumber.Value, isHidden: boolean) {
+export function formatProtectedUsdValue(
+  balance: BigNumber.Value,
+  isHidden: boolean,
+) {
   return isHidden ? '***' : formatUsdValue(balance);
 }
 

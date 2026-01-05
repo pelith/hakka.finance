@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import styles from './styles';
@@ -7,7 +7,7 @@ import Web3Status from '../Web3Status';
 import { REWARD_POOLS } from '../../constants/rewards';
 import type { Address } from 'viem';
 
-const PoolPage = ({ pool }: {pool: Address}) => {
+const PoolPage = ({ pool }: { pool: Address }) => {
   const { chainId } = useWeb3React();
 
   return (

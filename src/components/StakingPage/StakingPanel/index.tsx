@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 import { useState, useMemo, useEffect } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { parseUnits } from 'viem';
@@ -12,7 +12,10 @@ import {
 import withApproveTokenCheckWrapper from '../../../hoc/withApproveTokenCheckWrapper';
 import withConnectWalletCheckWrapper from '../../../hoc/withConnectWalletCheckWrapper';
 import withWrongNetworkCheckWrapper from '../../../hoc/withWrongNetworkCheckWrapper';
-import { useHakkaStake, StakeState } from '../../../hooks/staking/useHakkaStake';
+import {
+  useHakkaStake,
+  StakeState,
+} from '../../../hooks/staking/useHakkaStake';
 import { ApprovalState, useTokenApprove } from '../../../hooks/useTokenApprove';
 import { transferToYear } from '../../../utils';
 import { stakeReceivedAmount } from '../../../utils/stakeReceivedAmount';
@@ -39,7 +42,10 @@ export default function StakingPanel(props: IProps) {
   const { account } = useWeb3React();
   const isConnected = !!account;
 
-  const {data: hakkaBalance} = useTokenInfoAndBalance(account as string, HAKKA[activeChainId].address);
+  const { data: hakkaBalance } = useTokenInfoAndBalance(
+    account as string,
+    HAKKA[activeChainId].address,
+  );
 
   const [inputAmount, setInputAmount] = useState<string>('');
   const [isCorrectInput, setIsCorrectInput] = useState(true);
@@ -82,7 +88,9 @@ export default function StakingPanel(props: IProps) {
         <span>Amount</span>
         <span>
           HAKKA Balance:{' '}
-          {isCorrectNetwork ? formatCommonNumber(hakkaBalance?.balance) || '0.0000' : '-'}
+          {isCorrectNetwork
+            ? formatCommonNumber(hakkaBalance?.balance) || '0.0000'
+            : '-'}
         </span>
       </div>
       <NumericalInputField

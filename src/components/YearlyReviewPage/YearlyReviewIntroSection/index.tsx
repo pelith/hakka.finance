@@ -1,5 +1,4 @@
- /** @jsxImportSource theme-ui */
-
+/** @jsxImportSource theme-ui */
 
 import _omit from 'lodash/omit';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';

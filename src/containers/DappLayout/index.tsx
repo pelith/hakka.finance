@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
@@ -11,7 +11,13 @@ import images from '../../images';
 import { ToastContainer } from 'react-toastify';
 import './ReactToastify.css';
 
-const DappLayout = ({ children, title }: { children: React.ReactNode, title: string }) => {
+const DappLayout = ({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title: string;
+}) => {
   const TOAST_AUTO_CLOSE_TIME = 8000;
   const [isShowSideBar, setIsShowSideBar] = useState(false);
 

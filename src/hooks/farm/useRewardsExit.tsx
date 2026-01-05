@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useCallback, useEffect, useMemo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
@@ -46,14 +46,18 @@ export function useRewardsExit(
       },
     });
 
-  const { isLoading, isSuccess, isError: isWaitError, error: waitError } =
-    useWaitForTransactionReceipt({
-      hash: data,
-      chainId: wagmiChainId,
-      query: {
-        enabled: !!data,
-      },
-    });
+  const {
+    isLoading,
+    isSuccess,
+    isError: isWaitError,
+    error: waitError,
+  } = useWaitForTransactionReceipt({
+    hash: data,
+    chainId: wagmiChainId,
+    query: {
+      enabled: !!data,
+    },
+  });
 
   const exitState: ExitState = useMemo(() => {
     if (!spender) return ExitState.UNKNOWN;

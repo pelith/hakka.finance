@@ -1,5 +1,4 @@
- /** @jsxImportSource theme-ui */
-
+/** @jsxImportSource theme-ui */
 
 import { isMobile } from 'react-device-detect';
 import { MyButton } from '../../Common';
@@ -56,7 +55,9 @@ const MissionSection = ({
               <div key={levelValue} sx={styles.missionItemWrapper}>
                 <Accordion
                   headerContent={`level ${levelValue}`}
-                  headerBgColor={LevelInfo[levelValue as `${number}`].levelColor}
+                  headerBgColor={
+                    LevelInfo[levelValue as `${number}`].levelColor
+                  }
                   isDefaultOpen={userLevel === levelValue}
                 >
                   {LevelInfo[levelValue as `${number}`].missionList.map(
@@ -75,7 +76,8 @@ const MissionSection = ({
                     ),
                   )}
                   {LevelInfo[levelValue as `${number}`].missionList.length <
-                    LevelInfo[levelValue as `${number}`].expectedMissionAmount && (
+                    LevelInfo[levelValue as `${number}`]
+                      .expectedMissionAmount && (
                     <MissionItem
                       missionStatus={MissionStatusOptions.UPCOMING}
                     />
@@ -84,7 +86,7 @@ const MissionSection = ({
               </div>
             );
           }
-          return null
+          return null;
         })}
     </div>
   );

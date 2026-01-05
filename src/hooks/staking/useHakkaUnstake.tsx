@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useMemo, useEffect } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
@@ -17,14 +17,25 @@ export function useHakkaUnstake(
 ): [TransactionState, () => Promise<void>] {
   const { chainId } = useWeb3React();
 
-  const {writeContractAsync, data, isSuccess: isWriteSuccess, isError: isWriteError, error: writeError, reset,} = useWriteContract()
+  const {
+    writeContractAsync,
+    data,
+    isSuccess: isWriteSuccess,
+    isError: isWriteError,
+    error: writeError,
+    reset,
+  } = useWriteContract();
 
-  const {isSuccess: isWaitForSuccess, isError: isWaitForError, error: waitForError} = useWaitForTransactionReceipt({
+  const {
+    isSuccess: isWaitForSuccess,
+    isError: isWaitForError,
+    error: waitForError,
+  } = useWaitForTransactionReceipt({
     hash: data,
     query: {
       enabled: isWriteSuccess,
-    }
-  })
+    },
+  });
 
   const unstakeState: TransactionState = useMemo(() => {
     if (!spender) return TransactionState.UNKNOWN;
@@ -39,8 +50,8 @@ export function useHakkaUnstake(
       address: unstakeAddress as `0x${string}`,
       abi: STAKING_ABI,
       functionName: 'unstake',
-      args: [spender as `0x${string}`, BigInt(index), amountParsed]
-    })
+      args: [spender as `0x${string}`, BigInt(index), amountParsed],
+    });
     toast(
       <a
         target='_blank'
@@ -63,11 +74,10 @@ export function useHakkaUnstake(
     if (isWaitForError) {
       toast.error(<div>{waitForError?.message}</div>, { containerId: 'error' });
     }
-  }, [isWaitForError, isWriteError, waitForError, writeError])
-
+  }, [isWaitForError, isWriteError, waitForError, writeError]);
 
   useEffect(() => {
-    reset()
+    reset();
   }, [index]);
 
   return [unstakeState, unstake];

@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useState, useMemo, useEffect } from 'react';
 import { formatUnits, zeroAddress } from 'viem';
@@ -28,7 +28,7 @@ import StakePositionTable from './StakePositionTable';
 import StakingPanel from './StakingPanel';
 
 import _omit from 'lodash/omit';
-import {Tooltip as ReactTooltip} from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { botSideBarItems } from '../../containers/SideBar';
 import { useRewardsData } from '../../data/RewardsData';
 import { REWARD_POOLS } from '../../constants/rewards';
@@ -37,7 +37,7 @@ import useVotingPower from '../../hooks/useVotingPower';
 import VotingPowerContainer from '../../containers/VotingPowerContainer';
 import useStakedHakka from '../../hooks/useStakedHakka';
 import RestakeModal from '../RestakeModal';
-import {useStakingVault} from '../../hooks/staking/useStakingVault';
+import { useStakingVault } from '../../hooks/staking/useStakingVault';
 import NavigateLink from './NavigateLink';
 import BigNumber from 'bignumber.js';
 
@@ -99,7 +99,9 @@ const Staking = () => {
     [REWARD_POOLS[currentShakkaRewardPoolAddress]?.decimal || 18],
   );
   const depositedBalance = account
-    ? new BigNumber(rewardData.depositBalances?.[currentShakkaRewardPoolAddress] ?? 0).toFixed(2)
+    ? new BigNumber(
+        rewardData.depositBalances?.[currentShakkaRewardPoolAddress] ?? 0,
+      ).toFixed(2)
     : '-';
 
   const totalSHakkaObtained =
@@ -148,7 +150,10 @@ const Staking = () => {
             >
               <span>Go to governance</span>
             </ReactTooltip>
-            <a onClick={() => navigate({ to: '/staking-v1' })} sx={styles.normalButton}>
+            <a
+              onClick={() => navigate({ to: '/staking-v1' })}
+              sx={styles.normalButton}
+            >
               Switch to v1
               <img className='icon' src={images.iconArrowRight} />
             </a>
@@ -196,7 +201,10 @@ const Staking = () => {
           chainId={activeChainTab}
           account={account!}
           index={positionIndex!}
-          sHakkaBalance={formatUnits(sHakkaBalanceInfo?.[chainId as ChainId] ?? 0n, 18)}
+          sHakkaBalance={formatUnits(
+            sHakkaBalanceInfo?.[chainId as ChainId] ?? 0n,
+            18,
+          )}
           sHakkaBalanceInFarming={depositedBalance}
           toggleWalletModal={toggleWalletModal}
           isCorrectNetwork={isTabInCorrectNetwork}
@@ -218,7 +226,9 @@ const Staking = () => {
             <span>Earn more Hakka</span>
             <a
               sx={styles.sHakkaRewardLinkBtn}
-              onClick={() => navigate({ to: `/farms/${currentShakkaRewardPoolAddress}` })}
+              onClick={() =>
+                navigate({ to: `/farms/${currentShakkaRewardPoolAddress}` })
+              }
               rel='noreferrer'
             >
               <span>sHAKKA Pool</span>

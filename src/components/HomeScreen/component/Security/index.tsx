@@ -22,7 +22,14 @@ const SECURITY_ORGANIZATION_INFO: {
   [SecurityOrganizations.HashCloak]: {
     securityContent: 'Audited and verified',
     preposition: 'by',
-    icon: <img src={images.iconHashCloak} width='126px' height='28px' alt='HashCloak' />,
+    icon: (
+      <img
+        src={images.iconHashCloak}
+        width='126px'
+        height='28px'
+        alt='HashCloak'
+      />
+    ),
     btnContent: 'Read Audit Report',
     link: 'https://github.com/hakkafinance/audit-reports',
   },

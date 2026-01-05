@@ -113,21 +113,46 @@ export type TokenInfo = {
   decimals: number;
   symbol: string;
   name: string;
-}
-function createToken(chainId: ChainId, address: Address, decimals: number, symbol: string, name: string): TokenInfo {
-  return {    chainId,
-    address,
-    decimals,
-    symbol,
-    name,
-  };
+};
+function createToken(
+  chainId: ChainId,
+  address: Address,
+  decimals: number,
+  symbol: string,
+  name: string,
+): TokenInfo {
+  return { chainId, address, decimals, symbol, name };
 }
 
 export const HAKKA: { [chainId in ChainId]: TokenInfo } = {
-  [ChainId.MAINNET]: createToken(ChainId.MAINNET, '0x0E29e5AbbB5FD88e28b2d355774e73BD47dE3bcd', 18, 'HAKKA', 'Hakka Finance'),
-  [ChainId.BSC]: createToken(ChainId.BSC, '0x1d1eb8e8293222e1a29d2c0e4ce6c0acfd89aaac', 18, 'HAKKA', 'Hakka Finance'),
-  [ChainId.POLYGON]: createToken(ChainId.POLYGON, '0x978338A9d2d0aa2fF388d3dc98b9bF25bfF5efB4', 18, 'HAKKA', 'Hakka Finance'),
-  [ChainId.FANTOM]: createToken(ChainId.FANTOM, '0xda803c6AD8078c51c5334B51aA4Cc3f440d56D5F', 18, 'HAKKA', 'Hakka Finance'),
+  [ChainId.MAINNET]: createToken(
+    ChainId.MAINNET,
+    '0x0E29e5AbbB5FD88e28b2d355774e73BD47dE3bcd',
+    18,
+    'HAKKA',
+    'Hakka Finance',
+  ),
+  [ChainId.BSC]: createToken(
+    ChainId.BSC,
+    '0x1d1eb8e8293222e1a29d2c0e4ce6c0acfd89aaac',
+    18,
+    'HAKKA',
+    'Hakka Finance',
+  ),
+  [ChainId.POLYGON]: createToken(
+    ChainId.POLYGON,
+    '0x978338A9d2d0aa2fF388d3dc98b9bF25bfF5efB4',
+    18,
+    'HAKKA',
+    'Hakka Finance',
+  ),
+  [ChainId.FANTOM]: createToken(
+    ChainId.FANTOM,
+    '0xda803c6AD8078c51c5334B51aA4Cc3f440d56D5F',
+    18,
+    'HAKKA',
+    'Hakka Finance',
+  ),
 };
 
 export const STAKING_ADDRESSES: { [chainId in ChainId]: Address } = {
@@ -160,7 +185,11 @@ export const GUILDBANK: { [chainId in ChainId]: Address } = {
 
 export const ETHADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
-export const VAULT_TOKENS: { [chainId in ChainId]: {[x : string]: {name: string, symbol: string, decimals: number}} } = {
+export const VAULT_TOKENS: {
+  [chainId in ChainId]: {
+    [x: string]: { name: string; symbol: string; decimals: number };
+  };
+} = {
   [ChainId.MAINNET]: {
     '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': {
       name: 'Ether',

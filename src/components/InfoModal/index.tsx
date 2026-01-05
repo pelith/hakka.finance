@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { ArrowRightCircle } from 'react-feather';
 import { useStakingDataV2, useStakingDataV1 } from '../../data/StakingData';
@@ -20,11 +20,11 @@ import BigNumber from 'bignumber.js';
 import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
 
 export default function InfoModal() {
-  const {address, chainId, isConnected} = useAccount()
+  const { address, chainId, isConnected } = useAccount();
   const hakkaPrice = useTokenPrice('hakka-finance');
   const isHakkaExist = !!HAKKA[chainId as ChainId];
 
-  const {data: hakkaBalance} = useReadContract({
+  const { data: hakkaBalance } = useReadContract({
     address: HAKKA[chainId as ChainId]?.address as Address,
     abi: ERC20_ABI,
     functionName: 'balanceOf',
@@ -33,11 +33,11 @@ export default function InfoModal() {
       enabled: Boolean(isConnected && address) && isHakkaExist,
       select(data) {
         return new BigNumber(formatUnits(data, 18));
-      }
-    }
+      },
+    },
   });
 
-  const {data: vestingBalance} = useReadContract({
+  const { data: vestingBalance } = useReadContract({
     address: VESTING_ADDRESSES[chainId as ChainId] as Address,
     abi: ERC20_ABI,
     functionName: 'balanceOf',
@@ -46,8 +46,8 @@ export default function InfoModal() {
       enabled: Boolean(isConnected && address) && isHakkaExist,
       select(data) {
         return new BigNumber(formatUnits(data, 18));
-      }
-    }
+      },
+    },
   });
 
   const { data: v2StakingBalance } = useStakingDataV2();
@@ -56,7 +56,7 @@ export default function InfoModal() {
   const infoModalOpen = useInfoModalOpen();
   const toggleInfoModal = useInfoModalToggle();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   function getModalContent() {
     return (
@@ -71,11 +71,16 @@ export default function InfoModal() {
         <img sx={styles.sakura} src={images.sakura} alt='sakura' />
         <div sx={styles.contentWrapper}>
           <div sx={styles.balance}>
-            <img sx={styles.hakkaIcon} src={images.hakkaAccount} alt='hakka account' />
-            <div sx={styles.hakkaValue}>
-              {hakkaBalance?.toFixed(2) || '-'}
-            </div>
-            <AddHakkaToMetamaskBtn address={HAKKA[chainId as ChainId]?.address as string} selectedChainId={chainId as ChainId} />
+            <img
+              sx={styles.hakkaIcon}
+              src={images.hakkaAccount}
+              alt='hakka account'
+            />
+            <div sx={styles.hakkaValue}>{hakkaBalance?.toFixed(2) || '-'}</div>
+            <AddHakkaToMetamaskBtn
+              address={HAKKA[chainId as ChainId]?.address as string}
+              selectedChainId={chainId as ChainId}
+            />
           </div>
           <div sx={styles.displayBetween}>
             <div sx={styles.label}>Price</div>
@@ -88,11 +93,12 @@ export default function InfoModal() {
             <div>
               <div sx={styles.label}>Staking balance (v2)</div>
               <div sx={styles.data}>
-                {formatCommonNumber(v2StakingBalance?.stakingBalance) || '-'} HAKKA
+                {formatCommonNumber(v2StakingBalance?.stakingBalance) || '-'}{' '}
+                HAKKA
               </div>
             </div>
             <button
-            type='button'
+              type='button'
               onClick={() => {
                 navigate({ to: '/staking' });
               }}
@@ -106,7 +112,8 @@ export default function InfoModal() {
             <div>
               <div sx={styles.label}>Staking balance (V1)</div>
               <div sx={styles.data}>
-                {formatCommonNumber(v1StakingBalance?.stakingBalance) || '-'} HAKKA
+                {formatCommonNumber(v1StakingBalance?.stakingBalance) || '-'}{' '}
+                HAKKA
               </div>
             </div>
             <button

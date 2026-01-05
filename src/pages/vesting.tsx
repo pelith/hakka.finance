@@ -1,4 +1,3 @@
-
 import DappLayout from '../containers/DappLayout';
 import VestingPage from '../components/VestingPage';
 

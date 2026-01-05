@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
   "files": {
     "includes": [
       "**",
@@ -54,8 +54,7 @@
       "a11y": {
         "noSvgWithoutTitle": "off",
         "useKeyWithClickEvents": "off",
-        "noStaticElementInteractions": "off",
-        "noNonInteractiveTabIndex": "off"
+        "noStaticElementInteractions": "off"
       }
     }
   },

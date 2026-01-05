@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 import { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
@@ -79,13 +79,13 @@ const RedeemModal = ({
 
   const { sHakkaBalanceInfo } = useSHakkaBalance();
   const sHakkaBalanceForDisplay = sHakkaBalanceInfo?.[chainId]
-    ? parseFloat(formatUnits(sHakkaBalanceInfo[chainId], 18),).toFixed(
-        4,
-      )
+    ? parseFloat(formatUnits(sHakkaBalanceInfo[chainId], 18)).toFixed(4)
     : '-';
 
   const sHakkaPositionLimit = useMemo(() => {
-    const userShakkaBalance = BigNumber(formatUnits(sHakkaBalanceInfo?.[chainId] || 0n, 18));
+    const userShakkaBalance = BigNumber(
+      formatUnits(sHakkaBalanceInfo?.[chainId] || 0n, 18),
+    );
     const vaultShakkaAmount = vault ? vault.wAmount : BigNumber(0);
 
     if (userShakkaBalance.lt(vaultShakkaAmount)) {
@@ -104,9 +104,7 @@ const RedeemModal = ({
         </div>
         <p sx={styles.positionShakka}>
           <span>
-            {(vault && formatCommonNumber(vault.wAmount) ||
-              '-')}{' '}
-            sHAKKA
+            {(vault && formatCommonNumber(vault.wAmount)) || '-'} sHAKKA
           </span>
           &nbsp;got from this position
         </p>
@@ -129,7 +127,10 @@ const RedeemModal = ({
         </p>
         <div sx={styles.sHakkaInFarmContainer}>
           <p>{sHakkaBalanceInFarming || '-'}</p>
-          <div sx={styles.sHakkaPoolLink} onClick={() => navigate({ to: '/farms' })}>
+          <div
+            sx={styles.sHakkaPoolLink}
+            onClick={() => navigate({ to: '/farms' })}
+          >
             <p>sHAKKA Pool</p>
             <img sx={{ opacity: '0.5' }} src={images.iconArrowRight} />
           </div>

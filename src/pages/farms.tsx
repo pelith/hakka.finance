@@ -1,4 +1,3 @@
-
 import DappLayout from '../containers/DappLayout';
 import RewardsPage from '../components/RewardsPage/index';
 

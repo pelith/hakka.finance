@@ -1,4 +1,3 @@
-
 import './skeleton.css';
 
 type Props = {

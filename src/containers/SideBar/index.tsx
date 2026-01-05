@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import React, { useEffect, useState } from 'react';
 import { Box, Flex, Link } from 'rebass';
@@ -94,7 +94,10 @@ export const botSideBarItems = [
   // },
 ];
 
-function SideBar(props: { onCloseSideBar: (value: boolean) => void, isShowSideBar: boolean }) {
+function SideBar(props: {
+  onCloseSideBar: (value: boolean) => void;
+  isShowSideBar: boolean;
+}) {
   const { onCloseSideBar, isShowSideBar } = props;
   const [selectedNav, setSelectedNav] = useState('');
   const [isViewAllNotifiedMission, setIsViewAllNotifiedMission] =
@@ -126,7 +129,6 @@ function SideBar(props: { onCloseSideBar: (value: boolean) => void, isShowSideBa
   const onSelectNavItem = (path: string) => () => {
     navigate({ to: `/${path}` });
     setSelectedNav(path);
-
   };
   const handleCloseSideBar = () => {
     onCloseSideBar(false);
@@ -134,11 +136,7 @@ function SideBar(props: { onCloseSideBar: (value: boolean) => void, isShowSideBa
   const renderTopSideBar = () =>
     topSideBarItems.map((it, idx) => (
       <Box key={it.name} onClick={onSelectNavItem(it.path)}>
-        <SideBarItem
-          icon={it.icon}
-          text={it.name}
-          path={it.path}
-        />
+        <SideBarItem icon={it.icon} text={it.name} path={it.path} />
       </Box>
     ));
 
@@ -178,7 +176,11 @@ function SideBar(props: { onCloseSideBar: (value: boolean) => void, isShowSideBa
         <Box>
           <Box sx={styles.custom_padding}>
             <Box sx={styles.sidebar_header}>
-              <img src={images.hakkaLogo} onClick={() => navigate({ to: '/' })} alt='Hakka Logo' />
+              <img
+                src={images.hakkaLogo}
+                onClick={() => navigate({ to: '/' })}
+                alt='Hakka Logo'
+              />
               <img
                 alt='Close'
                 onClick={handleCloseSideBar}

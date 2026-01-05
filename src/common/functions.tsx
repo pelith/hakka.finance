@@ -19,9 +19,11 @@
 export const standardNameFileUpload = (name: string) =>
   name.split(' ').join('').replace('.png', '');
 
-export const lowerCase = (value: string) => (value ? value.toLowerCase() : value);
+export const lowerCase = (value: string) =>
+  value ? value.toLowerCase() : value;
 
-export const upperCase = (value: string) => (value ? value.toUpperCase() : value);
+export const upperCase = (value: string) =>
+  value ? value.toUpperCase() : value;
 
 export const generateId = () => {
   let text = '';
@@ -32,7 +34,6 @@ export const generateId = () => {
   }
   return text;
 };
-
 
 export const upperCaseFirstLetter = (lower: string) => {
   if (!lower) return lower;
@@ -49,4 +50,3 @@ export const upperCaseFirstLetter = (lower: string) => {
 //     }
 //   })
 // }
-

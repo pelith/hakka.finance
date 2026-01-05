@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Switch } from 'theme-ui';
 import { parseUnits } from 'viem';
@@ -98,7 +98,10 @@ const RestakeModal = ({
   const [isKeepAmountTheSame, setIsKeepAmountTheSame] = useState(false);
   const [isKeepPeriodTheSame, setIsKeepPeriodTheSame] = useState(false);
   const vault = vaults?.[index];
-  const {data: hakkaBalanceData} = useTokenInfoAndBalance(account as Address, HAKKA[chainId].address);
+  const { data: hakkaBalanceData } = useTokenInfoAndBalance(
+    account as Address,
+    HAKKA[chainId].address,
+  );
   const hakkaBalance = hakkaBalanceData?.balance ?? '0';
 
   const safeInputAmount = useMemo(
@@ -115,7 +118,10 @@ const RestakeModal = ({
   }, []);
 
   const currentBlockTimestamp = useCurrentBlockTimestamp();
-  let timeLeft = new BigNumber(vault?.unlockTime ?? 0).minus(currentBlockTimestamp).toNumber() ?? 0;
+  let timeLeft =
+    new BigNumber(vault?.unlockTime ?? 0)
+      .minus(currentBlockTimestamp)
+      .toNumber() ?? 0;
 
   timeLeft = timeLeft < 0 ? 0 : timeLeft;
   const isLeftTimeLessThan30Mins = useMemo(() => {
@@ -191,7 +197,9 @@ const RestakeModal = ({
         <div style={isKeepAmountTheSame ? { display: 'none' } : {}}>
           <div sx={styles.hakkaBalanceContainer}>
             <span>Amount</span>
-            <span>HAKKA Balance: {new BigNumber(hakkaBalance).toFixed(4) || '-'}</span>
+            <span>
+              HAKKA Balance: {new BigNumber(hakkaBalance).toFixed(4) || '-'}
+            </span>
           </div>
           <div sx={styles.numericalInputWrapper}>
             <NumericalInputField
@@ -224,7 +232,11 @@ const RestakeModal = ({
           <VotingPowerSection
             value={parseFloat(additionalSHakkaAmount ?? '0')}
             prefixSymbol
-            total={receivedSHakkaAmount ? parseFloat(receivedSHakkaAmount) : undefined}
+            total={
+              receivedSHakkaAmount
+                ? parseFloat(receivedSHakkaAmount)
+                : undefined
+            }
           />
         </div>
         <RestakeButton

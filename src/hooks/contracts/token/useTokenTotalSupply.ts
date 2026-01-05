@@ -3,7 +3,10 @@ import { erc20Abi, formatUnits, isAddress, type Address } from 'viem';
 import { useReadContract } from 'wagmi';
 import { useTokenInfo } from './useTokenInfoAndBalance';
 
-export default function useTokenTotalSupply(tokenAddress: Address, chainId: ChainId){
+export default function useTokenTotalSupply(
+  tokenAddress: Address,
+  chainId: ChainId,
+) {
   const { data: tokenInfo, isSuccess } = useTokenInfo(tokenAddress, chainId);
   return useReadContract({
     address: tokenAddress,
@@ -15,7 +18,7 @@ export default function useTokenTotalSupply(tokenAddress: Address, chainId: Chai
       enabled: isAddress(tokenAddress) && isSuccess,
       select(data) {
         return formatUnits(data, tokenInfo!.decimals);
-      }
-    }
-  })
+      },
+    },
+  });
 }

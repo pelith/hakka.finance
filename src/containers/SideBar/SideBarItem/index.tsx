@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import React, { useState, useEffect } from 'react';
 import { Box, Flex, Text } from 'rebass';
@@ -6,8 +6,20 @@ import styles from './styles';
 import { upperCaseFirstLetter } from '../../../common/functions';
 import { NOTIFICATION_DOT } from '..';
 
-const SideBarItem = (props: { icon: string, text: string, path: string, subIcon?: string, isViewAllNotifiedMission?: boolean }) => {
-  const { icon, text, path, subIcon = '', isViewAllNotifiedMission = false } = props;
+const SideBarItem = (props: {
+  icon: string;
+  text: string;
+  path: string;
+  subIcon?: string;
+  isViewAllNotifiedMission?: boolean;
+}) => {
+  const {
+    icon,
+    text,
+    path,
+    subIcon = '',
+    isViewAllNotifiedMission = false,
+  } = props;
   const [selectedNavPath, setSelectedNavPath] = useState('');
   const isBrowser = typeof window !== 'undefined';
   const currentPath = isBrowser
@@ -33,15 +45,13 @@ const SideBarItem = (props: { icon: string, text: string, path: string, subIcon?
             {upperCaseFirstLetter(text)}
           </Text>
         </Flex>
-        {subIcon === NOTIFICATION_DOT ? (
-          !isViewAllNotifiedMission && (
-            <div sx={styles.notification_dot_container}>
-              <div sx={styles.notification_dot} />
-            </div>
-          )
-        ) : (
-          subIcon && <img src={subIcon} /> || null
-        )}
+        {subIcon === NOTIFICATION_DOT
+          ? !isViewAllNotifiedMission && (
+              <div sx={styles.notification_dot_container}>
+                <div sx={styles.notification_dot} />
+              </div>
+            )
+          : (subIcon && <img src={subIcon} />) || null}
       </Flex>
     </Box>
   );

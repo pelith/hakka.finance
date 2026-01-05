@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { Box } from 'rebass';
 import images from '../../../../images';
@@ -57,14 +57,16 @@ function CardInfo() {
         >
           <Box sx={styles.cardHeading}>
             <Box>{item.title}</Box>
-            <p sx={styles.subTitle}>
-              {item.subTitle}
-            </p>
+            <p sx={styles.subTitle}>{item.subTitle}</p>
             <p sx={styles.subTextGreen} className='sub-content text'>
               {item.subContent}
             </p>
           </Box>
-          <img sx={styles.cardImg} src={images[item.imageBottom as keyof typeof images]} alt={item.imageBottom} />
+          <img
+            sx={styles.cardImg}
+            src={images[item.imageBottom as keyof typeof images]}
+            alt={item.imageBottom}
+          />
         </Box>
       </span>
     ));

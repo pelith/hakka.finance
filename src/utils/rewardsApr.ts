@@ -27,16 +27,12 @@ export async function bhsApr(_hakkaPrice: bigint): Promise<bigint> {
   return Promise.resolve(ZERO);
 }
 
-export async function balancer4tokenApr(
-  _hakkaPrice: bigint,
-): Promise<bigint> {
+export async function balancer4tokenApr(_hakkaPrice: bigint): Promise<bigint> {
   // BHS/USDC/DAI/HAKKA
   return Promise.resolve(ZERO);
 }
 
-export async function balancer2tokenApr(
-  _hakkaPrice: bigint,
-): Promise<bigint> {
+export async function balancer2tokenApr(_hakkaPrice: bigint): Promise<bigint> {
   // BHS/HAKKA
   return Promise.resolve(ZERO);
 }
@@ -66,20 +62,27 @@ export async function sHakkaApr(_hakkaPrice: bigint): Promise<bigint> {
       {
         address: rewardsAddress,
         abi: REWARD_ABI,
-        functionName: 'rewardRate'
+        functionName: 'rewardRate',
       },
       {
         address: rewardsAddress,
         abi: REWARD_ABI,
-        functionName: 'periodFinish'
-      }
+        functionName: 'periodFinish',
+      },
     ],
     allowFailure: false,
   });
 
   if (periodFinish < BigInt(now) || stakedTotalSupply === 0n) return ZERO;
   const yearlyRewards = rewardRate * SECONDS_IN_YEAR;
-  return BigInt(BigNumber(yearlyRewards).multipliedBy(WEI_PER_ETHER).div(stakedTotalSupply).multipliedBy(stakingRate).div(WEI_PER_ETHER).toString())
+  return BigInt(
+    BigNumber(yearlyRewards)
+      .multipliedBy(WEI_PER_ETHER)
+      .div(stakedTotalSupply)
+      .multipliedBy(stakingRate)
+      .div(WEI_PER_ETHER)
+      .toString(),
+  );
 }
 
 export function sHakkaV2Apr(chainId: ChainId): () => Promise<bigint> {
@@ -116,10 +119,14 @@ export function sHakkaV2Apr(chainId: ChainId): () => Promise<bigint> {
 
     if (periodFinish < BigInt(now) || stakedTotalSupply === 0n) return ZERO;
     const yearlyRewards = rewardRate * SECONDS_IN_YEAR;
-    return BigInt(Decimal(yearlyRewards).mul(WEI_PER_ETHER)
-    .div(stakedTotalSupply)
-    .mul(finalStakingBN)
-    .div(WEI_PER_ETHER).toString())
+    return BigInt(
+      Decimal(yearlyRewards)
+        .mul(WEI_PER_ETHER)
+        .div(stakedTotalSupply)
+        .mul(finalStakingBN)
+        .div(WEI_PER_ETHER)
+        .toString(),
+    );
   };
 }
 
@@ -135,64 +142,72 @@ export function getGainAprFunc(
     const client = JSON_RPC_PROVIDER[chainId];
     const rewardsAddress = REWARD_POOLS[iGainAddress].rewardsAddress; // farm address
     const tokenAddress = REWARD_POOLS[iGainAddress].tokenAddress; // igain lp address
-    const [stakedTotalSupply, rewardRate, periodFinish, poolA, poolB, totalSupply, decimals] =
-      await client.multicall({
-        contracts: [
-          {
-            address: rewardsAddress,
-            abi: REWARD_ABI,
-            functionName: 'totalSupply',
-          },
-          {
-            address: rewardsAddress,
-            abi: REWARD_ABI,
-            functionName: 'rewardRate'
-          },
-          {
-            address: rewardsAddress,
-            abi: REWARD_ABI,
-            functionName: 'periodFinish'
-          },
-          {
-            address: tokenAddress,
-            abi: IGAIN_ABI,
-            functionName: 'poolA'
-          },
-          {
-            address: tokenAddress,
-            abi: IGAIN_ABI,
-            functionName: 'poolB'
-          },
-          {
-            address: tokenAddress,
-            abi: IGAIN_ABI,
-            functionName: 'totalSupply'
-          },
-          {
-            address: tokenAddress,
-            abi: IGAIN_ABI,
-            functionName: 'decimals'
-          }
-        ],
-        allowFailure: false,
-      })
+    const [
+      stakedTotalSupply,
+      rewardRate,
+      periodFinish,
+      poolA,
+      poolB,
+      totalSupply,
+      decimals,
+    ] = await client.multicall({
+      contracts: [
+        {
+          address: rewardsAddress,
+          abi: REWARD_ABI,
+          functionName: 'totalSupply',
+        },
+        {
+          address: rewardsAddress,
+          abi: REWARD_ABI,
+          functionName: 'rewardRate',
+        },
+        {
+          address: rewardsAddress,
+          abi: REWARD_ABI,
+          functionName: 'periodFinish',
+        },
+        {
+          address: tokenAddress,
+          abi: IGAIN_ABI,
+          functionName: 'poolA',
+        },
+        {
+          address: tokenAddress,
+          abi: IGAIN_ABI,
+          functionName: 'poolB',
+        },
+        {
+          address: tokenAddress,
+          abi: IGAIN_ABI,
+          functionName: 'totalSupply',
+        },
+        {
+          address: tokenAddress,
+          abi: IGAIN_ABI,
+          functionName: 'decimals',
+        },
+      ],
+      allowFailure: false,
+    });
 
     const decimalBNUnit = parseUnits('1', decimals);
     const perLpPrice =
       (((poolA * poolB * 2n) / (poolA + poolB)) * decimalBNUnit) / totalSupply;
 
     const stakedTotalValue =
-      (perLpPrice * (stakedTotalSupply === 0n ? perLpPrice : stakedTotalSupply)) /
+      (perLpPrice *
+        (stakedTotalSupply === 0n ? perLpPrice : stakedTotalSupply)) /
       decimalBNUnit;
 
     if (periodFinish < BigInt(now) || stakedTotalValue === 0n) return ZERO;
 
     const tokenPriceMultiplier = parseUnits(tokenPrice.toFixed(4), decimals);
-    const yearlyUsdRewards = (rewardRate * SECONDS_IN_YEAR * hakkaPrice) /
-      WEI_PER_ETHER;
+    const yearlyUsdRewards =
+      (rewardRate * SECONDS_IN_YEAR * hakkaPrice) / WEI_PER_ETHER;
 
-    const denominator = (stakedTotalValue * tokenPriceMultiplier) /
-      decimalBNUnit;
+    const denominator =
+      (stakedTotalValue * tokenPriceMultiplier) / decimalBNUnit;
     if (denominator === 0n) return ZERO;
 
     return (yearlyUsdRewards * decimalBNUnit) / denominator;

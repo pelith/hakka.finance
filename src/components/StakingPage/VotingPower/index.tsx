@@ -1,6 +1,5 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 /** @jsxFrag */
-
 
 import styles from './style';
 import { Tooltip as ReactTooltip } from 'react-tooltip';

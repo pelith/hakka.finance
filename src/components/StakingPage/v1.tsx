@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { zeroAddress } from 'viem';
-import {Tooltip as ReactTooltip} from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { useNavigate } from '@tanstack/react-router';
 import { isMobile } from 'react-device-detect';
 import images from '../../images';
@@ -14,7 +14,10 @@ import VotingPowerContainer, {
   StakingVersion,
 } from '../../containers/VotingPowerContainer';
 import { botSideBarItems } from '../../containers/SideBar';
-import { useStakingVaultV1, type VaultType } from 'src/hooks/staking/useStakingVault';
+import {
+  useStakingVaultV1,
+  type VaultType,
+} from 'src/hooks/staking/useStakingVault';
 import { createBigNumberSort } from 'src/utils/sort';
 import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
 
@@ -37,8 +40,10 @@ const Staking = () => {
   const [isShowArchived, setIsShowArchived] = useState<boolean>(true);
   const [isSortByUnlockTime, setIsSortByUnlockTime] = useState<boolean>(false);
   const navigate = useNavigate();
-  const {data: { stakingBalance, sHakkaBalance, stakingRate, votingPower } = {}} = useStakingDataV1();
-  const {vault: vaults} = useStakingVaultV1(chainId as ChainId);
+  const {
+    data: { stakingBalance, sHakkaBalance, stakingRate, votingPower } = {},
+  } = useStakingDataV1();
+  const { vault: vaults } = useStakingVaultV1(chainId as ChainId);
 
   const isCorrectNetwork = useMemo<boolean>(() => {
     if (chainId) {
@@ -52,8 +57,8 @@ const Staking = () => {
   }, []);
 
   const [unarchivePosition, archivedPosition] = useMemo(() => {
-    let archivedPosition: (VaultType & {index: number})[] = [];
-    let unarchivePosition: (VaultType & {index: number})[] = [];
+    let archivedPosition: (VaultType & { index: number })[] = [];
+    let unarchivePosition: (VaultType & { index: number })[] = [];
 
     vaults.forEach((vault, index) => {
       if (vault?.hakkaAmount.eq(0)) {
@@ -69,7 +74,7 @@ const Staking = () => {
 
   const sortedUnarchivePosition = useMemo(() => {
     if (isSortByUnlockTime) {
-        unarchivePosition.sort(createBigNumberSort('asc', 'unlockTime'));
+      unarchivePosition.sort(createBigNumberSort('asc', 'unlockTime'));
       return unarchivePosition;
     } else {
       unarchivePosition.sort(createBigNumberSort('desc', 'index'));

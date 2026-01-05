@@ -25,7 +25,14 @@ function getTokenPrice(source: any, tokenSlug: string): bigint {
 
 export async function balancer4tokenTvl(tokenPrice: any): Promise<bigint> {
   const client = JSON_RPC_PROVIDER[ChainId.MAINNET];
-  const [hakkaBalance, daiBalance, usdcBalance, bhsBalance, bptSupply, poolBpt] = await client.multicall({
+  const [
+    hakkaBalance,
+    daiBalance,
+    usdcBalance,
+    bhsBalance,
+    bptSupply,
+    poolBpt,
+  ] = await client.multicall({
     contracts: [
       {
         address: HAKKA[ChainId.MAINNET].address,
@@ -65,7 +72,7 @@ export async function balancer4tokenTvl(tokenPrice: any): Promise<bigint> {
       },
     ] as const,
     allowFailure: false,
-  })
+  });
 
   const hakkaPrice = getTokenPrice(tokenPrice, 'hakka-finance');
   const daiPrice = getTokenPrice(tokenPrice, 'dai');
@@ -75,7 +82,8 @@ export async function balancer4tokenTvl(tokenPrice: any): Promise<bigint> {
   const daiValue = daiBalance * daiPrice;
   const usdcValue = usdcBalance * usdcPrice;
   const bhsValue = bhsBalance * bhsPrice;
-  const pricePerBpt = (hakkaValue + daiValue + usdcValue + bhsValue) / bptSupply;
+  const pricePerBpt =
+    (hakkaValue + daiValue + usdcValue + bhsValue) / bptSupply;
 
   // console.log(formatUnits(pricePerBpt.mul(poolBpt).div(WeiPerEther)))
   return (pricePerBpt * poolBpt) / WEI_PER_ETHER;
@@ -83,35 +91,37 @@ export async function balancer4tokenTvl(tokenPrice: any): Promise<bigint> {
 
 export async function balancer2tokenTvl(tokenPrice: any): Promise<bigint> {
   const client = JSON_RPC_PROVIDER[ChainId.MAINNET];
-  const [hakkaBalance, bhsBalance, bptSupply, poolBpt] = await client.multicall({
-    contracts: [
-      {
-        address: HAKKA[ChainId.MAINNET].address,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [BHS_HAKKA_BPT],
-      },
-      {
-        address: BHS_ADDRESS,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [BHS_HAKKA_BPT],
-      },
-      {
-        address: BHS_HAKKA_BPT,
-        abi: ERC20_ABI,
-        functionName: 'totalSupply',
-        args: [],
-      },
-      {
-        address: BHS_HAKKA_BPT,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [BHS_HAKKA_POOL],
-      },
-    ] as const,
-    allowFailure: false,
-  })
+  const [hakkaBalance, bhsBalance, bptSupply, poolBpt] = await client.multicall(
+    {
+      contracts: [
+        {
+          address: HAKKA[ChainId.MAINNET].address,
+          abi: ERC20_ABI,
+          functionName: 'balanceOf',
+          args: [BHS_HAKKA_BPT],
+        },
+        {
+          address: BHS_ADDRESS,
+          abi: ERC20_ABI,
+          functionName: 'balanceOf',
+          args: [BHS_HAKKA_BPT],
+        },
+        {
+          address: BHS_HAKKA_BPT,
+          abi: ERC20_ABI,
+          functionName: 'totalSupply',
+          args: [],
+        },
+        {
+          address: BHS_HAKKA_BPT,
+          abi: ERC20_ABI,
+          functionName: 'balanceOf',
+          args: [BHS_HAKKA_POOL],
+        },
+      ] as const,
+      allowFailure: false,
+    },
+  );
 
   const hakkaPrice = getTokenPrice(tokenPrice, 'hakka-finance');
   const bhsPrice = getTokenPrice(tokenPrice, 'blackholeswap-compound-dai-usdc');
@@ -132,36 +142,37 @@ export function getGainTvlFunc(
     const client = JSON_RPC_PROVIDER[chainId];
     const rewardsAddress = REWARD_POOLS[iGainAddress].rewardsAddress; // farm address
     const tokenAddress = REWARD_POOLS[iGainAddress].tokenAddress; // igain lp address
-    const [stakedTotalSupply, poolA, poolB, totalSupply, decimals] = await client.multicall({
-      contracts: [
-        {
-          address: rewardsAddress,
-          abi: REWARD_ABI,
-          functionName: 'totalSupply',
-        },
-        {
-          address: tokenAddress,
-          abi: IGAIN_ABI,
-          functionName: 'poolA',
-        },
-        {
-          address: tokenAddress,
-          abi: IGAIN_ABI,
-          functionName: 'poolB',
-        },
-        {
-          address: tokenAddress,
-          abi: IGAIN_ABI,
-          functionName: 'totalSupply',
-        },
-        {
-          address: tokenAddress,
-          abi: IGAIN_ABI,
-          functionName: 'decimals',
-        },
-      ],
-      allowFailure: false,
-    })
+    const [stakedTotalSupply, poolA, poolB, totalSupply, decimals] =
+      await client.multicall({
+        contracts: [
+          {
+            address: rewardsAddress,
+            abi: REWARD_ABI,
+            functionName: 'totalSupply',
+          },
+          {
+            address: tokenAddress,
+            abi: IGAIN_ABI,
+            functionName: 'poolA',
+          },
+          {
+            address: tokenAddress,
+            abi: IGAIN_ABI,
+            functionName: 'poolB',
+          },
+          {
+            address: tokenAddress,
+            abi: IGAIN_ABI,
+            functionName: 'totalSupply',
+          },
+          {
+            address: tokenAddress,
+            abi: IGAIN_ABI,
+            functionName: 'decimals',
+          },
+        ],
+        allowFailure: false,
+      });
 
     const decimalBNUnit = parseUnits('1', decimals);
     const perLpPrice =
@@ -172,7 +183,10 @@ export function getGainTvlFunc(
     }
     return (
       (baseTokenTvl *
-        parseUnits((tokenPrice?.[tokenPriceKey]?.usd || 1).toString(), decimals)) /
+        parseUnits(
+          (tokenPrice?.[tokenPriceKey]?.usd || 1).toString(),
+          decimals,
+        )) /
       decimalBNUnit
     );
   };

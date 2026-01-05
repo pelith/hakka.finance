@@ -1,6 +1,6 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
-import {  useMemo } from 'react';
+import { useMemo } from 'react';
 import styles from './styles';
 import { MyButton } from '../../Common';
 import { useActiveWeb3React } from '../../../hooks/web3Manager';
@@ -11,8 +11,15 @@ import { isAddress, isAddressEqual, type Address } from 'viem';
 interface NewTokenAddressInputProps {
   addressInputValue: string;
   setAddressInputValue: (input: string) => void;
-  rewardTokens: { [x: string]: { name: string; symbol: string; decimals: number } };
-  addRewardToken: (input: { address: Address; name: string; symbol: string; decimals: number }) => void;
+  rewardTokens: {
+    [x: string]: { name: string; symbol: string; decimals: number };
+  };
+  addRewardToken: (input: {
+    address: Address;
+    name: string;
+    symbol: string;
+    decimals: number;
+  }) => void;
   setIsShowNewTokenArea: (input: boolean) => void;
 }
 
@@ -27,7 +34,7 @@ const NewTokenAddressInput = (props: NewTokenAddressInputProps) => {
   useActiveWeb3React(); // keep for backwards compatibility (side effects / wallet state)
   // const [addTokenError, setAddTokenError] = useState<string>('');
 
-  const {data: tokenInfo} = useReadContracts({
+  const { data: tokenInfo } = useReadContracts({
     contracts: [
       {
         address: addressInputValue as Address,
@@ -47,16 +54,21 @@ const NewTokenAddressInput = (props: NewTokenAddressInputProps) => {
     ] as const,
     query: {
       enabled: isAddress(addressInputValue),
-    }
-  })
+    },
+  });
 
   const isAddBtnDisabled = useMemo(() => {
-    if (!tokenInfo?.every(item => item.status === 'success')) return true
-    if (!isAddress(addressInputValue)) return true
+    if (!tokenInfo?.every((item) => item.status === 'success')) return true;
+    if (!isAddress(addressInputValue)) return true;
     const rewardTokensAddresses = Object.keys(rewardTokens);
-    if (rewardTokensAddresses.some(address => isAddressEqual(address as Address, addressInputValue as Address))) return true
-    return false
-  }, [Object.keys(rewardTokens).join()])
+    if (
+      rewardTokensAddresses.some((address) =>
+        isAddressEqual(address as Address, addressInputValue as Address),
+      )
+    )
+      return true;
+    return false;
+  }, [Object.keys(rewardTokens).join()]);
 
   const handleAddBtnClick = () => {
     if (!tokenInfo) return;

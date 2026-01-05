@@ -1,5 +1,3 @@
-
-
 export interface ConnectWalletCheckWrapperInterface
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isDisabledWhenNotPrepared?: boolean;

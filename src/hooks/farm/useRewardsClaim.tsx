@@ -1,1 +1,1 @@
-export * from '../contracts/rewards/useRewardsClaim'
+export * from '../contracts/rewards/useRewardsClaim';

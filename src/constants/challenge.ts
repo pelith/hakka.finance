@@ -360,7 +360,7 @@ export interface LevelInfoType {
   introduction: string;
   missionList: string[];
   expectedMissionAmount: number;
-  profile: `profileLv${1|2}`;
+  profile: `profileLv${1 | 2}`;
   levelColor: string;
   levelContainerBgColor: string;
   characterPanelBorderColor: string;

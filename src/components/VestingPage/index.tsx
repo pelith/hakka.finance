@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { useMemo, useState, useEffect } from 'react';
@@ -77,31 +77,51 @@ const VestingPage = () => {
     () =>
       vestingInfo[activeChainTab]?.lastWithdrawalTimeRaw &&
       Date.now() -
-        parseInt(vestingInfo[activeChainTab].lastWithdrawalTimeRaw?.toString()) *
+        parseInt(
+          vestingInfo[activeChainTab].lastWithdrawalTimeRaw?.toString(),
+        ) *
           1000 <
         1641600000,
     [vestingInfo[activeChainTab]?.lastWithdrawalTimeRaw, activeChainTab],
   );
   const vestingValueAmount = useMemo(
-    () => formatUnits(vestingInfo[activeChainTab]?.vestingValueRaw ?? 0n, HAKKA[activeChainTab || 1].decimals),
+    () =>
+      formatUnits(
+        vestingInfo[activeChainTab]?.vestingValueRaw ?? 0n,
+        HAKKA[activeChainTab || 1].decimals,
+      ),
     [vestingInfo[activeChainTab]?.vestingValueRaw, activeChainTab],
   );
 
   const vestingValuePrice = useMemo(
     () =>
-      BigNumber(vestingValueAmount)
-        .multipliedBy(BigNumber(hakkaPrice).multipliedBy(1e8)),
+      BigNumber(vestingValueAmount).multipliedBy(
+        BigNumber(hakkaPrice).multipliedBy(1e8),
+      ),
     [vestingValueAmount, hakkaPrice],
   );
   const vestingProportionAmount = useMemo(
     () =>
       vestingInfo[activeChainTab]?.vestingProportionRaw && activeChainTab
-        ? formatUnits(vestingInfo[activeChainTab].vestingProportionRaw ?? 0n, HAKKA[activeChainTab || 1].decimals)
+        ? formatUnits(
+            vestingInfo[activeChainTab].vestingProportionRaw ?? 0n,
+            HAKKA[activeChainTab || 1].decimals,
+          )
         : '0',
     [vestingInfo[activeChainTab]?.vestingProportionRaw, activeChainTab],
   );
 
-  const countdownRenderer = ({ days, hours, minutes, seconds }: { days: number, hours: number, minutes: number, seconds: number }) => (
+  const countdownRenderer = ({
+    days,
+    hours,
+    minutes,
+    seconds,
+  }: {
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }) => (
     <div>
       {zeroPad(days)}D {zeroPad(hours)}H {zeroPad(minutes)}M {zeroPad(seconds)}S
     </div>
@@ -115,7 +135,10 @@ const VestingPage = () => {
         <div sx={styles.header}>
           <h1 sx={styles.title}>Vesting</h1>
           <Web3Status
-            unsupported={isAddress(VESTING_ADDRESSES[chainId as ChainId]) && isAddressEqual(VESTING_ADDRESSES[chainId as ChainId], zeroAddress)}
+            unsupported={
+              isAddress(VESTING_ADDRESSES[chainId as ChainId]) &&
+              isAddressEqual(VESTING_ADDRESSES[chainId as ChainId], zeroAddress)
+            }
           />
         </div>
         <h3 sx={styles.heading}></h3>
@@ -150,11 +173,16 @@ const VestingPage = () => {
               <p sx={styles.vestingCardItemHeading}>Claimable Amount</p>
               <div sx={styles.displayFlex}>
                 <span sx={styles.claimableAmount}>
-                  {formatCommonNumber(BigNumber(vestingValueAmount)
-                    .multipliedBy(vestingProportionAmount))}{' '}
+                  {formatCommonNumber(
+                    BigNumber(vestingValueAmount).multipliedBy(
+                      vestingProportionAmount,
+                    ),
+                  )}{' '}
                   HAKKA
                 </span>
-                <AddHakkaToMetamaskBtn selectedChainId={activeChainTab as ChainId} />
+                <AddHakkaToMetamaskBtn
+                  selectedChainId={activeChainTab as ChainId}
+                />
               </div>
             </div>
           </div>
@@ -177,15 +205,19 @@ const VestingPage = () => {
                 isCorrectNetwork={isTabInCorrectNetwork}
                 targetNetwork={activeChainTab}
                 onClick={claim}
-                disabled={Boolean(claimState === VestingState.PENDING || isWaitingCycle)}
+                disabled={Boolean(
+                  claimState === VestingState.PENDING || isWaitingCycle,
+                )}
               >
                 {isWaitingCycle ? (
                   <Countdown
                     date={
-                      fromUnixTime(Number(vestingInfo?.[
-                        activeChainTab
-                      ]?.lastWithdrawalTimeRaw as bigint)).getTime() +
-                      1641600000
+                      fromUnixTime(
+                        Number(
+                          vestingInfo?.[activeChainTab]
+                            ?.lastWithdrawalTimeRaw as bigint,
+                        ),
+                      ).getTime() + 1641600000
                     }
                     renderer={countdownRenderer}
                   />

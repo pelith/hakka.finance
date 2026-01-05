@@ -1,4 +1,3 @@
-
 import ChallengeIntroPage from '../components/ChallengeIntroPage';
 import DappLayout from '../containers/DappLayout';
 

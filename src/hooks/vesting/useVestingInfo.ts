@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { ChainId } from '../../constants';
 import useFetchVestingInfo from './useFetchVestingInfo';
 
-
 export default function useVestingInfo() {
   const { fetchVestingInfoResult: mainnetVestingInfo } = useFetchVestingInfo(
     ChainId.MAINNET,
@@ -24,7 +23,12 @@ export default function useVestingInfo() {
       [ChainId.FANTOM]: fantomVestingInfo,
       [ChainId.POLYGON]: polygonVestingInfo,
     };
-  }, [mainnetVestingInfo, bscVestingInfo, fantomVestingInfo, polygonVestingInfo]);
+  }, [
+    mainnetVestingInfo,
+    bscVestingInfo,
+    fantomVestingInfo,
+    polygonVestingInfo,
+  ]);
 
   return { vestingInfo };
 }

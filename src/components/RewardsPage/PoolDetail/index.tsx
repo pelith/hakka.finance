@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import React, { useState, useMemo, useEffect } from 'react';
@@ -13,10 +13,7 @@ import { ChainId } from '../../../constants';
 import { REWARD_POOLS } from '../../../constants/rewards';
 import { POOL_ASSETES } from '../../../constants/rewards/assets';
 import { useTokenApprove, ApprovalState } from '../../../hooks/useTokenApprove';
-import {
-  shortenAddress,
-  getEtherscanLink,
-} from '../../../utils';
+import { shortenAddress, getEtherscanLink } from '../../../utils';
 import { useRewardsData } from '../../../data/RewardsData';
 import {
   useRewardsClaim,
@@ -53,14 +50,17 @@ const PoolDetail = ({ pool }: { pool: string }) => {
   );
   const toggleClaimModal = useClaimModalToggle();
 
-  const {data: vestingValueAmount = '0'} = useVestingBalance(account as string, chainId as ChainId);
+  const { data: vestingValueAmount = '0' } = useVestingBalance(
+    account as string,
+    chainId as ChainId,
+  );
   const formattedVestingValueAmount = useMemo(() => {
     return new BigNumber(vestingValueAmount).toFixed(4);
   }, [vestingValueAmount]);
 
   const hakkaPrice = useTokenPrice('hakka-finance');
   const tokenPrice = useTokensPrice();
-  const {data: apr} = useQuery({
+  const { data: apr } = useQuery({
     queryKey: ['apr', pool],
     queryFn: async () => {
       if (!hakkaPrice || !tokenPrice) {
@@ -69,17 +69,19 @@ const PoolDetail = ({ pool }: { pool: string }) => {
       return POOL_ASSETES[pool].getApr(
         parseUnits(hakkaPrice.toString(), 18),
         POOL_ASSETES[pool].tokenPriceKey
-            ? tokenPrice?.[POOL_ASSETES[pool].tokenPriceKey]?.usd || 1
-            : 1,
+          ? tokenPrice?.[POOL_ASSETES[pool].tokenPriceKey]?.usd || 1
+          : 1,
       );
     },
     select: (data) => {
-      return new BigNumber(formatUnits(BigInt(data ?? 0), 18)).toFixed(2) ?? '-';
+      return (
+        new BigNumber(formatUnits(BigInt(data ?? 0), 18)).toFixed(2) ?? '-'
+      );
     },
     refetchInterval: 1_000,
-  })
+  });
 
-  const {data: tvl} = useQuery({
+  const { data: tvl } = useQuery({
     queryKey: ['tvl', pool],
     queryFn: async () => {
       if (!tokenPrice) {
@@ -88,15 +90,20 @@ const PoolDetail = ({ pool }: { pool: string }) => {
       return POOL_ASSETES[pool].getTvl(tokenPrice);
     },
     select: (data) => {
-      return new BigNumber(formatUnits(BigInt(data ?? 0), 18)).toFixed(2) ?? '-';
+      return (
+        new BigNumber(formatUnits(BigInt(data ?? 0), 18)).toFixed(2) ?? '-'
+      );
     },
     refetchInterval: 1_000,
-  })
+  });
 
   const [stakeInputAmount, setStakeInputAmount] = useState<string>('');
   const [withdrawInputAmount, setWithdrawInputAmount] = useState<string>('');
 
-  const tokenBalance = useTokenInfoAndBalance(account as string, REWARD_POOLS[pool].tokenAddress);
+  const tokenBalance = useTokenInfoAndBalance(
+    account as string,
+    REWARD_POOLS[pool].tokenAddress,
+  );
   const stakedTokenBalance = useTokenInfoAndBalance(account as string, pool);
   const [approveState, approve] = useTokenApprove(
     REWARD_POOLS[pool].tokenAddress,
@@ -176,7 +183,7 @@ const PoolDetail = ({ pool }: { pool: string }) => {
           onClick={exit}
           disabled={
             exitState === ExitState.PENDING ||
-            !(((stakedTokenBalance.data?.balanceRaw ?? 0n) > 0n))
+            !((stakedTokenBalance.data?.balanceRaw ?? 0n) > 0n)
           }
         >
           <div sx={styles.exitBtnContent}>
@@ -289,7 +296,9 @@ const PoolDetail = ({ pool }: { pool: string }) => {
             <div sx={styles.rewardAmountContainer}>
               {/* if amount === 0 sx={styles.amountIsZero} */}
               <span>
-                {account ? formatCommonNumber(rewardData.depositBalances?.[pool]) : '-'}
+                {account
+                  ? formatCommonNumber(rewardData.depositBalances?.[pool])
+                  : '-'}
               </span>
               <span>{REWARD_POOLS[pool].tokenSymbol}</span>
             </div>
@@ -360,13 +369,21 @@ const PoolDetail = ({ pool }: { pool: string }) => {
             <div sx={styles.switch}>
               <div
                 onClick={() => setSwitchPick(SwitchOption.DEPOSIT)}
-                sx={switchPick === SwitchOption.DEPOSIT ? styles.switchFocus : undefined}
+                sx={
+                  switchPick === SwitchOption.DEPOSIT
+                    ? styles.switchFocus
+                    : undefined
+                }
               >
                 Deposit
               </div>
               <div
                 onClick={() => setSwitchPick(SwitchOption.WITHDRAW)}
-                sx={switchPick === SwitchOption.WITHDRAW ? styles.switchFocus : undefined}
+                sx={
+                  switchPick === SwitchOption.WITHDRAW
+                    ? styles.switchFocus
+                    : undefined
+                }
               >
                 Withdraw
               </div>
@@ -394,7 +411,9 @@ const PoolDetail = ({ pool }: { pool: string }) => {
                 <NumericalInputField
                   value={withdrawInputAmount}
                   onUserInput={setWithdrawInputAmount}
-                  tokenBalanceAmount={stakedTokenBalance?.data?.balance || '0.00'}
+                  tokenBalanceAmount={
+                    stakedTokenBalance?.data?.balance || '0.00'
+                  }
                   approve={approve}
                   approveState={approveState}
                   setIsCorrectInput={setIsCorrectInput}

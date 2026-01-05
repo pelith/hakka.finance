@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import BigNumber from 'bignumber.js';
 import images from '../../../images/index';
@@ -60,7 +60,8 @@ const RewardItem = (props: RewardItemProps) => {
               ? '0'
               : receiveAmount?.toFixed(4)}
           </span>
-          /<span sx={styles.bankBalance}>{formatCommonNumber(bankBalance)}</span>
+          /
+          <span sx={styles.bankBalance}>{formatCommonNumber(bankBalance)}</span>
         </div>
       ) : (
         <span sx={styles.unselectedReward}>Unselected Reward</span>

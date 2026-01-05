@@ -1,7 +1,11 @@
 import { useReadContracts } from 'wagmi';
 import { erc20Abi, formatUnits, isAddress, type Address } from 'viem';
 import type { ChainId } from 'src/constants';
-export function useTokenInfoAndBalance(address: string, tokenAddress: string, chainId?: ChainId){
+export function useTokenInfoAndBalance(
+  address: string,
+  tokenAddress: string,
+  chainId?: ChainId,
+) {
   const { data: tokenInfo, isSuccess } = useTokenInfo(tokenAddress, chainId);
   return useReadContracts({
     contracts: [
@@ -25,13 +29,13 @@ export function useTokenInfoAndBalance(address: string, tokenAddress: string, ch
           symbol: symbol,
           name: name,
           balance: formatUnits(balance.result, decimals),
-        }
-      }
-    }
-  })
+        };
+      },
+    },
+  });
 }
 
-export function useTokenInfo(tokenAddress: string, chainId?: ChainId){
+export function useTokenInfo(tokenAddress: string, chainId?: ChainId) {
   return useReadContracts({
     contracts: [
       {
@@ -66,13 +70,18 @@ export function useTokenInfo(tokenAddress: string, chainId?: ChainId){
       refetchIntervalInBackground: false,
       select(data) {
         const [decimals, symbol, name] = data;
-        if (decimals.status === 'failure' || symbol.status === 'failure' || name.status === 'failure') return undefined;
+        if (
+          decimals.status === 'failure' ||
+          symbol.status === 'failure' ||
+          name.status === 'failure'
+        )
+          return undefined;
         return {
           decimals: decimals.result,
           symbol: symbol.result,
           name: name.result,
-        }
-      }
-    }
-  })
+        };
+      },
+    },
+  });
 }

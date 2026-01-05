@@ -18,7 +18,12 @@ export function clientToSigner(client: Client<Transport, Chain, Account>) {
  * Returns wagmi equivalents for account, chainId, and provider
  */
 export function useActiveWeb3React() {
-  const { address: account, isConnected: isActive, connector, chainId } = useAccount();
+  const {
+    address: account,
+    isConnected: isActive,
+    connector,
+    chainId,
+  } = useAccount();
   const connectors = useConnectors();
   const { data: connectorClient } = useConnectorClient();
 
@@ -29,7 +34,7 @@ export function useActiveWeb3React() {
 
   return {
     account: account ?? '',
-    chainId: chainId as ChainId ?? ChainId.MAINNET,
+    chainId: (chainId as ChainId) ?? ChainId.MAINNET,
     isActive,
     connector,
     connectors,

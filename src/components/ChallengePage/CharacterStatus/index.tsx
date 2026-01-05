@@ -1,5 +1,4 @@
- /** @jsxImportSource theme-ui */
-
+/** @jsxImportSource theme-ui */
 
 import { isMobile } from 'react-device-detect';
 import styles from './styles';

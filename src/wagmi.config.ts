@@ -1,8 +1,8 @@
 import { http, createConfig } from 'wagmi';
 import { mainnet, bsc, polygon, fantom } from 'wagmi/chains';
 import { coinbaseWallet, walletConnect, injected } from 'wagmi/connectors';
-import { WagmiAdapter} from '@reown/appkit-adapter-wagmi'
-import { createAppKit } from '@reown/appkit/react'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
+import { createAppKit } from '@reown/appkit/react';
 const projectId = import.meta.env.APP_WALLETCONNECT_PROJECT_ID;
 
 if (!projectId) {
@@ -24,8 +24,8 @@ export const config = new WagmiAdapter({
     [bsc.id]: http(import.meta.env.APP_BSC_NETWORK_URL),
     [polygon.id]: http(import.meta.env.APP_POLYGON_NETWORK_URL),
     [fantom.id]: http(import.meta.env.APP_FANTOM_NETWORK_URL),
-  }
-})
+  },
+});
 
 createAppKit({
   adapters: [config],
@@ -39,9 +39,9 @@ createAppKit({
   },
   features: {
     email: false,
-    socials: false
-  }
-})
+    socials: false,
+  },
+});
 declare module 'wagmi' {
   interface Register {
     config: typeof config;

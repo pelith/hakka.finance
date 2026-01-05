@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import {
   useClaimModalOpen,
@@ -27,7 +27,11 @@ const ClaimModal = (props: ClaimModalInterface) => {
         <div sx={styles.illustration} />
         <div sx={styles.heading}>
           <h2>Claim Reward</h2>
-          <img src={images.iconDeleteRound} onClick={toggleClaimModal} alt='Delete Round' />
+          <img
+            src={images.iconDeleteRound}
+            onClick={toggleClaimModal}
+            alt='Delete Round'
+          />
         </div>
         <div sx={styles.stateCard}>
           <div sx={{ fontSize: '0px' }}>

@@ -1,4 +1,3 @@
-
 import { ChainId } from '../../constants';
 import useRequestNetworkConfig from '../../hooks/useRequestNetworkConfig';
 

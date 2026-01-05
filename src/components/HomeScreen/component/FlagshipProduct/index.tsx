@@ -1,10 +1,18 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import { Flex, Box } from 'rebass';
 import images from '../../../../images';
 import styles from './styles';
 
-function FlagshipProduct({ item, i, link }: { item: { image: string; title: string }; i: number; link: string }) {
+function FlagshipProduct({
+  item,
+  i,
+  link,
+}: {
+  item: { image: string; title: string };
+  i: number;
+  link: string;
+}) {
   return (
     <Flex
       onClick={() => {
@@ -15,13 +23,16 @@ function FlagshipProduct({ item, i, link }: { item: { image: string; title: stri
       sx={styles.product}
       mt='2'
     >
-      <img sx={styles.imageProduct} src={images[item.image as keyof typeof images]} alt={item.image} />
+      <img
+        sx={styles.imageProduct}
+        src={images[item.image as keyof typeof images]}
+        alt={item.image}
+      />
       <Box sx={styles.productHeading} ml='3'>
         {item.title}
       </Box>
     </Flex>
   );
 }
-
 
 export default FlagshipProduct;

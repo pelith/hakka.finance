@@ -1,4 +1,4 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 /** @jsxFrag */
 import React, { useEffect, useState } from 'react';
 
@@ -6,7 +6,13 @@ import { Box, Flex, Text } from 'rebass';
 import images from '../../../images';
 import styles from './styles';
 
-const CardProduct = (props: { cardName: string, icon: string, vist: string, onShowInfo: (value: boolean) => void, selectedCard: string }) => {
+const CardProduct = (props: {
+  cardName: string;
+  icon: string;
+  vist: string;
+  onShowInfo: (value: boolean) => void;
+  selectedCard: string;
+}) => {
   const { cardName, icon, vist, onShowInfo, selectedCard } = props;
   const [isShowInfo, setIsShowInfo] = useState(false);
   // console.log('is close when click x', !!isShowInfoProduct)

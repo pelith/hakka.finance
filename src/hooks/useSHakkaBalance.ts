@@ -1,8 +1,5 @@
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
-import {
-  NEW_SHAKKA_ADDRESSES,
-  ChainId,
-} from '../constants';
+import { NEW_SHAKKA_ADDRESSES, ChainId } from '../constants';
 
 import { useTokenInfoAndBalance } from './contracts/token/useTokenInfoAndBalance';
 
@@ -15,13 +12,27 @@ export default function useSHakkaBalance(): {
 } {
   const { account } = useWeb3React();
 
-  const miannetHakkaBalance = useTokenInfoAndBalance(account as string, NEW_SHAKKA_ADDRESSES[ChainId.MAINNET], ChainId.MAINNET);
-  const bscHakkaBalance = useTokenInfoAndBalance(account as string, NEW_SHAKKA_ADDRESSES[ChainId.BSC], ChainId.BSC);
-  const polygonHakkaBalance = useTokenInfoAndBalance(account as string, NEW_SHAKKA_ADDRESSES[ChainId.POLYGON], ChainId.POLYGON);
+  const miannetHakkaBalance = useTokenInfoAndBalance(
+    account as string,
+    NEW_SHAKKA_ADDRESSES[ChainId.MAINNET],
+    ChainId.MAINNET,
+  );
+  const bscHakkaBalance = useTokenInfoAndBalance(
+    account as string,
+    NEW_SHAKKA_ADDRESSES[ChainId.BSC],
+    ChainId.BSC,
+  );
+  const polygonHakkaBalance = useTokenInfoAndBalance(
+    account as string,
+    NEW_SHAKKA_ADDRESSES[ChainId.POLYGON],
+    ChainId.POLYGON,
+  );
 
-  return { sHakkaBalanceInfo: {
-    [ChainId.MAINNET]: miannetHakkaBalance?.data?.balanceRaw,
-    [ChainId.BSC]: bscHakkaBalance?.data?.balanceRaw,
-    [ChainId.POLYGON]: polygonHakkaBalance?.data?.balanceRaw,
-  } };
+  return {
+    sHakkaBalanceInfo: {
+      [ChainId.MAINNET]: miannetHakkaBalance?.data?.balanceRaw,
+      [ChainId.BSC]: bscHakkaBalance?.data?.balanceRaw,
+      [ChainId.POLYGON]: polygonHakkaBalance?.data?.balanceRaw,
+    },
+  };
 }

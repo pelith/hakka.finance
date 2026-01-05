@@ -1,7 +1,7 @@
- /** @jsxImportSource theme-ui */
+/** @jsxImportSource theme-ui */
 
 import React, { useEffect, useMemo } from 'react';
-import { useNavigate } from '@tanstack/react-router'; 
+import { useNavigate } from '@tanstack/react-router';
 import Web3Status from '../../Web3Status';
 import styles from './styles';
 import images from '../../../images';
@@ -45,7 +45,7 @@ const ChallengeDetailPage = ({ oatId }: ChallengeDetailPageProps) => {
   return (
     <div sx={styles.container}>
       <div sx={styles.detailPageWrapper}>
-        <div sx={{...styles.header,}}>
+        <div sx={{ ...styles.header }}>
           <p>Play To Earn</p>
           <Web3Status />
         </div>
@@ -64,7 +64,11 @@ const ChallengeDetailPage = ({ oatId }: ChallengeDetailPageProps) => {
         </div>
         <div sx={styles.mainLayout}>
           <div sx={styles.oatWrapper}>
-            <img sx={styles.oat} src={images[OAT_INFO[oatId].img]} alt={OAT_INFO[oatId].img} />
+            <img
+              sx={styles.oat}
+              src={images[OAT_INFO[oatId].img]}
+              alt={OAT_INFO[oatId].img}
+            />
             <img src={images.iconOat} alt='OAT' />
           </div>
           <div>
@@ -79,9 +83,7 @@ const ChallengeDetailPage = ({ oatId }: ChallengeDetailPageProps) => {
                 {MISSION_STATUS[missionStatus].content}
               </div>
             </div>
-            <h4 sx={styles.missionTitle}>
-              {OAT_INFO[oatId].describeTitle}
-            </h4>
+            <h4 sx={styles.missionTitle}>{OAT_INFO[oatId].describeTitle}</h4>
             <div sx={styles.buttonWrapper}>
               <MyButton
                 onClick={() =>
@@ -111,9 +113,7 @@ const ChallengeDetailPage = ({ oatId }: ChallengeDetailPageProps) => {
                   : 'View NFT'}
               </MyButton>
             </div>
-            <p sx={styles.describeContent}>
-              {OAT_INFO[oatId].describeContent}
-            </p>
+            <p sx={styles.describeContent}>{OAT_INFO[oatId].describeContent}</p>
             <p sx={styles.hintTitle}>How to complete the mission: </p>
             <ul sx={styles.ul}>
               {OAT_INFO[oatId].hint?.map((hint) => (
