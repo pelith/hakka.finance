@@ -3,7 +3,7 @@
 
 
 import { Flex, Box } from 'rebass';
-import { navigate } from 'gatsby';
+import { useNavigate } from '@tanstack/react-router';
 import images from '../../../../images';
 import styles from './styles';
 
@@ -20,7 +20,7 @@ const detailsInfo = [
   },
 ];
 function UtilityHakka() {
-
+  const navigate = useNavigate();
   const renderDetailsInfo = () =>
     detailsInfo.map((item, i) => (
       <Flex sx={styles.utilityInfoContainer} flexDirection='column' key={item.title}>
@@ -48,7 +48,7 @@ function UtilityHakka() {
         <Flex
           sx={styles.utilityLink}
           alignItems='center'
-          onClick={() => navigate(`/staking`)}
+          onClick={() => navigate({ to: '/staking' })}
         >
           <Box>Stake Portal</Box>
           <Flex ml='1' mt='1px'>

@@ -2,9 +2,9 @@ import { BigNumber } from 'bignumber.js';
 import { parseToBigNumber } from './bignumber';
 
 export function getCommonDecimal(amount: BigNumber) {
-  if (amount.lt(0.01)) return 8;
-  if (amount.lt(1)) return 6;
-  if (amount.lt(10)) return 5;
+  if (amount.lt(0.01)) return 4;
+  if (amount.lt(1)) return 4;
+  if (amount.lt(10)) return 4;
   if (amount.lt(100)) return 4;
   if (amount.lt(1000)) return 3;
   return 2;

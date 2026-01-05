@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { zeroAddress } from 'viem';
 import {Tooltip as ReactTooltip} from 'react-tooltip';
 import { useNavigate } from '@tanstack/react-router';

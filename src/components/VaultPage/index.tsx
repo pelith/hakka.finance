@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { isAddressEqual, parseUnits, zeroAddress, type Address } from 'viem';
 import BigNumber from 'bignumber.js';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import images from '../../images/index';
 import styles from './styles';
 import { MyButton } from '../Common';
@@ -26,7 +26,6 @@ import {
   VAULT_TOKENS,
   GUILDBANK,
 } from '../../constants';
-import { useConnections } from 'wagmi';
 import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance';
 import useTokenTotalSupply from 'src/hooks/contracts/token/useTokenTotalSupply';
 import RewardListItemContainer from 'src/containers/Vault/RewardListItemContainer';
@@ -37,8 +36,7 @@ const getRewardTokenById = (chainId: ChainId | undefined) => {
 };
 
 const VaultPage = () => {
-  const { account } = useWeb3React();
-  const chainId = useConnections()[0].chainId as ChainId
+  const { account, chainId } = useWeb3React();
 
   const hakkaBalanceAmount = useTokenInfoAndBalance(account as Address, HAKKA[chainId as ChainId].address as Address, chainId as ChainId)
 
@@ -57,6 +55,7 @@ const VaultPage = () => {
 
   // when chainId change, update rewardTokens value
   useEffect(() => {
+    if (!chainId) return;
     setRewardTokens(getRewardTokenById(chainId));
   }, [chainId]);
 
@@ -95,7 +94,7 @@ const VaultPage = () => {
   const [burnState, burn] = useHakkaBurn(
     BURNER_ADDRESS[chainId as ChainId],
     account,
-    amountParsed,
+    amountParsed || 0n,
     pickedRewardTokensAddress,
   );
 
@@ -246,6 +245,9 @@ const VaultPage = () => {
                     inputAmount={inputAmount}
                     chainId={chainId as ChainId}
                     hakkaTotalSupply={hakkaTotalSupplyAmount.data ?? '0'}
+                    tokenName={rewardTokens[tokenAddress as Address]?.name}
+                    tokenSymbol={rewardTokens[tokenAddress as Address]?.symbol}
+                    tokenDecimals={rewardTokens[tokenAddress as Address]?.decimals}
                     onDelete={() => onRewardListItemDelete(tokenAddress as Address)}
                     onChange={() => toggleToken(tokenAddress as Address)}
                     checked={pickedRewardTokensAddress.includes(tokenAddress as Address)}

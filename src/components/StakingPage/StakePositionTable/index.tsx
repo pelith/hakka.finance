@@ -1,5 +1,5 @@
  /** @jsxImportSource theme-ui */
-import { Flex, jsx } from 'theme-ui';
+import { Flex } from 'theme-ui';
 import { memo } from 'react';
 import Table from 'rc-table';
 import { useCallback, useState, useMemo } from 'react';

@@ -3,9 +3,9 @@ import { useQuery } from '@apollo/client';
 import { zeroAddress } from 'viem';
 import { PROJECT_GALAXY_CAMPAIGNS_INFO } from '../apollo/queries';
 import projectGalaxyClient from '../thirdParties/apollo/client';
-import { useBlockNumber } from '../state/application/hooks';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { MissionStatusOptions } from '../constants/challenge';
+import { useWatchBlockNumber } from 'wagmi';
 
 export interface PROJECT_GALAXY_CAMPAIGNS_INFO_QUERY_RESULT {
   space: {
@@ -31,7 +31,7 @@ export interface CampaignsInfoType {
 
 const useProjectGalaxyCampaignsInfo = () => {
   const [campaignsInfo, setCampaignsInfo] = useState<CampaignsInfoType>();
-  const latestBlockNumber = useBlockNumber();
+  const latestBlockNumber = useWatchBlockNumber();
   const { account } = useWeb3React();
 
   const querySetting = useMemo(() => {

@@ -193,8 +193,7 @@ export const VAULT_TOKENS: { [chainId in ChainId]: {[x : string]: {name: string,
   [ChainId.FANTOM]: {},
 };
 
-// TODO: check this address
-export const NEW_SHAKKA_ADDRESSES: { [chainId in ChainId]: string } = {
+export const NEW_SHAKKA_ADDRESSES: { [chainId in ChainId]: Address } = {
   [ChainId.MAINNET]: '0xb925863a15ebdeae1a638bf2b6fd00d4db897a62',
   [ChainId.BSC]: '0x51DE1EeF029b5cc1Ef359E62aA98101F56f29bE6',
   [ChainId.POLYGON]: '0x7F8093f5F49a9D7F0334f8017fF777F1893032d5',
@@ -304,19 +303,19 @@ export const TOKEN_PRICE_SLUGS: string[] = [
 export const JSON_RPC_PROVIDER: { [chainId in ChainId]: PublicClient } = {
   [ChainId.MAINNET]: createPublicClient({
     chain: mainnet,
-    transport: http(import.meta.env.VITE_NETWORK_URL),
+    transport: http(import.meta.env.APP_NETWORK_URL),
   }),
   [ChainId.BSC]: createPublicClient({
     chain: bsc,
-    transport: http(import.meta.env.VITE_BSC_NETWORK_URL),
+    transport: http(import.meta.env.APP_BSC_NETWORK_URL),
   }),
   [ChainId.POLYGON]: createPublicClient({
     chain: polygon,
-    transport: http(import.meta.env.VITE_POLYGON_NETWORK_URL),
+    transport: http(import.meta.env.APP_POLYGON_NETWORK_URL),
   }),
   [ChainId.FANTOM]: createPublicClient({
     chain: fantom,
-    transport: http(import.meta.env.VITE_FANTOM_NETWORK_URL),
+    transport: http(import.meta.env.APP_FANTOM_NETWORK_URL),
   }),
 };
 

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Box, Flex, Link } from 'rebass';
-import { navigate } from 'gatsby';
+import { useNavigate } from '@tanstack/react-router';
 import { get } from 'lodash';
 import styles from './styles';
 import images from '../../images';
@@ -100,7 +100,7 @@ function SideBar(props: { onCloseSideBar: (value: boolean) => void, isShowSideBa
   const [isViewAllNotifiedMission, setIsViewAllNotifiedMission] =
     useState<boolean>(true);
   const isBrowser = typeof window !== 'undefined';
-
+  const navigate = useNavigate();
   useEffect(() => {
     const localStorageViewedPages = isBrowser
       ? window.localStorage.getItem('viewed-pages')
@@ -124,7 +124,7 @@ function SideBar(props: { onCloseSideBar: (value: boolean) => void, isShowSideBa
   }, []);
 
   const onSelectNavItem = (path: string) => () => {
-    navigate(`/${path}`);
+    navigate({ to: `/${path}` });
     setSelectedNav(path);
 
   };
@@ -135,7 +135,6 @@ function SideBar(props: { onCloseSideBar: (value: boolean) => void, isShowSideBa
     topSideBarItems.map((it, idx) => (
       <Box key={it.name} onClick={onSelectNavItem(it.path)}>
         <SideBarItem
-          selectedNav={selectedNav}
           icon={it.icon}
           text={it.name}
           path={it.path}
@@ -154,7 +153,6 @@ function SideBar(props: { onCloseSideBar: (value: boolean) => void, isShowSideBa
         }
       >
         <SideBarItem
-          selectedNav={selectedNav}
           icon={it.icon}
           text={it.name}
           path={it.path}
@@ -180,7 +178,7 @@ function SideBar(props: { onCloseSideBar: (value: boolean) => void, isShowSideBa
         <Box>
           <Box sx={styles.custom_padding}>
             <Box sx={styles.sidebar_header}>
-              <img src={images.hakkaLogo} onClick={() => navigate('/')} alt='Hakka Logo' />
+              <img src={images.hakkaLogo} onClick={() => navigate({ to: '/' })} alt='Hakka Logo' />
               <img
                 alt='Close'
                 onClick={handleCloseSideBar}

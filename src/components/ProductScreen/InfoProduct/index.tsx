@@ -1,6 +1,4 @@
  /** @jsxImportSource theme-ui */
-/** @jsxFrag pragma */
-
 
 import { Box, Flex } from 'rebass';
 import images from '../../../images';

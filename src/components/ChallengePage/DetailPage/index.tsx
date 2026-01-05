@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 
 import React, { useEffect, useMemo } from 'react';
-import { navigate } from 'gatsby';
+import { useNavigate } from '@tanstack/react-router'; 
 import Web3Status from '../../Web3Status';
 import styles from './styles';
 import images from '../../../images';
@@ -26,7 +26,7 @@ const ChallengeDetailPage = ({ oatId }: ChallengeDetailPageProps) => {
     [missionStatus],
   );
   const isBrowser = typeof window !== 'undefined';
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (!isBrowser) {
       return;
@@ -55,7 +55,7 @@ const ChallengeDetailPage = ({ oatId }: ChallengeDetailPageProps) => {
             marginBottom: '35px',
             textDecoration: 'none',
           }}
-          onClick={() => navigate('/play2earn')}
+          onClick={() => navigate({ to: '/play2earn' })}
         >
           <div sx={styles.btnBack}>
             <img src={images.iconBack} alt='Back to mission list' />

@@ -2,14 +2,14 @@
 
 import { useCallback } from 'react';
 import images from '../../images';
-import { type ChainId, HAKKA } from '../../constants';
+import { ChainId, HAKKA } from '../../constants';
 import styles from './styles';
 import { useConnections, useWatchAsset } from 'wagmi';
 import { isAddress, type Address } from 'viem';
 
 const AddHakkaToMetamaskBtn = ({ address = '', selectedChainId }: { address?: string, selectedChainId: ChainId }) => {
   const [connections] = useConnections();
-  const chainId = connections.chainId;
+  const chainId = connections?.chainId ?? ChainId.MAINNET;
   const {watchAsset} = useWatchAsset()
   const addToMetamask = useCallback(() => {
     if (isAddress(address)) {

@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
 
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import React, { memo } from 'react';
 import useENSName from '../../hooks/useENSName';
 import useUnstoppableDomains from '../../hooks/useUnstoppableDomains';
@@ -19,17 +19,13 @@ import PlayToEarnLevelUpModal from '../PlayToEarnLevelUpModal';
 import { CHAIN_URL_MAP } from '../../constants/chainDetail';
 
 const Web3Status = ({ unsupported }: { unsupported?: boolean }) => {
-  const { isActive: active, account, chainId } = useWeb3React();
+  const { account, chainId } = useWeb3React();
   const { ENSName } = useENSName(account ?? undefined);
   const { unstoppableDomain } = useUnstoppableDomains(account ?? undefined);
   const toggleWalletModal = useWalletModalToggle();
   const toggleInfoModal = useInfoModalToggle();
 
   const isUnsupportedChainError = !CHAIN_URL_MAP.has(chainId || -1);
-
-  if (!active) {
-    return null;
-  }
 
   return (
     <div>
@@ -38,7 +34,7 @@ const Web3Status = ({ unsupported }: { unsupported?: boolean }) => {
         <div sx={styles.accountContainer}>
           <div sx={styles.loginButtonWrapper}>
             <MyButton
-              id={account ? 'web3-status-connected' : 'connect-wallet'}
+              key={account ? 'web3-status-connected' : 'connect-wallet'}
               onClick={toggleWalletModal}
               disabled={isUnsupportedChainError}
             >

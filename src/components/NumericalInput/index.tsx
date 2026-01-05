@@ -4,10 +4,10 @@
 import { parseUnits } from 'viem';
 import styles from './styles';
 import { escapeRegExp } from '../../utils/index';
-
+import { memo } from 'react';
 const inputRegex = RegExp('^\\d*(?:\\\\[.])?\\d*$'); // match escaped "." characters via in a non-capturing group
 
-export const NumercialInput = React.memo(
+export const NumercialInput = memo(
   ({
     value,
     onUserInput,

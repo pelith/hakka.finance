@@ -1,5 +1,4 @@
 import { useCallback, useContext, useMemo } from 'react';
-import { useActiveWeb3React } from '../../hooks/web3Manager';
 import { ApplicationContext } from './context';
 import type { PopupContent } from './actions';
 import type { PopupList, ApplicationState } from './reducer';
@@ -13,12 +12,6 @@ export function useApplicationContextStateSelector<
 
 export function useApplicationContext() {
   return useContext(ApplicationContext);
-}
-
-export function useBlockNumber(): number | undefined {
-  const { chainId } = useActiveWeb3React();
-  const blockNumber = useApplicationContextStateSelector('blockNumber');
-  return blockNumber[chainId ?? -1];
 }
 
 export function useWalletModalOpen(): boolean {

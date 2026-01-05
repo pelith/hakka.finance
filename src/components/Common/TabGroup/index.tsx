@@ -3,6 +3,7 @@
 import { ChainId } from '../../../constants';
 import styles from './styles';
 import images from '../../../images';
+import type { ThemeUIStyleObject } from 'theme-ui';
 interface IProps {
   list: { icon: string; title: string; value: ChainId }[];
   active: ChainId;
@@ -12,7 +13,7 @@ interface IProps {
 export const TabGroup = (props: IProps) => {
   const { list, active } = props;
   return (
-    <div sx={styles}>
+    <div sx={styles as ThemeUIStyleObject}>
       {list.map((item, index) => (
         <div
           key={item.value}

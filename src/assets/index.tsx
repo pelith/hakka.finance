@@ -1,10 +1,19 @@
+import coinbaseWalletIcon from './wallets/coinbaseWalletIcon.svg';
+import fortmaticIcon from './wallets/fortmaticIcon.png';
+import imToken from './wallets/imToken.png';
+import metamask from './wallets/metamask.png';
+import portisIcon from './wallets/portisIcon.png';
+import unstoppableIcon from './wallets/unstoppable.svg';
+import walletConnectIcon from './wallets/walletConnectIcon.svg';
+
 const logos = {
-  coinbaseWalletIcon: require('./wallets/coinbaseWalletIcon.svg').default,
-  fortmaticIcon: require('./wallets/fortmaticIcon.png').default,
-  metamask: require('./wallets/metamask.png').default,
-  imToken: require('./wallets/imToken.png').default,
-  portisIcon: require('./wallets/portisIcon.png').default,
-  unstoppableIcon: require('./wallets/unstoppable.svg').default,
-  walletConnectIcon: require('./wallets/walletConnectIcon.svg').default,
+  coinbaseWalletIcon,
+  fortmaticIcon,
+  metamask,
+  imToken,
+  portisIcon,
+  unstoppableIcon,
+  walletConnectIcon,
 };
+
 export default logos;

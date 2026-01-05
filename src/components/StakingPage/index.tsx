@@ -2,9 +2,9 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { formatUnits, zeroAddress } from 'viem';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 
-import { navigate } from 'gatsby';
+import { useNavigate } from '@tanstack/react-router';
 import images from '../../images';
 import styles from './styles';
 import Web3Status from '../Web3Status';
@@ -61,7 +61,7 @@ const Staking = () => {
   const { account, chainId } = useWeb3React();
   const activeChainId = chainId as ChainId;
   const [positionIndex, setPositionIndex] = useState<number | undefined>();
-
+  const navigate = useNavigate();
   const toggleWalletModal = useWalletModalToggle();
   const toggleRedeemModal = useRedeemModalToggle();
   const toggleRestakeModal = useRestakeModalToggle();
@@ -148,7 +148,7 @@ const Staking = () => {
             >
               <span>Go to governance</span>
             </ReactTooltip>
-            <a onClick={() => navigate('/staking-v1')} sx={styles.normalButton}>
+            <a onClick={() => navigate({ to: '/staking-v1' })} sx={styles.normalButton}>
               Switch to v1
               <img className='icon' src={images.iconArrowRight} />
             </a>
@@ -218,7 +218,7 @@ const Staking = () => {
             <span>Earn more Hakka</span>
             <a
               sx={styles.sHakkaRewardLinkBtn}
-              href={`/farms/${currentShakkaRewardPoolAddress}`}
+              onClick={() => navigate({ to: `/farms/${currentShakkaRewardPoolAddress}` })}
               rel='noreferrer'
             >
               <span>sHAKKA Pool</span>

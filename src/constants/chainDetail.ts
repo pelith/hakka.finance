@@ -5,10 +5,10 @@ export enum ChainId {
   FANTOM = 250,
 }
 
-const NETWORK_URL = import.meta.env.VITE_NETWORK_URL;
-const BSC_NETWORK_URL = import.meta.env.VITE_BSC_NETWORK_URL;
-const POLYGON_NETWORK_URL = import.meta.env.VITE_POLYGON_NETWORK_URL;
-const FANTOM_NETWORK_URL = import.meta.env.VITE_FANTOM_NETWORK_URL;
+const NETWORK_URL = import.meta.env.APP_NETWORK_URL;
+const BSC_NETWORK_URL = import.meta.env.APP_BSC_NETWORK_URL;
+const POLYGON_NETWORK_URL = import.meta.env.APP_POLYGON_NETWORK_URL;
+const FANTOM_NETWORK_URL = import.meta.env.APP_FANTOM_NETWORK_URL;
 if (
   typeof NETWORK_URL === 'undefined' ||
   typeof BSC_NETWORK_URL === 'undefined' ||
@@ -21,7 +21,7 @@ if (
 }
 
 export const NETWORK_CHAIN_ID: number = parseInt(
-  import.meta.env.VITE_CHAIN_ID ?? '1',
+  import.meta.env.APP_CHAIN_ID ?? '1',
 );
 
 const chainUrlList = [

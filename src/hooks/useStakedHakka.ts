@@ -1,15 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useWeb3React } from '@web3-react/core';
-import { zeroAddress, type Address } from 'viem';
+import { useMemo, useState } from 'react';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
+import { isAddress, zeroAddress, type Address } from 'viem';
 import {
   ChainDataFetchingState,
   NEW_SHAKKA_ADDRESSES,
   ChainId,
   JSON_RPC_PROVIDER,
 } from '../constants';
-import { useBlockNumber } from '../state/application/hooks';
 import STAKING_ABI from '../constants/abis/shakka';
-import throttle from 'lodash/throttle';
+import { useReadContract } from 'wagmi';
 export type StakedHakkaType = {
   [chainId in ChainId]?: bigint;
 };
@@ -22,61 +21,47 @@ export default function useStakedHakka(): {
   fetchDataState: ChainDataFetchingState;
 } {
   const { account } = useWeb3React();
-  const latestBlockNumber = useBlockNumber();
-  const [stakedHakka, setStakedHakka] = useState<StakedHakkaType>({});
-  const [transactionSuccess, setTransactionSuccess] = useState(false);
+
+  const {data: mainnetStakedHakka, isLoading: isLoadingMainnetStakedHakka} = useReadContract({
+    address: NEW_SHAKKA_ADDRESSES[ChainId.MAINNET] as Address,
+    abi: STAKING_ABI,
+    functionName: 'stakedHakka',
+    args: [account as Address],
+    query: {
+      enabled: isAddress(account ?? '') && isAddress(NEW_SHAKKA_ADDRESSES[ChainId.MAINNET] ?? ''),
+    }
+  })
+
+  const {data: bscStakedHakka, isLoading: isLoadingBscStakedHakka} = useReadContract({
+    address: NEW_SHAKKA_ADDRESSES[ChainId.BSC] as Address,
+    abi: STAKING_ABI,
+    functionName: 'stakedHakka',
+    args: [account as Address],
+    query: {
+      enabled: isAddress(account ?? '') && isAddress(NEW_SHAKKA_ADDRESSES[ChainId.BSC] ?? ''),
+    }
+  })
+  
+  const {data: polygonStakedHakka, isLoading: isLoadingPolygonStakedHakka} = useReadContract({
+    address: NEW_SHAKKA_ADDRESSES[ChainId.POLYGON] as Address,
+    abi: STAKING_ABI,
+    functionName: 'stakedHakka',
+    args: [account as Address],
+    query: {
+      enabled: isAddress(account ?? '') && isAddress(NEW_SHAKKA_ADDRESSES[ChainId.POLYGON] ?? ''),
+    }
+  })
 
   const fetchDataState: ChainDataFetchingState = useMemo(() => {
-    return transactionSuccess
-      ? ChainDataFetchingState.SUCCESS
-      : ChainDataFetchingState.LOADING;
-  }, [transactionSuccess]);
+    return isLoadingMainnetStakedHakka || isLoadingBscStakedHakka || isLoadingPolygonStakedHakka
+      ? ChainDataFetchingState.LOADING
+      : ChainDataFetchingState.SUCCESS;
+  }, [isLoadingMainnetStakedHakka, isLoadingBscStakedHakka, isLoadingPolygonStakedHakka]);
 
-  const providers = JSON_RPC_PROVIDER;
 
-  const getStakedHakka = async (
-    chainId: ChainId,
-    account: string,
-  ): Promise<[ChainId, bigint | undefined]> => {
-    const client = providers[chainId];
-    if (NEW_SHAKKA_ADDRESSES[chainId] === zeroAddress)
-      return [chainId, undefined];
-    const stakedHakka = (await client.readContract({
-      address: NEW_SHAKKA_ADDRESSES[chainId] as Address,
-      abi: STAKING_ABI as any,
-      functionName: 'stakedHakka',
-      args: [account as Address],
-    })) as bigint;
-    return [chainId, stakedHakka];
-  };
-
-  const fetchStakedHakka = async (account: string) => {
-    setTransactionSuccess(false);
-    try {
-      const stakedList = [
-        getStakedHakka(ChainId.MAINNET, account),
-        getStakedHakka(ChainId.BSC, account),
-        getStakedHakka(ChainId.POLYGON, account),
-      ];
-      const stakedHakkaResult = await Promise.all(stakedList);
-
-      setStakedHakka(Object.fromEntries(stakedHakkaResult));
-      setTransactionSuccess(true);
-    } catch (e) {
-      console.log(e);
-      console.log('fetch user staked hakka error');
-    }
-  };
-
-  const throttledFetchStakedHakka = useMemo(
-    () => throttle(fetchStakedHakka, 2000),
-    [],
-  );
-
-  useEffect(() => {
-    if (account === zeroAddress || !account) return;
-    throttledFetchStakedHakka(account);
-  }, [latestBlockNumber, account]);
-
-  return { stakedHakka, fetchDataState };
+  return { stakedHakka: {
+    [ChainId.MAINNET]: mainnetStakedHakka ?? 0n,
+    [ChainId.BSC]: bscStakedHakka ?? 0n,
+    [ChainId.POLYGON]: polygonStakedHakka ?? 0n,
+  }, fetchDataState };
 }

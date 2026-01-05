@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { getEtherscanLink, shortenTxId } from '../../utils';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';

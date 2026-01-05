@@ -60,9 +60,6 @@ const partnersImg = [
     img: 'imageGelato',
   },
   {
-    img: 'imageImmunefiGray',
-  },
-  {
     img: 'imageProjectGalaxy',
   },
 ] as const;

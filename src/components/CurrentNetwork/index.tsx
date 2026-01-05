@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
 
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import images from '../../images';
 import styles from './styles';
 import { ChainId, ChainName } from '../../constants';

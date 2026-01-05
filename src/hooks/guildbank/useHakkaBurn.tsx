@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 
 import { useState, useCallback, useMemo } from 'react';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { toast } from 'react-toastify';
 import useAppWriteContract from '../contracts/useAppWriteContract';
 import type { ChainId } from 'src/constants';
@@ -17,7 +17,7 @@ export enum BurnState {
 export function useHakkaBurn(
   burnAddress?: string,
   spender?: string,
-  amountParsed?: BigNumber,
+  amountParsed?: bigint,
   pickedRewardTokensAddress?: string[],
 ): [BurnState, () => Promise<void>] {
   const { chainId } = useWeb3React();
@@ -56,7 +56,7 @@ export function useHakkaBurn(
     address: burnAddress,
     abi: BURNER_ABI,
     functionName: 'ragequit',
-    args: [pickedRewardTokensAddress as Address[], BigInt(amountParsed!.toString())],
+    args: [pickedRewardTokensAddress as Address[], amountParsed!],
     });
   }, [spender, amountParsed, pickedRewardTokensAddress]);
 

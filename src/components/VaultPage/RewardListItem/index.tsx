@@ -3,6 +3,7 @@
 import BigNumber from 'bignumber.js';
 import images from '../../../images/index';
 import styles from './styles';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 
 interface RewardItemProps {
   onDelete: () => void;
@@ -59,7 +60,7 @@ const RewardItem = (props: RewardItemProps) => {
               ? '0'
               : receiveAmount?.toFixed(4)}
           </span>
-          /<span sx={styles.bankBalance}>{bankBalance}</span>
+          /<span sx={styles.bankBalance}>{formatCommonNumber(bankBalance)}</span>
         </div>
       ) : (
         <span sx={styles.unselectedReward}>Unselected Reward</span>

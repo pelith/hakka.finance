@@ -3,7 +3,9 @@ import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAn
 import { formatUnits, isAddressEqual, type Address } from 'viem';
 import { useBalance } from 'wagmi';
 import RewardListItem from '../../components/VaultPage/RewardListItem/index';
-import { useEffect, useMemo } from 'react';
+import BigNumber from 'bignumber.js';
+import { useEffect, useMemo, useRef } from 'react';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 interface RewardListItemContainerProps {
   tokenAddress: Address;
   guildBankAddress: Address;
@@ -16,6 +18,10 @@ interface RewardListItemContainerProps {
 
   hakkaTotalSupply: string;
 
+  tokenName?: string;
+  tokenSymbol?: string;
+  tokenDecimals?: number;
+
   onRewardCalculated: (receiveAmount: BigNumber) => void;
 }
 export default function RewardListItemContainer({
@@ -25,6 +31,7 @@ export default function RewardListItemContainer({
   hakkaTotalSupply,
   isDefaultToken = false,
   chainId,
+  tokenSymbol,
   checked = false,
   onChange,
   onDelete,
@@ -69,16 +76,19 @@ export default function RewardListItemContainer({
     return rewardAmount;
   }, [guildEthBalance?.value, guildTokenBalance?.balance, isEthAddress])
 
+const rewardCalculatedCallbackRef = useRef(onRewardCalculated);
+rewardCalculatedCallbackRef.current = onRewardCalculated;
+
   useEffect(() => {
-    onRewardCalculated?.(receiveAmount);
-  }, [receiveAmount, onRewardCalculated]);
+    rewardCalculatedCallbackRef.current?.(receiveAmount);
+  }, [receiveAmount]);
 
   return (
     <RewardListItem
       onDelete={onDelete ?? (() => {})}
       onChange={onChange}
       checked={checked}
-      tokenName={guildTokenBalance?.symbol ?? ''}
+      tokenName={tokenSymbol ?? ''}
       isDefaultToken={isDefaultToken}
       receiveAmount={receiveAmount}
       bankBalance={bankBalance}

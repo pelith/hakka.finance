@@ -1,7 +1,6 @@
  /** @jsxImportSource theme-ui */
-/** @jsxFrag React.Fragment */
 
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import React, { useState, useMemo, useEffect } from 'react';
 import { formatUnits, parseUnits } from 'viem';
 import styles from './styles';
@@ -15,7 +14,6 @@ import { REWARD_POOLS } from '../../../constants/rewards';
 import { POOL_ASSETES } from '../../../constants/rewards/assets';
 import { useTokenApprove, ApprovalState } from '../../../hooks/useTokenApprove';
 import {
-  tryParseAmount,
   shortenAddress,
   getEtherscanLink,
 } from '../../../utils';
@@ -45,6 +43,7 @@ import { useVestingBalance } from 'src/hooks/contracts/vesting/useVestingBalance
 import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance';
 import BigNumber from 'bignumber.js';
 import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
+import { useQuery } from '@tanstack/react-query';
 
 const PoolDetail = ({ pool }: { pool: string }) => {
   const { account, chainId } = useWeb3React();
@@ -61,68 +60,38 @@ const PoolDetail = ({ pool }: { pool: string }) => {
 
   const hakkaPrice = useTokenPrice('hakka-finance');
   const tokenPrice = useTokensPrice();
-  const [apr, setApr] = useState('');
-  const [tvl, setTvl] = useState('');
-
-  useEffect(() => {
-    let active = true;
-    try {
-      loadApr();
-    } catch (e) {
-      console.error(e);
-    }
-    return () => {
-      active = false;
-    };
-
-    async function loadApr() {
-      if (!active || !hakkaPrice || !tokenPrice) {
-        return;
+  const {data: apr} = useQuery({
+    queryKey: ['apr', pool],
+    queryFn: async () => {
+      if (!hakkaPrice || !tokenPrice) {
+        return '0';
       }
-      try {
-        const newApr = await POOL_ASSETES[pool].getApr(
-          parseUnits(hakkaPrice.toString(), 18),
-          POOL_ASSETES[pool].tokenPriceKey
+      return POOL_ASSETES[pool].getApr(
+        parseUnits(hakkaPrice.toString(), 18),
+        POOL_ASSETES[pool].tokenPriceKey
             ? tokenPrice?.[POOL_ASSETES[pool].tokenPriceKey]?.usd || 1
             : 1,
-        );
-        setApr(
-          new BigNumber(formatUnits((newApr ?? 0n) * 100n, 18)).toFixed(2) ??
-            '-',
-        );
-      } catch (e) {
-        console.error(e);
-
-        setTimeout(() => {
-          loadApr();
-        }, 1000);
-      }
-    }
-  }, [hakkaPrice, tokenPrice]);
-
-  useEffect(() => {
-    let active = true;
-    try {
-      loadTvl();
-    } catch (e) {
-      console.error(e);
-    }
-    return () => {
-      active = false;
-    };
-
-    async function loadTvl() {
-      if (!active || !tokenPrice) {
-        return;
-      }
-      const newTvl = await POOL_ASSETES[pool].getTvl(tokenPrice);
-      setTvl(
-        tryParseAmount(
-          formatUnits(newTvl, POOL_ASSETES[pool]?.decimal || 18),
-        )?.toFixed(2) ?? '-',
       );
-    }
-  }, [tokenPrice]);
+    },
+    select: (data) => {
+      return new BigNumber(formatUnits(BigInt(data ?? 0), 18)).toFixed(2) ?? '-';
+    },
+    refetchInterval: 1_000,
+  })
+
+  const {data: tvl} = useQuery({
+    queryKey: ['tvl', pool],
+    queryFn: async () => {
+      if (!tokenPrice) {
+        return '0';
+      }
+      return POOL_ASSETES[pool].getTvl(tokenPrice);
+    },
+    select: (data) => {
+      return new BigNumber(formatUnits(BigInt(data ?? 0), 18)).toFixed(2) ?? '-';
+    },
+    refetchInterval: 1_000,
+  })
 
   const [stakeInputAmount, setStakeInputAmount] = useState<string>('');
   const [withdrawInputAmount, setWithdrawInputAmount] = useState<string>('');
@@ -263,12 +232,12 @@ const PoolDetail = ({ pool }: { pool: string }) => {
             <div sx={styles.infoItem}>
               {tvl &&
               parseUnits(tvl, REWARD_POOLS[pool]?.decimal || 18) > 0n ? (
-                <React.Fragment>
+                <>
                   <span>TVL</span>
                   <span sx={styles.infoValue}> ${tvl} </span>
-                </React.Fragment>
+                </>
               ) : (
-                <React.Fragment />
+                <></>
               )}
             </div>
             <div sx={styles.infoItem}>

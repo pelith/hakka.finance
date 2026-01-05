@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { isMobile } from 'react-device-detect';
 import useTokenPrice from '../../hooks/useTokenPrice';
 import { formatUnits, parseUnits, type Address } from 'viem';
@@ -14,7 +14,6 @@ import Web3Status from '../Web3Status';
 import { ChainId } from '../../constants';
 import { type Pool, REWARD_POOLS } from '../../constants/rewards';
 import { POOL_ASSETES } from '../../constants/rewards/assets';
-import { tryParseAmount } from '../../utils';
 import { useRewardsData } from '../../data/RewardsData';
 import useTokensPrice from '../../hooks/useTokensPrice';
 import { CHAIN_SWITCH_TAB_INFO } from '../../constants/farm';
@@ -32,7 +31,7 @@ interface RewardsPoolsContainerProps {
     pool: Pool,
     currentChain: ChainId,
     active?: any,
-  ) => jsx.JSX.Element;
+  ) => React.ReactNode;
 }
 
 const RewardsPage = () => {

@@ -1,11 +1,10 @@
 import React, { useCallback, useMemo, useReducer } from 'react';
 import { createContext } from 'use-context-selector';
+import { useAppKit } from '@reown/appkit/react'
 import reducer, { initialApplicationState, type ApplicationState } from './reducer';
 import {
-  type UpdateBlockNumberPayload,
   type AddPopupPayload,
   type RemovePopupPayload,
-  updateBlockNumberAction,
   toggleWalletModalAction,
   toggleInfoModalAction,
   toggleClaimModalAction,
@@ -19,7 +18,6 @@ import {
 
 interface ApplicationContextProps {
   state: ApplicationState;
-  updateBlockNumber: (payload: UpdateBlockNumberPayload) => void;
   toggleWalletModal: () => void;
   toggleInfoModal: () => void;
   toggleClaimModal: () => void;
@@ -39,13 +37,13 @@ const ApplicationContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(reducer, initialApplicationState);
-
-  const updateBlockNumber = useCallback((payload: UpdateBlockNumberPayload) => {
-    dispatch(updateBlockNumberAction(payload));
-  }, []);
+  const appkit = useAppKit()
 
   const toggleWalletModal = useCallback(() => {
-    dispatch(toggleWalletModalAction());
+    // dispatch(toggleWalletModalAction());
+    appkit.open({
+      namespace: 'eip155',
+    })
   }, []);
 
   const toggleInfoModal = useCallback(() => {
@@ -85,7 +83,6 @@ const ApplicationContextProvider: React.FC<{ children: React.ReactNode }> = ({
       value={useMemo(
         () => ({
           state,
-          updateBlockNumber,
           toggleWalletModal,
           toggleInfoModal,
           toggleClaimModal,
@@ -98,7 +95,6 @@ const ApplicationContextProvider: React.FC<{ children: React.ReactNode }> = ({
         }),
         [
           state,
-          updateBlockNumber,
           toggleWalletModal,
           toggleInfoModal,
           toggleClaimModal,

@@ -3,9 +3,10 @@
 import { Box } from 'rebass';
 import images from '../../../../images';
 import styles from './styles';
-import { navigate } from 'gatsby';
+import { useNavigate } from '@tanstack/react-router';
 
 function CardInfo() {
+  const navigate = useNavigate();
   const cardHeadContent = [
     {
       imageBottom: 'iconRocket',
@@ -14,7 +15,7 @@ function CardInfo() {
       subContent:
         'Become a DeFi master and win NFTs by completing simple missions!',
       click: () => {
-        navigate('/play2earn-intro');
+        navigate({ to: '/play2earn-intro' });
       },
       bgColor: '#44D2BA',
       bgImage: `url(${images.iconP2eBanner})`,

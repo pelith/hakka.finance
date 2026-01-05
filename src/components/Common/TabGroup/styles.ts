@@ -1,6 +1,6 @@
-import type { ThemeUICSSObject } from 'theme-ui';
+import createSX from '@/utils/createSX';
 
-const tabActive: ThemeUICSSObject = {
+const tabActive = {
   backgroundColor: '#ebf0f2',
   color: '#253e47',
   '& img': {
@@ -37,4 +37,4 @@ export default {
   },
 
   'div.active': tabActive,
-} as ThemeUICSSObject;
+};

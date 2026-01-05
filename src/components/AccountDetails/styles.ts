@@ -1,6 +1,6 @@
-import { ThemeUIStyleObject } from 'theme-ui';
+import createSX from '@/utils/createSX';
 
-export default {
+export default createSX({
   copyIcon: {
     color: '#888D9B',
     display: 'flex',
@@ -156,4 +156,4 @@ export default {
       textDeaccountGroupingRowcoration: 'underline',
     },
   },
-} as Record<string, ThemeUIStyleObject>;
+});

@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 import { useEffect, useMemo, useState } from 'react';
 
-import { navigate } from 'gatsby';
+import { useNavigate } from '@tanstack/react-router';
 import { formatUnits, parseUnits } from 'viem';
 import BigNumber from 'bignumber.js';
 import {
@@ -21,7 +21,6 @@ import {
 } from '../../constants';
 import { useHakkaUnstake } from '../../hooks/staking/useHakkaUnstake';
 import { unstakeReceivedAmount } from '../../utils/unstakeReceivedAmount';
-import { tryParseAmount } from '../../utils';
 import type { VaultType } from '../../hooks/staking/useStakingVault';
 import withWrongNetworkCheckWrapper from '../../hoc/withWrongNetworkCheckWrapper';
 import withConnectWalletCheckWrapper from '../../hoc/withConnectWalletCheckWrapper';
@@ -59,7 +58,7 @@ const RedeemModal = ({
   const [isCorrectInput, setIsCorrectInput] = useState<boolean>(true);
   const vault = vaults?.[index];
   const receiveHakkaAmount = unstakeReceivedAmount(inputAmount, vault);
-
+  const navigate = useNavigate();
   const [unstakeState, unstake] = useHakkaUnstake(
     NEW_SHAKKA_ADDRESSES[chainId as ChainId],
     account,
@@ -130,7 +129,7 @@ const RedeemModal = ({
         </p>
         <div sx={styles.sHakkaInFarmContainer}>
           <p>{sHakkaBalanceInFarming || '-'}</p>
-          <div sx={styles.sHakkaPoolLink} onClick={() => navigate(`/farms`)}>
+          <div sx={styles.sHakkaPoolLink} onClick={() => navigate({ to: '/farms' })}>
             <p>sHAKKA Pool</p>
             <img sx={{ opacity: '0.5' }} src={images.iconArrowRight} />
           </div>

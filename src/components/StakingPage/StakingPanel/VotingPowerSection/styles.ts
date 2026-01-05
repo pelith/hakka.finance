@@ -1,5 +1,4 @@
 import createSX from 'src/utils/createSX';
-import type { ThemeUICSSObject } from 'theme-ui';
 export default createSX({
   wrapper: {
     display: 'flex',
@@ -13,7 +12,7 @@ export default createSX({
   img: {
     size: '21px',
     mr: '11.5px',
-  } as ThemeUICSSObject,
+  },
 
   total: {
     color: 'rgba(37, 62, 71, 0.5)',

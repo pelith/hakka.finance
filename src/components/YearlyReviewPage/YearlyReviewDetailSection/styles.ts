@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   mainContentWrapper: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -72,4 +74,4 @@ export default {
   goToProductsBtnWrapper: {
     width: '200px',
   },
-};
+});

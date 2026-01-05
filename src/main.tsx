@@ -1,4 +1,3 @@
-import {StrictMode} from 'react';
 import ReactDOM from 'react-dom/client';
 import '@fontsource/open-sans/400.css';
 import '@fontsource/open-sans/600.css';
@@ -9,10 +8,10 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { config } from './wagmi.config';
 import { routeTree } from './routeTree.gen';
 import { ContextProviders } from './state';
-import ApplicationUpdater from './state/application/updater';
-import MulticallUpdater from './state/multicall/updater';
 import { initGtm, trackSpaRouteChangesWithGtm } from './thirdParty/gtm';
 import { initTawk } from './thirdParty/tawk';
+import { ThemeUIProvider } from 'theme-ui';
+import { theme } from './theme';
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -21,8 +20,8 @@ if (import.meta.env.PROD) {
   initGtm('GTM-5RNGTLZ');
   trackSpaRouteChangesWithGtm({ eventName: 'routeChangeEvent' });
   initTawk({
-    tawkId: import.meta.env.VITE_TAWK_ID,
-    tawkKey: import.meta.env.VITE_TAWK_KEY,
+    tawkId: import.meta.env.APP_TAWK_ID,
+    tawkKey: import.meta.env.APP_TAWK_KEY,
   });
 }
 
@@ -43,30 +42,20 @@ const queryClient = new QueryClient({
   },
 });
 
-function Updaters() {
-  return (
-    <>
-      <ApplicationUpdater />
-      <MulticallUpdater />
-    </>
-  );
-}
-
 function App() {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <ContextProviders>
-          <Updaters />
-          <RouterProvider router={router} />
-        </ContextProviders>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <ThemeUIProvider theme={theme}>
+      <WagmiProvider config={config.wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <ContextProviders>
+            <RouterProvider router={router} />
+          </ContextProviders>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </ThemeUIProvider>
   );
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+  <App />
 );

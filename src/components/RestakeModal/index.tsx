@@ -1,6 +1,6 @@
  /** @jsxImportSource theme-ui */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { jsx, Switch } from 'theme-ui';
+import { Switch } from 'theme-ui';
 import { parseUnits } from 'viem';
 import { isMobile } from 'react-device-detect';
 import {

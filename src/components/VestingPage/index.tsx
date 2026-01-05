@@ -1,9 +1,9 @@
  /** @jsxImportSource theme-ui */
 
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { useMemo, useState, useEffect } from 'react';
 import Countdown, { zeroPad } from 'react-countdown';
-import { formatUnits, isAddressEqual, zeroAddress } from 'viem';
+import { formatUnits, isAddress, isAddressEqual, zeroAddress } from 'viem';
 import _omit from 'lodash/omit';
 import Web3Status from '../Web3Status';
 import images from '../../images';
@@ -38,7 +38,9 @@ const hakkaSupportChain = Object.keys(ChainNameWithIcon).map((key) => {
     icon: ChainNameWithIcon[+key as ChainId].iconName,
   };
 });
-
+const ClaimButton = withWrongNetworkCheckWrapper(
+  withConnectWalletCheckWrapper(MyButton),
+);
 const vestingSupportChain = hakkaSupportChain.filter(
   (chain) => VESTING_ADDRESSES[chain.value] !== zeroAddress,
 );
@@ -106,9 +108,6 @@ const VestingPage = () => {
   );
 
   const toggleWalletModal = useWalletModalToggle();
-  const ClaimButton = withWrongNetworkCheckWrapper(
-    withConnectWalletCheckWrapper(MyButton),
-  );
 
   return (
     <div sx={styles.container}>
@@ -116,7 +115,7 @@ const VestingPage = () => {
         <div sx={styles.header}>
           <h1 sx={styles.title}>Vesting</h1>
           <Web3Status
-            unsupported={isAddressEqual(VESTING_ADDRESSES[chainId as ChainId], zeroAddress)}
+            unsupported={isAddress(VESTING_ADDRESSES[chainId as ChainId]) && isAddressEqual(VESTING_ADDRESSES[chainId as ChainId], zeroAddress)}
           />
         </div>
         <h3 sx={styles.heading}></h3>

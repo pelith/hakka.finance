@@ -1,15 +1,6 @@
 import {
-  Currency,
-  CurrencyAmount,
-  JSBI,
-  Percent,
-  Token,
-  TokenAmount,
-} from '@uniswap/sdk';
-import {
   getAddress,
   hexToString,
-  parseUnits,
   type Address,
   type PublicClient,
 } from 'viem';
@@ -81,10 +72,6 @@ export function calculateGasMargin(value: bigint): bigint {
   return (value * 11000n) / 10000n;
 }
 
-// converts a basis points value to a sdk percent
-export function basisPointsToPercent(num: number): Percent {
-  return new Percent(JSBI.BigInt(num), JSBI.BigInt(10000));
-}
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -193,44 +180,6 @@ export async function getTokenSymbol(
       throw error;
     }
   }
-}
-
-export async function getTokenDecimals(
-  tokenAddress: string,
-  client: PublicClient,
-) {
-  if (!isAddress(tokenAddress)) {
-    throw Error(`Invalid 'tokenAddress' parameter '${tokenAddress}'.`);
-  }
-
-  try {
-    return (await client.readContract({
-      address: tokenAddress as Address,
-      abi: ERC20_ABI as any,
-      functionName: 'decimals',
-      args: [],
-    })) as number;
-  } catch (error: any) {
-    error.code = ERROR_CODES.TOKEN_DECIMALS;
-    throw error;
-  }
-}
-
-export function tryParseAmount(value?: string): CurrencyAmount | undefined {
-  if (!value) {
-    return CurrencyAmount.ether(JSBI.BigInt('0'));
-  }
-  try {
-    const typedValueParsed = parseUnits(value, 18).toString();
-    if (typedValueParsed !== '0') {
-      return CurrencyAmount.ether(JSBI.BigInt(typedValueParsed));
-    }
-  } catch (error) {
-    // should fail if the user specifies too many decimal places of precision (or maybe exceed max uint?)
-    console.debug(`Failed to parse input amount: "${value}"`, error);
-  }
-  // necessary for all paths to return a value
-  return CurrencyAmount.ether(JSBI.BigInt('0'));
 }
 
 export function transferToYear(sec: number): string {

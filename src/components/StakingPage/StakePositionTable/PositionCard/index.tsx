@@ -27,7 +27,7 @@ export default function PositionCard(props: IProps) {
           ></Countdown>
         </strong>
         <span className='sub-title'>
-          {getDateFromBigNumber(data.unlockTime)}
+          {getDateFromBigNumber(Number(data.unlockTime))}
         </span>
       </div>
       <div sx={styles.rowEle}>

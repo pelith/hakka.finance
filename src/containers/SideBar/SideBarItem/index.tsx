@@ -1,14 +1,13 @@
  /** @jsxImportSource theme-ui */
 
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { Box, Flex, Text } from 'rebass';
 import styles from './styles';
 import { upperCaseFirstLetter } from '../../../common/functions';
 import { NOTIFICATION_DOT } from '..';
 
-const SideBarItem = (props, { location, data }) => {
-  const { icon, text, path, subIcon, isViewAllNotifiedMission } = props;
+const SideBarItem = (props: { icon: string, text: string, path: string, subIcon?: string, isViewAllNotifiedMission?: boolean }) => {
+  const { icon, text, path, subIcon = '', isViewAllNotifiedMission = false } = props;
   const [selectedNavPath, setSelectedNavPath] = useState('');
   const isBrowser = typeof window !== 'undefined';
   const currentPath = isBrowser
@@ -41,7 +40,7 @@ const SideBarItem = (props, { location, data }) => {
             </div>
           )
         ) : (
-          <img src={subIcon} />
+          subIcon && <img src={subIcon} /> || null
         )}
       </Flex>
     </Box>

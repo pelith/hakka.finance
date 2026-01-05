@@ -1,12 +1,11 @@
  /** @jsxImportSource theme-ui */
-
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { MyButton } from '../Common';
 import styles from './styles';
 import withConnectWalletCheckWrapper from '../../hoc/withConnectWalletCheckWrapper';
 import { useWalletModalToggle } from '../../state/application/hooks';
 import Web3Status from '../Web3Status';
-import { navigate } from 'gatsby';
+import { useNavigate } from '@tanstack/react-router';
 import withWrongNetworkCheckWrapper from '../../hoc/withWrongNetworkCheckWrapper';
 import { ChainId, ChainNameWithIcon } from '../../constants';
 import { CHAIN_URL_MAP } from '../../constants/chainDetail';
@@ -23,7 +22,8 @@ const ChallengeIntroPage = () => {
     Number.parseInt(ele),
   );
   const isCorrectNetwork = chainId ? supportedChain.includes(chainId) : false;
-
+  
+  const navigate = useNavigate();
   return (
     <div sx={styles.container}>
       <div sx={styles.challengePageWrapper}>
@@ -44,7 +44,7 @@ const ChallengeIntroPage = () => {
           <div sx={styles.startBtnWrapper}>
             <div sx={styles.startBtn}>
               <StartButton
-                onClick={() => navigate('/play2earn')}
+                onClick={() => navigate({ to: '/play2earn' })}
                 styleKit='green'
                 isConnected={isConnected}
                 connectWallet={toggleWalletModal}

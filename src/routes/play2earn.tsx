@@ -9,8 +9,6 @@ export const Route = createFileRoute('/play2earn')({
 
 function Play2EarnPage() {
   return (
-    <DappLayout title='Hakka Finance | Play to Earn'>
-      <Play2Earn />
-    </DappLayout>
+    <Play2Earn />
   );
 }

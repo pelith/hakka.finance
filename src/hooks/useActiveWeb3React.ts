@@ -1,7 +1,8 @@
-import { useAccount, useChainId, useConnectorClient } from 'wagmi';
+import { useAccount, useConnectorClient } from 'wagmi';
 import { useMemo } from 'react';
 import type { Account, Chain, Client, Transport } from 'viem';
-import { type Config, useConnectors } from 'wagmi';
+import { useConnectors } from 'wagmi';
+import { ChainId } from '@/constants';
 
 export function clientToSigner(client: Client<Transport, Chain, Account>) {
   const { account, chain, transport } = client;
@@ -17,8 +18,7 @@ export function clientToSigner(client: Client<Transport, Chain, Account>) {
  * Returns wagmi equivalents for account, chainId, and provider
  */
 export function useActiveWeb3React() {
-  const { address: account, isConnected: isActive, connector } = useAccount();
-  const chainId = useChainId();
+  const { address: account, isConnected: isActive, connector, chainId } = useAccount();
   const connectors = useConnectors();
   const { data: connectorClient } = useConnectorClient();
 
@@ -28,8 +28,8 @@ export function useActiveWeb3React() {
   }, [connectorClient]);
 
   return {
-    account: account ?? undefined,
-    chainId,
+    account: account ?? '',
+    chainId: chainId as ChainId ?? ChainId.MAINNET,
     isActive,
     connector,
     connectors,

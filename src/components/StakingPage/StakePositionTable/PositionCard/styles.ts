@@ -1,4 +1,4 @@
-import { ThemeUICSSObject } from 'theme-ui';
+import type { ThemeUICSSObject } from 'theme-ui';
 
 const cardContainer: ThemeUICSSObject = {
   border: 'solid 1px var(--theme-ui-colors-neutral-300)',

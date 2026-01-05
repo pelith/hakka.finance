@@ -1,7 +1,7 @@
  /** @jsxImportSource theme-ui */
 import { Spinner } from 'theme-ui';
 import { useEffect } from 'react';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 
 import { network, networkHooks } from '../../connectors';
 import { useEagerConnect, useInactiveListener } from '../../hooks/web3Manager';

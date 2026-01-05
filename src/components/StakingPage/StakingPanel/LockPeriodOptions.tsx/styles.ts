@@ -1,6 +1,6 @@
-import { ThemeUICSSObject } from 'theme-ui';
 import { NormalButton } from '../../StakePositionItem/buttonStyle';
-export default {
+import createSX from '@/utils/createSX';
+export default createSX({
   optionContainer: {
     display: 'flex',
     alignItems: 'flex-end',
@@ -56,4 +56,4 @@ export default {
       background: 'rgba(62, 189, 147, 0.1)',
     },
   },
-} as Record<string, ThemeUICSSObject>;
+});

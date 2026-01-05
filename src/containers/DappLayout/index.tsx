@@ -8,7 +8,6 @@ import DappHeader from '../Header/DappHeader/index';
 import Footer from '../Footer';
 import styles from './styles';
 import images from '../../images';
-import Web3ReactManager from '../../components/Web3ReactManager';
 import { ToastContainer } from 'react-toastify';
 import './ReactToastify.css';
 
@@ -75,7 +74,7 @@ const DappLayout = ({ children, title }: { children: React.ReactNode, title: str
               draggable
               pauseOnHover
             />
-            <Web3ReactManager>{children}</Web3ReactManager>
+            {children}
           </Box>
           <Footer />
         </Box>

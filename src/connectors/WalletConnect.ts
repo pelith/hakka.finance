@@ -8,7 +8,7 @@ export const [walletconnect, walletconnectHooks] = initializeConnector(
       actions,
       options: {
         showQrModal: true,
-        projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string,
+        projectId: import.meta.env.APP_WALLETCONNECT_PROJECT_ID as string,
         chains: [1, 56, 137, 250],
         rpcMap: CHAIN_URL_DICT,
       },

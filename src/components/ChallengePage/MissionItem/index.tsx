@@ -12,7 +12,7 @@ import {
   PriorityInfo,
   PriorityOptions,
 } from '../../../constants/challenge';
-import { navigate } from 'gatsby';
+import { useNavigate } from '@tanstack/react-router';
 import images from '../../../images';
 import Skeleton from '../../Common/Skeleton';
 
@@ -38,7 +38,7 @@ const MissionItem = ({
     ) >= 0;
 
   const [isImgLoading, setIsImgLoading] = useState(true);
-
+  const navigate = useNavigate();
   return (
     <div sx={styles.container}>
       <div sx={styles.mainLayout}>
@@ -94,7 +94,7 @@ const MissionItem = ({
           />
         )}
         <MyButton
-          onClick={() => navigate(`/play2earn/${oatAddress}`)}
+          onClick={() => navigate({ to: `/play2earn/${oatAddress}` })}
           disabled={isUpcoming}
         >
           {MISSION_STATUS[missionStatus].btnContent}

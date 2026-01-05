@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   // render Chain css
 
   tokenMetrics: {
@@ -210,4 +212,4 @@ export default {
       },
     },
   },
-};
+});

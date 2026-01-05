@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'gatsby';
+import { Link } from '@tanstack/react-router';
 
 // styles
 const pageStyles = {
@@ -34,7 +34,7 @@ const NotFoundPage = () => (
       </span>{' '}
       we couldn’t find what you were looking for.
       <br />
-      {import.meta.env.VITE_ENV === 'development' ? (
+      {import.meta.env.APP_ENV === 'development' ? (
         <>
           <br />
           Try creating a page in <code style={codeStyles}>src/pages/</code>

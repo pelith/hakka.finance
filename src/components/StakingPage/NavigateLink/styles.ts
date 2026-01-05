@@ -1,6 +1,6 @@
 import images from '../../../images';
-import { ThemeUICSSObject } from 'theme-ui';
-export default {
+import createSX from '@/utils/createSX';
+export default createSX({
   wrapper: {
     mt: '56px',
     boxSizing: 'border-box',
@@ -60,5 +60,4 @@ export default {
         alignSelf: 'start',
       },
     },
-  } as ThemeUICSSObject,
-};
+  }});
