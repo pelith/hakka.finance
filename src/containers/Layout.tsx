@@ -48,7 +48,7 @@ const Layout = ({
           width='100%'
           sx={styles.custom_scroll_bar}
         >
-          <Header sx={styles.content_wrapper} toggleSidebar={toggleSideBar} />
+          <Header toggleSidebar={toggleSideBar} />
           <Box sx={styles.content}>{children}</Box>
           <Footer />
         </Box>

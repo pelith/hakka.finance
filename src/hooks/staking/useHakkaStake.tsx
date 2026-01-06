@@ -3,16 +3,14 @@
 import { useCallback, useMemo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { toast } from 'react-toastify';
-import { ExternalLink } from 'react-feather';
 
-import { getEtherscanLink, shortenTxId } from '../../utils';
 import {
   usePublicClient,
   useWaitForTransactionReceipt,
-  useWriteContract,
 } from 'wagmi';
 import type { ChainId } from '@/constants';
 import STAKING_ABI from '@/constants/abis/shakka';
+import useAppWriteContract from '../contracts/useAppWriteContract';
 
 export enum StakeState {
   UNKNOWN,
@@ -26,16 +24,14 @@ export function useHakkaStake(
   lockSec: number,
 ): [StakeState, () => Promise<void>] {
   const { chainId } = useWeb3React();
-  const publicClient = usePublicClient({ chainId: chainId as ChainId });
+  const publicClient = usePublicClient({ chainId: chainId as ChainId })!;
   const {
     writeContractAsync,
     data,
     isPending: isWritePending,
     isSuccess: isWriteSuccess,
-    isError: isWriteError,
-    error: writeError,
     reset,
-  } = useWriteContract();
+  } = useAppWriteContract();
   const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
     hash: data,
     query: {
@@ -78,17 +74,6 @@ export function useHakkaStake(
         ],
         gas: increaseGas,
       });
-      toast(
-        <a
-          target='_blank'
-          href={getEtherscanLink(chainId ?? 1, txHash, 'transaction')}
-          rel='noreferrer noopener'
-          sx={{ textDecoration: 'none', color: '#253e47' }}
-        >
-          {shortenTxId(txHash)} <ExternalLink size={16} />
-        </a>,
-        { containerId: 'tx' },
-      );
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
       });

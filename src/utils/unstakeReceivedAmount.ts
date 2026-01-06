@@ -1,4 +1,5 @@
 import { formatUnits } from 'viem';
+import { BigNumber } from './bignumber';
 
 export function unstakeReceivedAmount(
   withdrawAmount: string,
@@ -8,13 +9,12 @@ export function unstakeReceivedAmount(
     return undefined;
   }
 
-  const totalSHakkaAmount = parseFloat(formatUnits(vault.wAmount, 18));
-  const burnSHakkaAmount = parseFloat(withdrawAmount);
-  if (burnSHakkaAmount > totalSHakkaAmount) {
+  const totalSHakkaAmount = BigNumber(formatUnits(vault.wAmount, 18));
+  const burnSHakkaAmount = BigNumber(withdrawAmount);
+  if (burnSHakkaAmount.gt(totalSHakkaAmount)) {
     return undefined;
   }
   const receivedHakkaAmount =
-    (burnSHakkaAmount / totalSHakkaAmount) *
-    parseFloat(formatUnits(vault.hakkaAmount, 18));
+    (burnSHakkaAmount.div(totalSHakkaAmount)) .multipliedBy(formatUnits(vault.hakkaAmount, 18))
   return receivedHakkaAmount.toFixed(4);
 }
