@@ -1,4 +1,4 @@
-import createSX from 'src/utils/createSX';
+import createSX from '@/utils/createSX';
 import type { ThemeUIStyleObject } from 'theme-ui';
 
 export default createSX({

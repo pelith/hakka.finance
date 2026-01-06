@@ -36,11 +36,26 @@ import {
 import withConnectWalletCheckWrapper from '../../../hoc/withConnectWalletCheckWrapper';
 import withApproveTokenCheckWrapper from '../../../hoc/withApproveTokenCheckWrapper';
 import withWrongNetworkCheckWrapper from '../../../hoc/withWrongNetworkCheckWrapper';
-import { useVestingBalance } from 'src/hooks/contracts/vesting/useVestingBalance';
-import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance';
+import { useVestingBalance } from '@/hooks/contracts/vesting/useVestingBalance';
+import { useTokenInfoAndBalance } from '@/hooks/contracts/token/useTokenInfoAndBalance';
 import BigNumber from 'bignumber.js';
-import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
+
+enum SwitchOption {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
+}
+
+const CheckWrongNetworkConnectWalletApproveTokenButton =
+  withApproveTokenCheckWrapper(
+    withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton)),
+  );
+
+const CheckWrongNetworkAndConnectWalletButton = withWrongNetworkCheckWrapper(
+  withConnectWalletCheckWrapper(withApproveTokenCheckWrapper(MyButton)),
+);
 
 const PoolDetail = ({ pool }: { pool: string }) => {
   const { account, chainId } = useWeb3React();
@@ -113,11 +128,6 @@ const PoolDetail = ({ pool }: { pool: string }) => {
       : withdrawInputAmount,
   );
 
-  enum SwitchOption {
-    DEPOSIT,
-    WITHDRAW,
-  }
-
   const [switchPick, setSwitchPick] = useState<SwitchOption>(
     SwitchOption.DEPOSIT,
   );
@@ -136,15 +146,6 @@ const PoolDetail = ({ pool }: { pool: string }) => {
     account,
   );
   const toggleWalletModal = useWalletModalToggle();
-
-  const CheckWrongNetworkConnectWalletApproveTokenButton =
-    withApproveTokenCheckWrapper(
-      withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton)),
-    );
-
-  const CheckWrongNetworkAndConnectWalletButton = withWrongNetworkCheckWrapper(
-    withConnectWalletCheckWrapper(withApproveTokenCheckWrapper(MyButton)),
-  );
 
   const isWrongNetwork = REWARD_POOLS[pool].chain !== chainId;
 
@@ -216,15 +217,15 @@ const PoolDetail = ({ pool }: { pool: string }) => {
   return (
     <>
       <div>
-        <a
+        <Link
           sx={{ display: 'inline-block', textDecoration: 'none' }}
-          href='/farms'
+          to='/farms'
         >
           <div sx={styles.btnBack}>
-            <img src={images.iconBack} />
+            <img src={images.iconBack} alt='icon-back' />
             <span>Back</span>
           </div>
-        </a>
+        </Link>
         <div sx={styles.title}>
           <div sx={{ display: 'flex', alignItems: 'flex-end' }}>
             <p>{REWARD_POOLS[pool].name}</p>
@@ -263,7 +264,11 @@ const PoolDetail = ({ pool }: { pool: string }) => {
               </a>
             </div>
           </div>
-          <img src={POOL_ASSETES[pool].icon} sx={styles.infoIcon} />
+          <img
+            src={POOL_ASSETES[pool].icon}
+            sx={styles.infoIcon}
+            alt={`${REWARD_POOLS[pool].name} icon`}
+          />
         </div>
         <div sx={styles.depositInfoContainer}>
           <div sx={styles.depositInfoItem}>
@@ -279,7 +284,7 @@ const PoolDetail = ({ pool }: { pool: string }) => {
                 href={REWARD_POOLS[pool].url}
               >
                 <span> Get Token </span>
-                <img src={images.iconLinkNormal} />
+                <img src={images.iconLinkNormal} alt='icon-link-normal' />
               </a>
             </div>
           </div>
@@ -304,7 +309,11 @@ const PoolDetail = ({ pool }: { pool: string }) => {
             </div>
             <div sx={styles.rewardInfoContainer}>
               <div sx={styles.rewardInfoLabelWrapper}>
-                <img src={images.iconClaimableReward} sx={styles.rewardIcon} />
+                <img
+                  src={images.iconClaimableReward}
+                  sx={styles.rewardIcon}
+                  alt='icon-claimable-reward'
+                />
                 <div>
                   <p>Claimable reward</p>
                   {/* if amount !== 0 sx={styles.rewardAmount} */}
@@ -333,7 +342,11 @@ const PoolDetail = ({ pool }: { pool: string }) => {
             </div>
             <div sx={styles.rewardInfoContainer}>
               <div sx={styles.rewardInfoLabelWrapper}>
-                <img src={images.iconWaiting} sx={styles.rewardIcon} />
+                <img
+                  src={images.iconWaiting}
+                  sx={styles.rewardIcon}
+                  alt='icon-waiting'
+                />
                 <div>
                   <p>Vesting balance</p>
                   {/* if amount !== 0 remove the style */}
@@ -344,11 +357,11 @@ const PoolDetail = ({ pool }: { pool: string }) => {
               </div>
               <a sx={styles.viewBtn} href={'/vesting'}>
                 <span>View</span>
-                <img src={images.iconForward} />
+                <img src={images.iconForward} alt='icon-forward' />
               </a>
             </div>
             <div sx={styles.learnMoreLinkWrapper}>
-              <img src={images.iconInform} />
+              <img src={images.iconInform} alt='icon-inform' />
               <span>
                 Claim means your HAKKA rewards will be locked in vesting
                 contract.

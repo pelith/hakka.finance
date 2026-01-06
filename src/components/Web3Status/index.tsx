@@ -15,7 +15,6 @@ import InfoModal from '../InfoModal';
 import CurrentNetwork from '../CurrentNetwork';
 import images from '../../images';
 import styles from './styles';
-import PlayToEarnLevelUpModal from '../PlayToEarnLevelUpModal';
 import { CHAIN_URL_MAP } from '../../constants/chainDetail';
 
 const Web3Status = ({ unsupported }: { unsupported?: boolean }) => {

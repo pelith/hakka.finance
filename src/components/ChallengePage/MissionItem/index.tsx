@@ -1,6 +1,6 @@
 /** @jsxImportSource theme-ui */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { MyButton } from '../../Common';
 import styles from './styles';

@@ -1,4 +1,5 @@
-export default {
+import createSX from '@/utils/createSX';
+export default createSX({
   footerContainer: {
     paddingLeft: '12.8%',
     '@media screen and (max-width: 576px)': {
@@ -81,4 +82,4 @@ export default {
       margin: '0 12px 12px 12px',
     },
   },
-};
+});

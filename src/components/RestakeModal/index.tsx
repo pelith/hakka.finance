@@ -15,7 +15,6 @@ import NumericalInputField from '../NumericalInputField';
 import { ApprovalState, useTokenApprove } from '../../hooks/useTokenApprove';
 import VotingPowerSection from '../StakingPage/StakingPanel/VotingPowerSection';
 import LockPeriodOptions from '../StakingPage/StakingPanel/LockPeriodOptions.tsx';
-import { useTokenBalance } from '../../state/wallet/hooks';
 import {
   ChainId,
   HAKKA,
@@ -30,7 +29,7 @@ import withWrongNetworkCheckWrapper from '../../hoc/withWrongNetworkCheckWrapper
 import withConnectWalletCheckWrapper from '../../hoc/withConnectWalletCheckWrapper';
 import type { VaultType } from '../../hooks/staking/useStakingVault';
 import useCurrentBlockTimestamp from '../../hooks/useCurrentBlockTimestamp';
-import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance.ts';
+import { useTokenInfoAndBalance } from '@/hooks/contracts/token/useTokenInfoAndBalance.ts';
 import type { Address } from 'viem';
 import BigNumber from 'bignumber.js';
 interface RestakeModalInterface {
@@ -159,10 +158,10 @@ const RestakeModal = ({
   );
 
   const isDisable =
-    (parseFloat(safeInputAmount) !== 0 && !isCorrectInput) ||
+    (Number.parseFloat(safeInputAmount) !== 0 && !isCorrectInput) ||
     restakeState === TransactionState.PENDING ||
     (isKeepPeriodTheSame && isKeepAmountTheSame) ||
-    parseFloat(additionalSHakkaAmount ?? '0') <= 0 ||
+    Number.parseFloat(additionalSHakkaAmount ?? '0') <= 0 ||
     isLeftTimeLessThan30Mins;
 
   const isRestakePending = restakeState === TransactionState.PENDING;
@@ -187,7 +186,7 @@ const RestakeModal = ({
       <div sx={styles.container}>
         <div sx={styles.heading}>
           <h2>Restake</h2>
-          <img src={images.iconDeleteRound} onClick={toggleRestakeModal} />
+          <img src={images.iconDeleteRound} onClick={toggleRestakeModal} alt='delete' />
         </div>
         <StayTheSameSwitchWithTitle
           title='Stake more HAKKA?'
@@ -230,11 +229,11 @@ const RestakeModal = ({
         <h4 sx={styles.receiveShakkaTitle}>Additional sHAKKA you get</h4>
         <div sx={styles.votingPowerSectionWrapper}>
           <VotingPowerSection
-            value={parseFloat(additionalSHakkaAmount ?? '0')}
+            value={Number.parseFloat(additionalSHakkaAmount ?? '0')}
             prefixSymbol
             total={
               receivedSHakkaAmount
-                ? parseFloat(receivedSHakkaAmount)
+                ? Number.parseFloat(receivedSHakkaAmount)
                 : undefined
             }
           />

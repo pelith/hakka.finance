@@ -9,7 +9,6 @@ import {
 import STAKING_ABI from '../../constants/abis/shakka';
 import STAKING_V1_ABI from '../../constants/abis/shakka_v1';
 
-import _isEqual from 'lodash/isEqual';
 import _range from 'lodash/range';
 
 import { useReadContract, useReadContracts } from 'wagmi';

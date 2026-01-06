@@ -1,6 +1,6 @@
 import { useReadContracts } from 'wagmi';
 import { erc20Abi, formatUnits, isAddress, type Address } from 'viem';
-import type { ChainId } from 'src/constants';
+import type { ChainId } from '@/constants';
 export function useTokenInfoAndBalance(
   address: string,
   tokenAddress: string,

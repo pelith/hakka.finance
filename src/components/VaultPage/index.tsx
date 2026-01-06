@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { isAddressEqual, parseUnits, zeroAddress, type Address } from 'viem';
-import BigNumber from 'bignumber.js';
+import type BigNumber from 'bignumber.js';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import images from '../../images/index';
 import styles from './styles';
@@ -26,17 +26,18 @@ import {
   VAULT_TOKENS,
   GUILDBANK,
 } from '../../constants';
-import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance';
-import useTokenTotalSupply from 'src/hooks/contracts/token/useTokenTotalSupply';
-import RewardListItemContainer from 'src/containers/Vault/RewardListItemContainer';
-import { createBigNumberSort } from 'src/utils/sort';
+import { useTokenInfoAndBalance } from '@/hooks/contracts/token/useTokenInfoAndBalance';
+import useTokenTotalSupply from '@/hooks/contracts/token/useTokenTotalSupply';
+import RewardListItemContainer from '@/containers/Vault/RewardListItemContainer';
+import { createBigNumberSort } from '@/utils/sort';
 
 const getRewardTokenById = (chainId: ChainId | undefined) => {
   return VAULT_TOKENS[chainId || 1] || VAULT_TOKENS[1];
 };
 
 const VaultPage = () => {
-  const { account, chainId } = useWeb3React();
+  const { account } = useWeb3React();
+  const chainId = ChainId.MAINNET
 
   const hakkaBalanceAmount = useTokenInfoAndBalance(
     account as Address,

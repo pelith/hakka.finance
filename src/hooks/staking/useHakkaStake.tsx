@@ -11,8 +11,8 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from 'wagmi';
-import type { ChainId } from 'src/constants';
-import STAKING_ABI from 'src/constants/abis/shakka';
+import type { ChainId } from '@/constants';
+import STAKING_ABI from '@/constants/abis/shakka';
 
 export enum StakeState {
   UNKNOWN,

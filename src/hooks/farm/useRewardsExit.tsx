@@ -8,8 +8,8 @@ import { ExternalLink } from 'react-feather';
 import { REWARD_POOLS } from '../../constants/rewards';
 import { isAddress, type Address } from 'viem';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
-import STAKING_REWARDS_ABI from 'src/constants/abis/staking_rewards';
-import type { ChainId } from 'src/constants';
+import STAKING_REWARDS_ABI from '@/constants/abis/staking_rewards';
+import type { ChainId } from '@/constants';
 
 export enum ExitState {
   UNKNOWN,

@@ -22,6 +22,7 @@ export default function useVotingPower(): {
     abi: STAKING_ABI,
     functionName: 'votingPower',
     args: [account as Address],
+    chainId: ChainId.MAINNET,
     query: {
       enabled:
         isAddress(account ?? '') &&
@@ -34,6 +35,7 @@ export default function useVotingPower(): {
     abi: STAKING_ABI,
     functionName: 'votingPower',
     args: [account as Address],
+    chainId: ChainId.BSC,
     query: {
       enabled:
         isAddress(account ?? '') &&
@@ -45,6 +47,7 @@ export default function useVotingPower(): {
     abi: STAKING_ABI,
     functionName: 'votingPower',
     args: [account as Address],
+    chainId: ChainId.POLYGON,
     query: {
       enabled:
         isAddress(account ?? '') &&

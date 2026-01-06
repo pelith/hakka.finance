@@ -17,11 +17,11 @@ import { POOL_ASSETES } from '../../constants/rewards/assets';
 import { useRewardsData } from '../../data/RewardsData';
 import useTokensPrice from '../../hooks/useTokensPrice';
 import { CHAIN_SWITCH_TAB_INFO } from '../../constants/farm';
-import { createBigNumberSort } from 'src/utils/sort';
+import { createBigNumberSort } from '@/utils/sort';
 import {
   formatCommonNumber,
   formatPercentageNumber,
-} from 'src/utils/formatCommonNumbers';
+} from '@/utils/formatCommonNumbers';
 
 enum SortOptions {
   LATEST = 'latest',

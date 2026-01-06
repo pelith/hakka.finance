@@ -25,6 +25,7 @@
     "format": "biome format --write ./src",
     "deploy": "netlify deploy --site=e3335be6-9531-4bd6-b1dc-302013899981",
     "deploy:dev": "netlify deploy --site=510be721-6675-46d0-9306-48c3bc779345",
+    "compile": "tsgo -b",
     "knip": "knip"
   },
   "dependencies": {
@@ -40,6 +41,7 @@
     "@tanstack/react-router": "^1.14.0",
     "@tanstack/router-plugin": "^1.143.6",
     "@theme-ui/css": "^0.17.4",
+    "@uauth/js": "^3.0.1",
     "@walletconnect/ethereum-provider": "~2.21.1",
     "bignumber.js": "^9.0.1",
     "copy-to-clipboard": "^3.3.1",
@@ -91,5 +93,8 @@
     "overrides": {
       "@walletconnect/logger>pino": "10.0.0"
     }
+  },
+  "optionalDependencies": {
+    "@typescript/native-preview": "7.0.0-dev.20260106.1"
   }
 }

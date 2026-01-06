@@ -17,7 +17,7 @@ export default function VotingPowerSection(props: IProps) {
 
   return (
     <div sx={styles.wrapper}>
-      <img sx={styles.img} src={images.iconSealedHakka} />
+      <img sx={styles.img} src={images.iconSealedHakka} alt='sealed hakka' />
       <span className={className}>{displayValue}</span>
       {hasTotal && <span sx={styles.total}>Total: {total?.toFixed(4)}</span>}
     </div>

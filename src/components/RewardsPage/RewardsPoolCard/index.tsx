@@ -8,6 +8,7 @@ import withConnectWalletCheckWrapper from '../../../hoc/withConnectWalletCheckWr
 import withWrongNetworkCheckWrapper from '../../../hoc/withWrongNetworkCheckWrapper';
 import { useWalletModalToggle } from '../../../state/application/hooks';
 import { ChainId } from '../../../constants';
+import { useNavigate } from '@tanstack/react-router';
 
 interface RewardsPoolCardProps {
   tokenImage: string;
@@ -46,6 +47,7 @@ const RewardsPoolCard = (props: RewardsPoolCardProps) => {
     withConnectWalletCheckWrapper(MyButton),
   );
   const isConnected = !!account;
+  const navigate = useNavigate();
 
   return (
     <div sx={styles.container}>
@@ -79,7 +81,7 @@ const RewardsPoolCard = (props: RewardsPoolCardProps) => {
         isCorrectNetwork={chainId === currentChain}
         targetNetwork={currentChain}
         onClick={() => {
-          location.href = `/farms/${rewardsAddress}`;
+          navigate({ to: `/farms/${rewardsAddress}` });
         }}
       >
         {btnContent}

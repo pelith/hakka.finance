@@ -3,7 +3,7 @@ import { formatUnits, type Address } from 'viem';
 import { useActiveWeb3React } from '../hooks/web3Manager';
 
 import STAKING_REWARDS_ABI from '../constants/abis/staking_rewards';
-import type { ChainId } from 'src/constants';
+import type { ChainId } from '@/constants';
 import { useReadContracts } from 'wagmi';
 
 export function useRewardsData(

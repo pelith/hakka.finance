@@ -24,8 +24,8 @@ import NumericalInputField from '../../NumericalInputField';
 import LockPeriodOptions from './LockPeriodOptions.tsx';
 import styles from './styles';
 import VotingPowerSection from './VotingPowerSection';
-import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance.ts';
-import { formatCommonNumber } from 'src/utils/formatCommonNumbers.ts';
+import { useTokenInfoAndBalance } from '@/hooks/contracts/token/useTokenInfoAndBalance.ts';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers.ts';
 
 interface IProps {
   isCorrectNetwork: boolean;

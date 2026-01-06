@@ -7,13 +7,13 @@ import { parseUnits } from 'viem';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
 import { REWARD_POOLS } from '../../constants/rewards';
-import { ChainId } from 'src/constants';
+import { ChainId } from '@/constants';
 import {
   usePublicClient,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from 'wagmi';
-import STAKING_REWARDS_ABI from 'src/constants/abis/staking_rewards';
+import STAKING_REWARDS_ABI from '@/constants/abis/staking_rewards';
 
 export enum DepositState {
   UNKNOWN,
@@ -27,7 +27,7 @@ export function useRewardsDeposit(
   spender?: string,
 ): [DepositState, () => Promise<void>] {
   const { chainId } = useWeb3React();
-  const publicClient = usePublicClient({ chainId: chainId as ChainId });
+  const publicClient = usePublicClient({ chainId: chainId as ChainId })!;
   const {
     writeContractAsync,
     data,

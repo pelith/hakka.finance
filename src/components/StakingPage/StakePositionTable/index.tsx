@@ -20,7 +20,7 @@ import _cond from 'lodash/cond';
 import _matches from 'lodash/matches';
 import _stubTrue from 'lodash/stubTrue';
 import { getUnixTime } from 'date-fns';
-import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 
 const { Column } = Table;
 

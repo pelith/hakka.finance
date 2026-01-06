@@ -1,7 +1,9 @@
-import React, { type ReactNode } from 'react';
+/** @jsxImportSource theme-ui */
+import { type ReactNode } from 'react';
 import { isMobile } from 'react-device-detect';
 import images from '../../../images';
 import styles from './styles';
+import BigNumber from 'bignumber.js';
 type Props = {
   totalStakedHakka?: string;
   totalSHakkaObtained?: string;
@@ -16,14 +18,14 @@ type InfoItemProps = {
 };
 
 const InfoItem = ({ icon, title, value }: InfoItemProps) => (
-  <div style={styles.infoItemWrapper}>
-    <div style={styles.titleWrapper}>
-      <img style={styles.icon} src={icon} />
+  <div sx={styles.infoItemWrapper}>
+    <div sx={styles.titleWrapper}>
+      <img sx={styles.icon} src={icon} alt='icon' />
       <span>{title}</span>
     </div>
     <span
-      style={
-        !parseFloat(value ?? '0') ? { color: 'rgba(37, 62, 71, 0.5)' } : {}
+      sx={
+        !BigNumber(value ?? '0').isZero() ? { color: 'rgba(37, 62, 71, 0.5)' } : {}
       }
     >
       {value || '0.00'}

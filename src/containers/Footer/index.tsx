@@ -4,43 +4,43 @@ import { Box, Flex, Text } from 'rebass';
 import images from '../../images/index';
 import styles from './styles';
 
+const LIST_ITEM = [
+  {
+    url: 'iconTelegram',
+    href: 'https://t.me/hakkafinance',
+  },
+  {
+    url: 'iconTwitter',
+    href: 'https://twitter.com/hakkafinance',
+  },
+  {
+    url: 'iconDiscord',
+    href: 'https://discord.com/invite/cU4D2a8',
+  },
+  {
+    url: 'iconMediumLarge',
+    href: 'https://medium.com/hakkafinance',
+  },
+  {
+    url: 'iconGithub',
+    href: 'https://github.com/hakkafinance',
+  },
+  {
+    url: 'iconYoutube',
+    href: 'https://www.youtube.com/channel/UCFa7O8tfvZfMhHjgYcssFtw/featured',
+  },
+  {
+    url: 'iconReddit',
+    href: 'https://www.reddit.com/r/hakkafinance/',
+  },
+] as const;
 function Footer() {
-  const listIcon = [
-    {
-      url: 'iconTelegram',
-      href: 'https://t.me/hakkafinance',
-    },
-    {
-      url: 'iconTwitter',
-      href: 'https://twitter.com/hakkafinance',
-    },
-    {
-      url: 'iconDiscord',
-      href: 'https://discord.com/invite/cU4D2a8',
-    },
-    {
-      url: 'iconMediumLarge',
-      href: 'https://medium.com/hakkafinance',
-    },
-    {
-      url: 'iconGithub',
-      href: 'https://github.com/hakkafinance',
-    },
-    {
-      url: 'iconYoutube',
-      href: 'https://www.youtube.com/channel/UCFa7O8tfvZfMhHjgYcssFtw/featured',
-    },
-    {
-      url: 'iconReddit',
-      href: 'https://www.reddit.com/r/hakkafinance/',
-    },
-  ];
 
   const renderListIcon = () =>
-    listIcon.map((item, i) => (
-      <Box key={i}>
+    LIST_ITEM.map((item, i) => (
+      <Box key={item.url}>
         <a target='_blank' href={item.href} rel='noreferrer noopener'>
-          <img sx={styles.imgIcon} src={images[item.url]} />
+          <img sx={styles.imgIcon} src={images[item.url]} alt={item.url} />
         </a>
       </Box>
     ));

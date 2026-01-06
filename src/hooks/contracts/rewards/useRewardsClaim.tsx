@@ -1,10 +1,10 @@
 import { isAddress, type Address } from 'viem';
-import type { ChainId } from 'src/constants';
+import type { ChainId } from '@/constants';
 import { ExternalLink } from 'react-feather';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
-import STAKING_REWARDS_ABI from 'src/constants/abis/staking_rewards';
+import STAKING_REWARDS_ABI from '@/constants/abis/staking_rewards';
 import { toast } from 'react-toastify';
-import { getEtherscanLink, shortenTxId } from 'src/utils';
+import { getEtherscanLink, shortenTxId } from '@/utils';
 
 export enum ClaimState {
   UNKNOWN = 'UNKNOWN',

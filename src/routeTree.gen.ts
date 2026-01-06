@@ -19,6 +19,7 @@ import { Route as GuildbankRouteImport } from './routes/guildbank'
 import { Route as FarmsRouteImport } from './routes/farms'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FarmsIndexRouteImport } from './routes/farms/index'
 import { Route as Play2EarnOatIdRouteImport } from './routes/play2Earn/$oatId'
 import { Route as FarmsPoolRouteImport } from './routes/farms/$pool'
 
@@ -72,6 +73,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FarmsIndexRoute = FarmsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FarmsRoute,
+} as any)
 const Play2EarnOatIdRoute = Play2EarnOatIdRouteImport.update({
   id: '/play2Earn/$oatId',
   path: '/play2Earn/$oatId',
@@ -96,11 +102,11 @@ export interface FileRoutesByFullPath {
   '/vesting': typeof VestingRoute
   '/farms/$pool': typeof FarmsPoolRoute
   '/play2Earn/$oatId': typeof Play2EarnOatIdRoute
+  '/farms/': typeof FarmsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/farms': typeof FarmsRouteWithChildren
   '/guildbank': typeof GuildbankRoute
   '/play2earn': typeof Play2earnRoute
   '/play2earn-intro': typeof Play2earnIntroRoute
@@ -110,6 +116,7 @@ export interface FileRoutesByTo {
   '/vesting': typeof VestingRoute
   '/farms/$pool': typeof FarmsPoolRoute
   '/play2Earn/$oatId': typeof Play2EarnOatIdRoute
+  '/farms': typeof FarmsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +132,7 @@ export interface FileRoutesById {
   '/vesting': typeof VestingRoute
   '/farms/$pool': typeof FarmsPoolRoute
   '/play2Earn/$oatId': typeof Play2EarnOatIdRoute
+  '/farms/': typeof FarmsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,11 +149,11 @@ export interface FileRouteTypes {
     | '/vesting'
     | '/farms/$pool'
     | '/play2Earn/$oatId'
+    | '/farms/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/farms'
     | '/guildbank'
     | '/play2earn'
     | '/play2earn-intro'
@@ -155,6 +163,7 @@ export interface FileRouteTypes {
     | '/vesting'
     | '/farms/$pool'
     | '/play2Earn/$oatId'
+    | '/farms'
   id:
     | '__root__'
     | '/'
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/vesting'
     | '/farms/$pool'
     | '/play2Earn/$oatId'
+    | '/farms/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -257,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/farms/': {
+      id: '/farms/'
+      path: '/'
+      fullPath: '/farms/'
+      preLoaderRoute: typeof FarmsIndexRouteImport
+      parentRoute: typeof FarmsRoute
+    }
     '/play2Earn/$oatId': {
       id: '/play2Earn/$oatId'
       path: '/play2Earn/$oatId'
@@ -276,10 +293,12 @@ declare module '@tanstack/react-router' {
 
 interface FarmsRouteChildren {
   FarmsPoolRoute: typeof FarmsPoolRoute
+  FarmsIndexRoute: typeof FarmsIndexRoute
 }
 
 const FarmsRouteChildren: FarmsRouteChildren = {
   FarmsPoolRoute: FarmsPoolRoute,
+  FarmsIndexRoute: FarmsIndexRoute,
 }
 
 const FarmsRouteWithChildren = FarmsRoute._addFileChildren(FarmsRouteChildren)

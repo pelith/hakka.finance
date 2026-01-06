@@ -19,7 +19,7 @@ import {
 import { useV1HakkaUnstake } from '../../../hooks/staking/useV1HakkaUnstake';
 import withApproveTokenCheckWrapper from '../../../hoc/withApproveTokenCheckWrapper';
 import { fromUnixTime } from 'date-fns';
-import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 const Zero = new BigNumber(0);
 
 interface StakePositionProps {
@@ -142,7 +142,7 @@ const StakePositionItem = (props: StakePositionProps) => {
                 onClick={() => setIsShowRedeem(!isShowRedeem)}
               >
                 <span>Redeem</span>
-                <img src={isShowRedeem ? images.iconTop : images.iconDown} />
+                <img src={isShowRedeem ? images.iconTop : images.iconDown} alt='icon' />
               </div>
             )}
           </div>
@@ -166,7 +166,7 @@ const StakePositionItem = (props: StakePositionProps) => {
               />
             </div>
             <div sx={styles.receiveAmountWrapper}>
-              <img src={images.iconBecome} sx={styles.iconBecome} />
+              <img src={images.iconBecome} sx={styles.iconBecome} alt='icon' />
               <div>
                 <p sx={{ fontWeight: 'normal' }}>Receive HAKKA</p>
                 <p>{formatCommonNumber(stakingValue)}</p>

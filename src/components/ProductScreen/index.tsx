@@ -1,5 +1,5 @@
 /** @jsxImportSource theme-ui */
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Box, Text } from 'rebass';
 import CardProduct from './CardProduct';
@@ -7,7 +7,7 @@ import images from '../../images';
 import styles from './styles';
 import InfoProduct from './InfoProduct';
 interface CardItem {
-  icon: keyof typeof images;
+  icon: string;
   cardName: string;
   info: string;
   whitepaper?: string;

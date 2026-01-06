@@ -1,13 +1,13 @@
 /** @jsxImportSource theme-ui */
 /** @jsxFrag */
 
-import React, { useState } from 'react';
-import { Box, Flex, Heading } from 'rebass';
+import { type ReactNode } from 'react';
+import { Box, Flex } from 'rebass';
 import fetch from 'cross-fetch';
 import styles from './styles';
 import { useQuery } from '@tanstack/react-query';
 
-function WhatHakka({ renderCoin }: { renderCoin: () => React.ReactNode }) {
+function WhatHakka({ renderCoin }: { renderCoin: () => ReactNode }) {
   const { data: circulatingSupplyValue } = useQuery({
     queryFn: () =>
       fetch('https://api.hakka.finance/').then((res) => res.text()),

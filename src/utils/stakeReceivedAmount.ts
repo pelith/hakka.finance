@@ -5,7 +5,7 @@ import {
   SEC_OF_YEAR,
   STAKING_RATE_MODEL_RELEASE_TIME,
 } from '../constants';
-import type { VaultType } from 'src/hooks/staking/useStakingVault';
+import type { VaultType } from '@/hooks/staking/useStakingVault';
 import BigNumber from 'bignumber.js';
 
 const THIRTY_MINS_FRACTIONS_OF_YEAR = 30 / 60 / 24 / 365.25;

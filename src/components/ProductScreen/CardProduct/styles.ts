@@ -1,4 +1,4 @@
-import createSX from 'src/utils/createSX';
+import createSX from '@/utils/createSX';
 
 export default createSX({
   card: {

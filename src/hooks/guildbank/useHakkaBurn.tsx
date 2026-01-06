@@ -4,9 +4,9 @@ import { useState, useCallback, useMemo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { toast } from 'react-toastify';
 import useAppWriteContract from '../contracts/useAppWriteContract';
-import type { ChainId } from 'src/constants';
+import type { ChainId } from '@/constants';
 import { useWaitForTransactionReceipt } from 'wagmi';
-import BURNER_ABI from 'src/constants/abis/burner';
+import BURNER_ABI from '@/constants/abis/burner';
 import { isAddress, type Address } from 'viem';
 
 export enum BurnState {

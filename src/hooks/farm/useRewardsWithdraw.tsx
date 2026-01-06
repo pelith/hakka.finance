@@ -4,9 +4,9 @@ import { useCallback, useMemo } from 'react';
 import { isAddress, parseUnits } from 'viem';
 import { toast } from 'react-toastify';
 import { REWARD_POOLS } from '../../constants/rewards';
-import type { ChainId } from 'src/constants';
+import type { ChainId } from '@/constants';
 import useAppWriteContract from '../contracts/useAppWriteContract';
-import STAKING_REWARDS_ABI from 'src/constants/abis/staking_rewards';
+import STAKING_REWARDS_ABI from '@/constants/abis/staking_rewards';
 import { useWaitForTransactionReceipt } from 'wagmi';
 import { useActiveWeb3React } from '../useActiveWeb3React';
 

@@ -69,13 +69,13 @@ export function trackSpaRouteChangesWithGtm({ eventName }: TrackOptions): void {
   if (!(historyRef as any).__gtm_patched__) {
     (historyRef as any).__gtm_patched__ = true;
 
-    historyRef.pushState = function (...args) {
+    historyRef.pushState = function (this: History, ...args: any[]) {
       const ret = originalPushState.apply(this, args as any);
       handler();
       return ret;
     } as any;
 
-    historyRef.replaceState = function (...args) {
+    historyRef.replaceState = function (this: History, ...args: any[]) {
       const ret = originalReplaceState.apply(this, args as any);
       handler();
       return ret;

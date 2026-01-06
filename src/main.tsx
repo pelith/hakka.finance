@@ -1,3 +1,4 @@
+/** @jsxImportSource theme-ui */
 import ReactDOM from 'react-dom/client';
 import '@fontsource/open-sans/400.css';
 import '@fontsource/open-sans/600.css';

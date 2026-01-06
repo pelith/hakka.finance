@@ -17,7 +17,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useAccount, useReadContract } from 'wagmi';
 import { formatUnits, type Address } from 'viem';
 import BigNumber from 'bignumber.js';
-import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 
 export default function InfoModal() {
   const { address, chainId, isConnected } = useAccount();

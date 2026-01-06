@@ -1,5 +1,5 @@
+import { useSwitchChain } from 'wagmi';
 import { ChainId } from '../../constants';
-import useRequestNetworkConfig from '../../hooks/useRequestNetworkConfig';
 
 export interface WrongNetworkCheckWrapperInterface
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -20,11 +20,12 @@ const withWrongNetworkCheckWrapper =
       children,
     } = props;
 
-    const networkConfig = useRequestNetworkConfig(targetNetwork);
+    const {switchChain, isPending} = useSwitchChain()
+
     const isDisabled = isCorrectNetwork ? disabled : isDisabledWhenNotPrepared;
     const handleClick = isCorrectNetwork
       ? onClick
-      : () => window.ethereum.request(networkConfig);
+      : () => switchChain({chainId: targetNetwork ?? ChainId.MAINNET});
     const childrenElement =
       !isCorrectNetwork && !isDisabledWhenNotPrepared
         ? 'Change Network'
@@ -33,7 +34,7 @@ const withWrongNetworkCheckWrapper =
     const wrappedComponentProps = {
       ...props,
       children: childrenElement,
-      disabled: isDisabled,
+      disabled: isDisabled || isPending,
       onClick: handleClick,
     };
 

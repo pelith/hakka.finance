@@ -1,8 +1,8 @@
 import { useWriteContract } from 'wagmi';
 import { toast } from 'react-toastify';
-import { getEtherscanLink, shortenTxId } from 'src/utils';
+import { getEtherscanLink, shortenTxId } from '@/utils';
 import { ExternalLink } from 'react-feather';
-import type { ChainId } from 'src/constants';
+import type { ChainId } from '@/constants';
 
 export default function useAppWriteContract(chainId: ChainId = 1) {
   return useWriteContract({
@@ -22,6 +22,11 @@ export default function useAppWriteContract(chainId: ChainId = 1) {
       },
       onError(error) {
         console.error(error);
+        if (typeof error !== 'object')return
+        if ('shortMessage' in error) {
+          toast.error(<div>{error.shortMessage}</div>, { containerId: 'error' });
+          return;
+        }
         toast.error(<div>{error.message}</div>, { containerId: 'error' });
       },
     },

@@ -43,7 +43,7 @@
         "noParameterAssign": "off",
         "useAsConstAssertion": "error",
         "useDefaultParameterLast": "error",
-        "useEnumInitializers": "error",
+        "useEnumInitializers": "off",
         "useSelfClosingElements": "error",
         "useSingleVarDeclarator": "error",
         "noUnusedTemplateLiteral": "off",

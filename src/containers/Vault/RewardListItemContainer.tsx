@@ -1,5 +1,5 @@
-import { type ChainId, ETHADDRESS } from 'src/constants';
-import { useTokenInfoAndBalance } from 'src/hooks/contracts/token/useTokenInfoAndBalance';
+import { type ChainId, ETHADDRESS } from '@/constants';
+import { useTokenInfoAndBalance } from '@/hooks/contracts/token/useTokenInfoAndBalance';
 import { formatUnits, isAddressEqual, type Address } from 'viem';
 import { useBalance } from 'wagmi';
 import RewardListItem from '../../components/VaultPage/RewardListItem/index';

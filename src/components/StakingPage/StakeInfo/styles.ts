@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   head: {
     fontSize: '24px',
     fontWeight: 'bold',
@@ -22,4 +24,4 @@ export default {
   icon: {
     marginRight: '7px',
   },
-};
+});

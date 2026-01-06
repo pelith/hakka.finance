@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
 import { TransactionState } from '../../constants';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
-import STAKING_ABI from 'src/constants/abis/shakka';
+import STAKING_ABI from '@/constants/abis/shakka';
 
 export function useHakkaUnstake(
   unstakeAddress: string,

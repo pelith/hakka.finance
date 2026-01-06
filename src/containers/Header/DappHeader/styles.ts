@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   headerBg: {
     position: 'absolute',
     width: '100%',
@@ -70,4 +72,4 @@ export default {
       opacity: 1,
     },
   },
-};
+});

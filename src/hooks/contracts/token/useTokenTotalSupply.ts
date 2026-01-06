@@ -1,4 +1,4 @@
-import type { ChainId } from 'src/constants';
+import type { ChainId } from '@/constants';
 import { erc20Abi, formatUnits, isAddress, type Address } from 'viem';
 import { useReadContract } from 'wagmi';
 import { useTokenInfo } from './useTokenInfoAndBalance';

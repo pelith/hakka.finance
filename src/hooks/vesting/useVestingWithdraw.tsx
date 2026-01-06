@@ -6,9 +6,9 @@ import { getEtherscanLink, shortenTxId } from '../../utils';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
 import useAppWriteContract from '../contracts/useAppWriteContract';
-import type { ChainId } from 'src/constants';
+import type { ChainId } from '@/constants';
 import { useWaitForTransactionReceipt } from 'wagmi';
-import VESTING_ABI from 'src/constants/abis/vesting';
+import VESTING_ABI from '@/constants/abis/vesting';
 import { isAddress } from 'viem';
 
 export enum VestingState {

@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   content_wrapper: {
     width: '100%',
   },
@@ -19,4 +21,4 @@ export default {
       display: 'none',
     },
   },
-};
+});

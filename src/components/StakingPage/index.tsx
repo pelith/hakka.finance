@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { formatUnits, zeroAddress } from 'viem';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import images from '../../images';
 import styles from './styles';
 import Web3Status from '../Web3Status';
@@ -40,6 +40,7 @@ import RestakeModal from '../RestakeModal';
 import { useStakingVault } from '../../hooks/staking/useStakingVault';
 import NavigateLink from './NavigateLink';
 import BigNumber from 'bignumber.js';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 
 const hakkaSupportChain = Object.keys(ChainNameWithIcon).map((key) => {
   return {
@@ -138,7 +139,7 @@ const Staking = () => {
               target='_blank'
               sx={styles.governanceButton}
             >
-              <img src={images.iconToGovernance} />
+              <img src={images.iconToGovernance} alt='to governance' />
             </a>
             <ReactTooltip
               place='bottom'
@@ -150,13 +151,13 @@ const Staking = () => {
             >
               <span>Go to governance</span>
             </ReactTooltip>
-            <a
-              onClick={() => navigate({ to: '/staking-v1' })}
+            <Link
+              to='/staking-v1'
               sx={styles.normalButton}
             >
               Switch to v1
-              <img className='icon' src={images.iconArrowRight} />
-            </a>
+              <img className='icon' src={images.iconArrowRight} alt='arrow right' />
+            </Link>
           </div>
         </div>
         <div sx={styles.body}>
@@ -166,23 +167,23 @@ const Staking = () => {
             list={stakingSupportChain}
             active={activeChainTab}
             onChange={setActiveChainTab}
-          ></TabGroup>
+          />
           <div sx={styles.gridBlock}>
             <div sx={styles.stakeInfoWrapper}>
               <StakeInfo
                 totalStakedHakka={
                   stakedHakka?.[activeChainTab]
-                    ? parseFloat(
+                    ? formatCommonNumber(
                         formatUnits(stakedHakka[activeChainTab], 18),
-                      ).toFixed(2)
+                      )
                     : '-'
                 }
                 totalSHakkaObtained={totalSHakkaObtained}
                 sHakkaBalance={
                   sHakkaBalanceInfo?.[activeChainTab]
-                    ? parseFloat(
+                    ? formatCommonNumber(
                         formatUnits(sHakkaBalanceInfo[activeChainTab], 18),
-                      ).toFixed(2)
+                      )
                     : '-'
                 }
                 farmingSHakka={depositedBalance}
@@ -192,8 +193,8 @@ const Staking = () => {
               isCorrectNetwork={isTabInCorrectNetwork}
               chainId={activeChainTab}
               toggleWalletModal={toggleWalletModal}
-            ></StakingPanel>
-          </div>
+            />
+            </div>
         </div>
         <RedeemModal
           key={`redeem-${positionIndex}`}
@@ -201,10 +202,6 @@ const Staking = () => {
           chainId={activeChainTab}
           account={account!}
           index={positionIndex!}
-          sHakkaBalance={formatUnits(
-            sHakkaBalanceInfo?.[chainId as ChainId] ?? 0n,
-            18,
-          )}
           sHakkaBalanceInFarming={depositedBalance}
           toggleWalletModal={toggleWalletModal}
           isCorrectNetwork={isTabInCorrectNetwork}
@@ -224,16 +221,14 @@ const Staking = () => {
           <hr sx={styles.hr} />
           <div sx={styles.sHakkaRewardLinkWrapper}>
             <span>Earn more Hakka</span>
-            <a
+            <Link
               sx={styles.sHakkaRewardLinkBtn}
-              onClick={() =>
-                navigate({ to: `/farms/${currentShakkaRewardPoolAddress}` })
-              }
-              rel='noreferrer'
+              to="/farms/$pool"
+              params={{ pool: currentShakkaRewardPoolAddress }}
             >
               <span>sHAKKA Pool</span>
-              <img src={images.iconForwardGreen} />
-            </a>
+              <img src={images.iconForwardGreen} alt='forward green' />
+            </Link>
           </div>
         </div>
         {/* table */}

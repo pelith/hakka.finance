@@ -26,10 +26,10 @@ import withWrongNetworkCheckWrapper from '../../hoc/withWrongNetworkCheckWrapper
 import AddHakkaToMetamaskBtn from '../AddToMetamaskBtn';
 import { TabGroup } from '../Common/TabGroup';
 import useVestingInfo from '../../hooks/vesting/useVestingInfo';
-import { useActiveWeb3React } from 'src/hooks/useActiveWeb3React';
+import { useActiveWeb3React } from '@/hooks/useActiveWeb3React';
 import { fromUnixTime } from 'date-fns';
 import BigNumber from 'bignumber.js';
-import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 
 const hakkaSupportChain = Object.keys(ChainNameWithIcon).map((key) => {
   return {

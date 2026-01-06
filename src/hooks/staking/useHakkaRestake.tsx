@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
 import { getEtherscanLink, shortenTxId } from '../../utils';
 import { TransactionState } from '../../constants';
-import STAKING_ABI from 'src/constants/abis/shakka';
+import STAKING_ABI from '@/constants/abis/shakka';
 export default function useHakkaRestake(
   stakeAddress: string,
   index: number,

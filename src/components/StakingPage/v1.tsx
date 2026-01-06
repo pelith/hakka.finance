@@ -17,9 +17,9 @@ import { botSideBarItems } from '../../containers/SideBar';
 import {
   useStakingVaultV1,
   type VaultType,
-} from 'src/hooks/staking/useStakingVault';
-import { createBigNumberSort } from 'src/utils/sort';
-import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
+} from '@/hooks/staking/useStakingVault';
+import { createBigNumberSort } from '@/utils/sort';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 
 interface StakingInfoItemProps {
   title: string;
