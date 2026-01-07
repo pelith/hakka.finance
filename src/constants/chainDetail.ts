@@ -20,7 +20,7 @@ if (
   );
 }
 
-export const NETWORK_CHAIN_ID: number = parseInt(
+export const NETWORK_CHAIN_ID: number = Number.parseInt(
   import.meta.env.APP_CHAIN_ID ?? '1',
 );
 

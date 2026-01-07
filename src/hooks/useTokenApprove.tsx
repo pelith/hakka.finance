@@ -30,10 +30,11 @@ export function useTokenApprove(
 ): [ApprovalState, () => Promise<void>] {
   const { account } = useActiveWeb3React();
   const { chainId } = useWeb3React();
-  const { data: currentAllowance = 0n } = useTokenAllowance(
-    tokenToApprove,
+  const { data: currentAllowance = 0n, refetch: refetchCurrentAllowance } = useTokenAllowance(
     account as string,
+    tokenToApprove,
     spender,
+    chainId as ChainId,
   );
   const { data: tokenInfoAndBalance } = useTokenInfoAndBalance(
     account as string,
@@ -48,7 +49,7 @@ export function useTokenApprove(
     isPending: isWritePending,
   } = useAppWriteContract(chainId as ChainId);
 
-  const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
+  const { isLoading: isWaitForLoading, isSuccess: isWaitForSuccess } = useWaitForTransactionReceipt({
     hash: data,
     query: {
       enabled: !!data && isWriteSuccess,
@@ -71,9 +72,14 @@ export function useTokenApprove(
       : ApprovalState.APPROVED;
   }, [isWritePending, isWaitForLoading, tokenToApprove, currentAllowance, spender, requiredAllowance, tokenInfoAndBalance?.balance]);
 
+  useEffect(() => {
+    if (isWaitForSuccess) {
+      refetchCurrentAllowance();
+    }
+  }, [isWaitForSuccess, refetchCurrentAllowance]);
+
   const approve = useCallback(async (): Promise<void> => {
     const MAX_UINT256 = 2n ** 256n - 1n;
-  console.log('isWritePending', isWritePending, isWaitForLoading, approvalState);
     if (approvalState !== ApprovalState.NOT_APPROVED) {
       console.error('approve was called unnecessarily');
       return;

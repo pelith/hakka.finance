@@ -87,7 +87,7 @@ export async function sHakkaApr(_hakkaPrice: bigint): Promise<bigint> {
 
 export function sHakkaV2Apr(chainId: ChainId): () => Promise<bigint> {
   const now = Math.round(Date.now() / 1000);
-  return async function (): Promise<bigint> {
+  return async (): Promise<bigint> => {
     const client = JSON_RPC_PROVIDER[chainId];
     const rewardsAddress = REWARD_POOLS[SHAKKA_POOLS[chainId]!].rewardsAddress;
     const initStakingRate = getStartStakingRate(
@@ -99,20 +99,20 @@ export function sHakkaV2Apr(chainId: ChainId): () => Promise<bigint> {
     ); // 126230400 = 365.25 * 60 * 60 * 24 * 4
     const finalStakingBN = parseUnits(finalStakingRate.toString(), 18);
     const stakedTotalSupply = (await client.readContract({
-      address: rewardsAddress as any,
-      abi: REWARD_ABI as any,
+      address: rewardsAddress,
+      abi: REWARD_ABI,
       functionName: 'totalSupply',
       args: [],
     })) as bigint;
     const rewardRate = (await client.readContract({
-      address: rewardsAddress as any,
-      abi: REWARD_ABI as any,
+      address: rewardsAddress,
+      abi: REWARD_ABI,
       functionName: 'rewardRate',
       args: [],
     })) as bigint;
     const periodFinish = (await client.readContract({
-      address: rewardsAddress as any,
-      abi: REWARD_ABI as any,
+      address: rewardsAddress,
+      abi: REWARD_ABI,
       functionName: 'periodFinish',
       args: [],
     })) as bigint;
@@ -135,10 +135,10 @@ export function getGainAprFunc(
   chainId: ChainId,
 ): (hakkaPrice: bigint, tokenPrice: number) => Promise<bigint> {
   const now = Math.round(Date.now() / 1000);
-  return async function (
+  return async (
     hakkaPrice: bigint,
     tokenPrice: number,
-  ): Promise<bigint> {
+  ): Promise<bigint> => {
     const client = JSON_RPC_PROVIDER[chainId];
     const rewardsAddress = REWARD_POOLS[iGainAddress].rewardsAddress; // farm address
     const tokenAddress = REWARD_POOLS[iGainAddress].tokenAddress; // igain lp address

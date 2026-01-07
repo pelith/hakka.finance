@@ -100,13 +100,6 @@ const HomeScreen = () => {
 
   const [subscribeEmailAddress, setSubscribeEmailAddress] = useState('');
 
-  useEffect(() => {
-    const anchor = location.hash;
-    if (anchor) {
-      window.location.href = anchor;
-    }
-  }, []);
-
   return (
     <Box>
       <Box sx={styles.homescreenContainer}>

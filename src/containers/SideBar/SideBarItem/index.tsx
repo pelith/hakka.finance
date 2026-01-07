@@ -20,20 +20,15 @@ const SideBarItem = (props: {
     subIcon = '',
     isViewAllNotifiedMission = false,
   } = props;
-  const [selectedNavPath, setSelectedNavPath] = useState('');
   const isBrowser = typeof window !== 'undefined';
-  const currentPath = isBrowser
+  const [currentPath] = isBrowser
     ? window.location.pathname.replace(/\//g, '').split('0', 1)
     : '';
-
-  useEffect(() => {
-    setSelectedNavPath(currentPath[0]);
-  }, []);
 
   return (
     <Box
       sx={
-        selectedNavPath === path
+        currentPath === path
           ? styles.sidebar_item_active
           : styles.sidebar_item
       }

@@ -6,11 +6,13 @@ import { toast } from 'react-toastify';
 
 import {
   usePublicClient,
+  useWalletClient,
   useWaitForTransactionReceipt,
+  useWriteContract,
 } from 'wagmi';
 import type { ChainId } from '@/constants';
 import STAKING_ABI from '@/constants/abis/shakka';
-import useAppWriteContract from '../contracts/useAppWriteContract';
+import { encodeFunctionData } from 'viem';
 
 export enum StakeState {
   UNKNOWN,
@@ -19,19 +21,21 @@ export enum StakeState {
 
 export function useHakkaStake(
   stakeAddress: string,
-  spender: string,
+  sender: string,
   amountParsedRaw: bigint,
   lockSec: number,
 ): [StakeState, () => Promise<void>] {
-  const { chainId } = useWeb3React();
+  const { chainId, account } = useWeb3React();
+  const walletClient = useWalletClient({ chainId: chainId as ChainId })!;
   const publicClient = usePublicClient({ chainId: chainId as ChainId })!;
+
   const {
     writeContractAsync,
     data,
     isPending: isWritePending,
     isSuccess: isWriteSuccess,
     reset,
-  } = useAppWriteContract();
+  } = useWriteContract();
   const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
     hash: data,
     query: {
@@ -45,21 +49,28 @@ export function useHakkaStake(
   }, [isWritePending, isWaitForLoading]);
 
   const stake = useCallback(async (): Promise<void> => {
-    if (!spender) {
+    if (!sender) {
       console.error('no spender');
       return;
     }
 
+    console.log('stake', {spender: sender, amountParsedRaw, lockSec, stakeAddress, chainId});
+
+    const encodedData = encodeFunctionData({
+      abi: STAKING_ABI,
+      functionName: 'stake',
+      args: [
+        sender as `0x${string}`,
+        amountParsedRaw,
+        BigInt(lockSec),
+      ],
+    })
+
     try {
-      const estimatedGas = await publicClient.estimateContractGas({
-        address: stakeAddress as `0x${string}`,
-        abi: STAKING_ABI,
-        functionName: 'stake',
-        args: [
-          spender as `0x${string}`,
-          BigInt(amountParsedRaw.toString()),
-          BigInt(lockSec),
-        ],
+      const estimatedGas = await publicClient.estimateGas({
+        to: stakeAddress as `0x${string}`,
+        data: encodedData,
+        account: walletClient.data!.account,
       });
 
       const increaseGas = (estimatedGas * 15000n) / 10000n;
@@ -68,7 +79,7 @@ export function useHakkaStake(
         abi: STAKING_ABI,
         functionName: 'stake',
         args: [
-          spender as `0x${string}`,
+          sender as `0x${string}`,
           BigInt(amountParsedRaw.toString()),
           BigInt(lockSec),
         ],
@@ -79,13 +90,19 @@ export function useHakkaStake(
       });
     } catch (err) {
       console.error(err);
-      if (err instanceof Error) {
-        toast.error(<div>{err.message}</div>, { containerId: 'error' });
+      if (err instanceof Object) {
+        if ('shortMessage' in err) {
+          toast.error(<div>{err.shortMessage as string}</div>, { containerId: 'error' });
+          return;
+        }
+        if (err instanceof Error) {
+          toast.error(<div>{err.message}</div>, { containerId: 'error' });
+        }
       }
     } finally {
       reset();
     }
-  }, [spender, amountParsedRaw, lockSec]);
+  }, [sender, amountParsedRaw, lockSec]);
 
   return [stakeState, stake];
 }
