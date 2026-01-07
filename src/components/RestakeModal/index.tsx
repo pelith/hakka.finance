@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Switch } from 'theme-ui';
 import { parseUnits } from 'viem';

@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 import { animated, useTransition } from 'react-spring';
 import { DialogOverlay, DialogContent } from '@reach/dialog';
 import { isMobile } from 'react-device-detect';

@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import images from '../../../../images';
 import styles from './styles';

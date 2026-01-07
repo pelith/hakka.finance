@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 import { useState, useMemo, useEffect } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { parseUnits } from 'viem';

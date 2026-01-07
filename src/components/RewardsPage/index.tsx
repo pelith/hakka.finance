@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 /** @jsxFrag */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';

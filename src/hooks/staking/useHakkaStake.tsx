@@ -1,5 +1,3 @@
-/** @jsxImportSource theme-ui */
-
 import { useCallback, useMemo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { toast } from 'react-toastify';

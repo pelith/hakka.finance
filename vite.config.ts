@@ -21,7 +21,9 @@ export default defineConfig(({ mode: _ }) => {
         routeFileIgnorePrefix: '_*',
         autoCodeSplitting: true,
       }),
-      react(),
+      react({
+        jsxImportSource: 'theme-ui',
+      }),
       svgr(),
       jsxLocPlugin(),
       nodePolyfills({
@@ -37,10 +39,6 @@ export default defineConfig(({ mode: _ }) => {
       commonjsOptions: {
         transformMixedEsModules: true,
       },
-    },
-    esbuild: {
-      jsxFactory: 'jsx',
-      jsxInject: `import { jsx } from 'theme-ui'`,
     },
     resolve: {
       alias: {

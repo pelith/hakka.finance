@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import { parseUnits } from 'viem';
 import styles from './styles';

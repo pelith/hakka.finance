@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import { useState, useMemo } from 'react';
 import { parseUnits } from 'viem';

@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 import { type ReactNode } from 'react';
 import { isMobile } from 'react-device-detect';
 import images from '../../../images';

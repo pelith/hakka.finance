@@ -1,5 +1,3 @@
-/** @jsxImportSource theme-ui */
-
 import React, { useState, useEffect } from 'react';
 import { Box, Flex, Text } from 'rebass';
 import styles from './styles';

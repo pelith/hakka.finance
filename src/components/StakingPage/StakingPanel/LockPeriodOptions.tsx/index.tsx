@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import { memo, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import styles from './styles';

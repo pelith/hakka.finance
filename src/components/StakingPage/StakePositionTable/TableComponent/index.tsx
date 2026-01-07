@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import type { ITableData } from '../types';
 import styles from '../styles';

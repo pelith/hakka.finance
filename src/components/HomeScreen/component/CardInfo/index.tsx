@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import { Box } from 'rebass';
 import images from '../../../../images';

@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import { useCallback } from 'react';
 import images from '../../images';

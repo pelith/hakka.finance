@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 import { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';

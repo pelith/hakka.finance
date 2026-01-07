@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import { isMobile } from 'react-device-detect';
 import { MyButton } from '../../Common';

@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import { useCallback, useMemo } from 'react';
 import { isAddress, parseUnits } from 'viem';

@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import BigNumber from 'bignumber.js';
 import images from '../../../images/index';

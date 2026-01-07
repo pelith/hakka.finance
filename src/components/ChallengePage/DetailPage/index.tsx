@@ -1,5 +1,3 @@
-/** @jsxImportSource theme-ui */
-
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import Web3Status from '../../Web3Status';

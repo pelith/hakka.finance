@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import { useMemo } from 'react';
 import styles from './styles';

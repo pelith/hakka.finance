@@ -1,5 +1,3 @@
-/** @jsxImportSource theme-ui */
-
 import styles from './styles';
 import logos from '../../assets';
 import identiy from 'lodash/identity';

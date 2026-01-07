@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 
 import { CheckCircle, Copy } from 'react-feather';
 import useCopyClipboard from '../../hooks/useCopyClipboard';

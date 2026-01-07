@@ -1,4 +1,3 @@
-/** @jsxImportSource theme-ui */
 import { useState } from 'react';
 
 import { Box, Text } from 'rebass';
