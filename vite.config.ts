@@ -11,6 +11,9 @@ export default defineConfig(({ mode: _ }) => {
   // const env = loadEnv(mode, process.cwd(), '');
   return {
     envPrefix: 'APP_',
+    server: {
+      port: 3000,
+    },
     plugins: [
       // this is the plugin that enables path aliases
       viteTsConfigPaths({

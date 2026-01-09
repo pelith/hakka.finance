@@ -31,16 +31,13 @@ export function useHakkaBurn(
       enabled: !!data,
     },
   });
-
-  const [currentTransaction, setCurrentTransaction] = useState(null);
-
   const burnState: BurnState = useMemo(() => {
     if (!spender) return BurnState.UNKNOWN;
 
     return isPending && isWaitForLoading
       ? BurnState.PENDING
       : BurnState.UNKNOWN;
-  }, [currentTransaction, spender]);
+  }, [spender, isPending, isWaitForLoading]);
 
   const burn = useCallback(async (): Promise<void> => {
     if (!spender) {

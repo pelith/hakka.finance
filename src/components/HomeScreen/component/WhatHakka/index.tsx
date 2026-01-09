@@ -2,21 +2,47 @@
 
 import { type ReactNode } from 'react';
 import { Box, Flex } from 'rebass';
-import fetch from 'cross-fetch';
 import styles from './styles';
-import { useQuery } from '@tanstack/react-query';
-
+import { useReadContracts } from 'wagmi';
+import { formatUnits } from 'viem';
+import { ChainId, HAKKA } from 'src/constants';
+import erc20 from 'src/constants/abis/erc20';
+import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
+const Admin = '0x1D075f1F543bB09Df4530F44ed21CA50303A65B2' as const
+const MultiSig = '0xc04672587e0d1bd7da5707484119dbdbb67ac57d' as const
 function WhatHakka({ renderCoin }: { renderCoin: () => ReactNode }) {
-  const { data: circulatingSupplyValue } = useQuery({
-    queryFn: () =>
-      fetch('https://api.hakka.finance/').then((res) => res.text()),
-    queryKey: ['circulatingSupply'],
-    select: (res) => {
-      const value = Math.floor(Number.parseInt(res, 10) * 10000) / 10000;
-      return `${value} HAKKA`;
+  const {data: circulatingSupply} = useReadContracts({
+    contracts: [
+      {
+        address: HAKKA[ChainId.MAINNET].address,
+        abi: erc20,
+        functionName: 'balanceOf',
+        args: [Admin]
+      },
+      {
+        address: HAKKA[ChainId.MAINNET].address,
+        abi: erc20,
+        functionName: 'balanceOf',
+        args: [MultiSig]
+      },
+      {
+        address: HAKKA[ChainId.MAINNET].address,
+        abi: erc20,
+        functionName: 'totalSupply',
+        args: []
+      }
+    ],
+    query: {
+      select(data) {
+        if (!data) return 0
+        const [adminBalance, multiSigBalance, totalSupply] = data;
+        if (adminBalance.result === undefined || multiSigBalance.result === undefined || totalSupply.result === undefined) return 0;
+        const summing = totalSupply.result - adminBalance.result - multiSigBalance.result;
+        return formatUnits(summing, 18);
+      },
     },
-    initialData: '0 HAKKA',
   });
+
 
   return (
     <>
@@ -32,7 +58,7 @@ function WhatHakka({ renderCoin }: { renderCoin: () => ReactNode }) {
       </Box>
       <Box sx={styles.circulatingSupplyText}>
         <span>Circulating Supply: </span>
-        <span>{circulatingSupplyValue}</span>
+        <span>{formatCommonNumber(circulatingSupply)} HAKKA</span>
       </Box>
       <Flex sx={styles.listCoinHakka} mt='20px' alignItems='center'>
         {renderCoin()}

@@ -9,7 +9,6 @@ import { config } from './wagmi.config';
 import { routeTree } from './routeTree.gen';
 import { ContextProviders } from './state';
 import { initGtm, trackSpaRouteChangesWithGtm } from './thirdParty/gtm';
-import { initTawk } from './thirdParty/tawk';
 import { ThemeUIProvider } from 'theme-ui';
 import { theme } from './theme';
 
@@ -19,10 +18,6 @@ const router = createRouter({ routeTree });
 if (import.meta.env.PROD) {
   initGtm('GTM-5RNGTLZ');
   trackSpaRouteChangesWithGtm({ eventName: 'routeChangeEvent' });
-  initTawk({
-    tawkId: import.meta.env.APP_TAWK_ID,
-    tawkKey: import.meta.env.APP_TAWK_KEY,
-  });
 }
 
 // Register the router instance for type safety

@@ -35,15 +35,6 @@ export const botSideBarItems = [
     subIcon: images.iconSnapshot,
   },
   {
-    name: 'forum',
-    icon: images.iconForum,
-    href: 'https://forum.hakka.finance/',
-    path: 'forum',
-    connectOutsideWebsite: true,
-    underConstruction: false,
-    subIcon: images.iconLinkSmall,
-  },
-  {
     name: 'play to earn!',
     icon: images.iconChallenge,
     path: 'play2earn-intro',

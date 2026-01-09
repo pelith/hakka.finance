@@ -196,9 +196,9 @@ export const VAULT_TOKENS: {
       symbol: 'ETH',
       decimals: 18,
     },
-    '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2': {
-      name: 'Maker',
-      symbol: 'MKR',
+    '0x56072C95FAA701256059aa122697B133aDEd9279': {
+      name: 'SKY',
+      symbol: 'SKY',
       decimals: 18,
     },
     '0x35101c731b1548B5e48bb23F99eDBc2f5c341935': {
