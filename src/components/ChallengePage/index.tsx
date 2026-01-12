@@ -1,4 +1,3 @@
-
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './styles';
 import Web3Status from '../Web3Status';

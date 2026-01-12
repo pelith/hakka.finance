@@ -4,14 +4,11 @@ import { useTokenAllowance } from './contracts/token/useTokenAllowance';
 import { useActiveWeb3React } from './web3Manager';
 import { toast } from 'react-toastify';
 import isZero from '../utils/isZero';
-import { erc20Abi, formatUnits, isAddress, type Address, } from 'viem';
+import { erc20Abi, formatUnits, isAddress, type Address } from 'viem';
 import { useTokenInfoAndBalance } from './contracts/token/useTokenInfoAndBalance';
 import BigNumber from 'bignumber.js';
 import type { ChainId } from '@/constants';
-import {
-  usePublicClient,
-  useWaitForTransactionReceipt,
-} from 'wagmi';
+import { usePublicClient, useWaitForTransactionReceipt } from 'wagmi';
 import useAppWriteContract from './contracts/useAppWriteContract';
 
 export enum ApprovalState {
@@ -28,12 +25,13 @@ export function useTokenApprove(
 ): [ApprovalState, () => Promise<void>] {
   const { account } = useActiveWeb3React();
   const { chainId } = useWeb3React();
-  const { data: currentAllowance = 0n, refetch: refetchCurrentAllowance } = useTokenAllowance(
-    account as string,
-    tokenToApprove,
-    spender,
-    chainId as ChainId,
-  );
+  const { data: currentAllowance = 0n, refetch: refetchCurrentAllowance } =
+    useTokenAllowance(
+      account as string,
+      tokenToApprove,
+      spender,
+      chainId as ChainId,
+    );
   const { data: tokenInfoAndBalance } = useTokenInfoAndBalance(
     account as string,
     tokenToApprove,
@@ -47,12 +45,13 @@ export function useTokenApprove(
     isPending: isWritePending,
   } = useAppWriteContract(chainId as ChainId);
 
-  const { isLoading: isWaitForLoading, isSuccess: isWaitForSuccess } = useWaitForTransactionReceipt({
-    hash: data,
-    query: {
-      enabled: !!data && isWriteSuccess,
-    },
-  });
+  const { isLoading: isWaitForLoading, isSuccess: isWaitForSuccess } =
+    useWaitForTransactionReceipt({
+      hash: data,
+      query: {
+        enabled: !!data && isWriteSuccess,
+      },
+    });
 
   const approvalState: ApprovalState = useMemo(() => {
     if (!tokenToApprove || !spender) return ApprovalState.UNKNOWN;
@@ -68,7 +67,15 @@ export function useTokenApprove(
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [isWritePending, isWaitForLoading, tokenToApprove, currentAllowance, spender, requiredAllowance, tokenInfoAndBalance?.balance]);
+  }, [
+    isWritePending,
+    isWaitForLoading,
+    tokenToApprove,
+    currentAllowance,
+    spender,
+    requiredAllowance,
+    tokenInfoAndBalance?.balance,
+  ]);
 
   useEffect(() => {
     if (isWaitForSuccess) {
@@ -108,7 +115,6 @@ export function useTokenApprove(
     } finally {
       resetWriteContract();
     }
-    
   }, [approvalState, tokenToApprove, writeContractAsync, spender]);
 
   return [approvalState, approve];

@@ -8,41 +8,46 @@ import { formatUnits } from 'viem';
 import { ChainId, HAKKA } from 'src/constants';
 import erc20 from 'src/constants/abis/erc20';
 import { formatCommonNumber } from 'src/utils/formatCommonNumbers';
-const Admin = '0x1D075f1F543bB09Df4530F44ed21CA50303A65B2' as const
-const MultiSig = '0xc04672587e0d1bd7da5707484119dbdbb67ac57d' as const
+const Admin = '0x1D075f1F543bB09Df4530F44ed21CA50303A65B2' as const;
+const MultiSig = '0xc04672587e0d1bd7da5707484119dbdbb67ac57d' as const;
 function WhatHakka({ renderCoin }: { renderCoin: () => ReactNode }) {
-  const {data: circulatingSupply} = useReadContracts({
+  const { data: circulatingSupply } = useReadContracts({
     contracts: [
       {
         address: HAKKA[ChainId.MAINNET].address,
         abi: erc20,
         functionName: 'balanceOf',
-        args: [Admin]
+        args: [Admin],
       },
       {
         address: HAKKA[ChainId.MAINNET].address,
         abi: erc20,
         functionName: 'balanceOf',
-        args: [MultiSig]
+        args: [MultiSig],
       },
       {
         address: HAKKA[ChainId.MAINNET].address,
         abi: erc20,
         functionName: 'totalSupply',
-        args: []
-      }
+        args: [],
+      },
     ],
     query: {
       select(data) {
-        if (!data) return 0
+        if (!data) return 0;
         const [adminBalance, multiSigBalance, totalSupply] = data;
-        if (adminBalance.result === undefined || multiSigBalance.result === undefined || totalSupply.result === undefined) return 0;
-        const summing = totalSupply.result - adminBalance.result - multiSigBalance.result;
+        if (
+          adminBalance.result === undefined ||
+          multiSigBalance.result === undefined ||
+          totalSupply.result === undefined
+        )
+          return 0;
+        const summing =
+          totalSupply.result - adminBalance.result - multiSigBalance.result;
         return formatUnits(summing, 18);
       },
     },
   });
-
 
   return (
     <>

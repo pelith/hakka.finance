@@ -1,4 +1,3 @@
-
 import { expiredCountdownRenderer, VaultIcon } from '../TableComponent';
 import type { ITableData } from '../types';
 import { getDateFromBigNumber } from '../utils';

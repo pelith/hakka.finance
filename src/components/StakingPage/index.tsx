@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useEffect } from 'react';
 import { formatUnits, zeroAddress } from 'viem';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
@@ -150,12 +149,13 @@ const Staking = () => {
             >
               <span>Go to governance</span>
             </ReactTooltip>
-            <Link
-              to='/staking-v1'
-              sx={styles.normalButton}
-            >
+            <Link to='/staking-v1' sx={styles.normalButton}>
               Switch to v1
-              <img className='icon' src={images.iconArrowRight} alt='arrow right' />
+              <img
+                className='icon'
+                src={images.iconArrowRight}
+                alt='arrow right'
+              />
             </Link>
           </div>
         </div>
@@ -193,7 +193,7 @@ const Staking = () => {
               chainId={activeChainTab}
               toggleWalletModal={toggleWalletModal}
             />
-            </div>
+          </div>
         </div>
         <RedeemModal
           key={`redeem-${positionIndex}`}
@@ -222,7 +222,7 @@ const Staking = () => {
             <span>Earn more Hakka</span>
             <Link
               sx={styles.sHakkaRewardLinkBtn}
-              to="/farms/$pool"
+              to='/farms/$pool'
               params={{ pool: currentShakkaRewardPoolAddress }}
             >
               <span>sHAKKA Pool</span>

@@ -14,7 +14,8 @@ export function unstakeReceivedAmount(
   if (burnSHakkaAmount.gt(totalSHakkaAmount)) {
     return undefined;
   }
-  const receivedHakkaAmount =
-    (burnSHakkaAmount.div(totalSHakkaAmount)) .multipliedBy(formatUnits(vault.hakkaAmount, 18))
+  const receivedHakkaAmount = burnSHakkaAmount
+    .div(totalSHakkaAmount)
+    .multipliedBy(formatUnits(vault.hakkaAmount, 18));
   return receivedHakkaAmount.toFixed(4);
 }

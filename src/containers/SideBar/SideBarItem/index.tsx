@@ -26,9 +26,7 @@ const SideBarItem = (props: {
   return (
     <Box
       sx={
-        currentPath === path
-          ? styles.sidebar_item_active
-          : styles.sidebar_item
+        currentPath === path ? styles.sidebar_item_active : styles.sidebar_item
       }
     >
       <Flex sx={{ width: '100%' }} justifyContent='space-between'>

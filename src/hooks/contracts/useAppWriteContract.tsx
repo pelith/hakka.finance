@@ -22,9 +22,11 @@ export default function useAppWriteContract(chainId: ChainId = 1) {
       },
       onError(error) {
         console.error(error);
-        if (typeof error !== 'object')return
+        if (typeof error !== 'object') return;
         if ('shortMessage' in error) {
-          toast.error(<div>{error.shortMessage}</div>, { containerId: 'error' });
+          toast.error(<div>{error.shortMessage}</div>, {
+            containerId: 'error',
+          });
           return;
         }
         toast.error(<div>{error.message}</div>, { containerId: 'error' });

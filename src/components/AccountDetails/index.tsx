@@ -1,4 +1,3 @@
-
 import { useActiveWeb3React } from '../../hooks/web3Manager';
 import { shortenAddress } from '../../utils';
 import Copy from './Copy';
@@ -76,7 +75,7 @@ export default function AccountDetails({
                 {isActive ? (
                   <MyButton
                     onClick={() => {
-                      connector?.disconnect()
+                      connector?.disconnect();
                     }}
                   >
                     Disconnect

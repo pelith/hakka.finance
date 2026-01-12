@@ -1,4 +1,3 @@
-
 import { Box, Flex } from 'rebass';
 import images from '../../images/index';
 import styles from './styles';
@@ -44,7 +43,12 @@ const Header = (props: HeaderProps) => {
   };
   const renderListIcon = () =>
     listIcon.map((item, i) => (
-      <a key={item.url} target='_blank' href={item.href} rel='noreferrer noopener'>
+      <a
+        key={item.url}
+        target='_blank'
+        href={item.href}
+        rel='noreferrer noopener'
+      >
         <img sx={styles.imgIcon} src={images[item.url]} alt={item.url} />
       </a>
     ));
@@ -60,7 +64,11 @@ const Header = (props: HeaderProps) => {
       </Box>
 
       <Box sx={styles.mobile_header} justifyContent='space-between'>
-        <img sx={styles.headerBg} src={images.headerLogo3x} alt='header logo 3x' />
+        <img
+          sx={styles.headerBg}
+          src={images.headerLogo3x}
+          alt='header logo 3x'
+        />
         <img sx={styles.logoRespon} src={images.hakkaLogo} alt='' />
         <img
           onClick={handleToggleSidebar}

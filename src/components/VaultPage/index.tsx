@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useMemo } from 'react';
 import { isAddressEqual, parseUnits, zeroAddress, type Address } from 'viem';
 import type BigNumber from 'bignumber.js';
@@ -36,7 +35,7 @@ const getRewardTokenById = (chainId: ChainId | undefined) => {
 
 const VaultPage = () => {
   const { account } = useWeb3React();
-  const chainId = ChainId.MAINNET
+  const chainId = ChainId.MAINNET;
 
   const hakkaBalanceAmount = useTokenInfoAndBalance(
     account as Address,

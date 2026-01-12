@@ -1,4 +1,3 @@
-
 import BigNumber from 'bignumber.js';
 import images from '../../../images/index';
 import styles from './styles';

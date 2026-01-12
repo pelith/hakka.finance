@@ -1,4 +1,3 @@
-
 import { Box, Flex, Link } from 'rebass';
 import images from '../../../images';
 import styles from './styles';

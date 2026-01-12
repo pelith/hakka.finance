@@ -1,4 +1,3 @@
-
 import { Box, Flex } from 'rebass';
 import images from '../../../images';
 import { MyButton } from '../../../components/Common';

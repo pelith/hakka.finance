@@ -21,6 +21,7 @@ import {
   formatCommonNumber,
   formatPercentageNumber,
 } from '@/utils/formatCommonNumbers';
+import { useQueries } from '@tanstack/react-query';
 
 enum SortOptions {
   LATEST = 'latest',
@@ -82,7 +83,38 @@ const RewardsPage = () => {
   const tokenPrice = useTokensPrice();
   const hakkaPrice = useTokenPrice('hakka-finance');
   const rewardData = useRewardsData(currentPoolAddresses, decimals);
-  const [apr, setApr] = useState<Record<Address, bigint | undefined>>({});
+  const apr = useQueries({
+    queries: Object.keys(REWARD_POOLS).map((address) => ({
+      queryKey: ['apr', address],
+      queryFn: async () => {
+        if (!(address in POOL_ASSETES)) {
+          return 0n;
+        }
+        const apr = await POOL_ASSETES[address].getApr(
+          parseUnits(hakkaPrice.toString(), 18),
+          POOL_ASSETES[address].tokenPriceKey
+            ? tokenPrice?.[POOL_ASSETES[address].tokenPriceKey]?.usd || 1
+            : 1,
+        );
+        return {
+          address,
+          apr,
+        };
+      },
+      retryInterval: 3000,
+    })),
+    combine: (data) =>
+      data.reduce(
+        (acc, curr) => {
+          if (curr.data) {
+            acc[curr.data.address as Address] = curr.data.apr;
+          }
+          return acc;
+        },
+        {} as Record<Address, bigint | undefined>,
+      ),
+  });
+
   const [isShowStakedOnly, setIsShowStakedOnly] = useState(false);
 
   const stakedPoolAddresses = useMemo(
@@ -113,18 +145,16 @@ const RewardsPage = () => {
     const copyActivePools = [...activePools];
     if (Object.keys(apr).length > 0) {
       return copyActivePools.sort(createBigNumberSort('desc'));
-    } else {
-      return activePools;
     }
+    return activePools;
   }, [activePools, apr]);
 
   const sortedByAprStakedActivePools = useMemo(() => {
     const copyStakedActivePools = [...stakedActivePools];
     if (Object.keys(apr).length > 0) {
       return copyStakedActivePools.sort(createBigNumberSort('desc'));
-    } else {
-      return stakedActivePools;
     }
+    return stakedActivePools;
   }, [stakedActivePools, apr]);
 
   const sortedActivePools = useMemo(() => {
@@ -167,69 +197,6 @@ const RewardsPage = () => {
       setCurrentChain(chainId);
     }
   }, [chainId]);
-
-  useEffect(() => {
-    let active = true;
-    if (hakkaPrice && tokenPrice) {
-      loadApr(Object.keys(REWARD_POOLS));
-    }
-
-    async function loadApr(
-      poolAddresses: string[],
-      prevResult: Record<Address, bigint | undefined> = {},
-    ) {
-      let newApr = { ...prevResult };
-      const failAddress: string[] = [];
-      try {
-        setApr(newApr);
-        newApr = { ...newApr };
-        const apyPromiseList = await Promise.all(
-          poolAddresses.map((address) => {
-            if (!POOL_ASSETES[address]) {
-              return 0n;
-            }
-            return POOL_ASSETES[address].getApr(
-              parseUnits(hakkaPrice.toString(), 18),
-              POOL_ASSETES[address].tokenPriceKey
-                ? tokenPrice?.[POOL_ASSETES[address].tokenPriceKey]?.usd || 1
-                : 1,
-            );
-          }),
-        );
-
-        const settledApyList = await Promise.allSettled(apyPromiseList);
-        const reasonList: string[] = [];
-        settledApyList.map((aprResult, index) => {
-          if (aprResult.status === 'fulfilled') {
-            newApr[REWARD_POOLS[poolAddresses[index]].rewardsAddress] =
-              aprResult.value;
-          } else {
-            reasonList.push((aprResult as PromiseRejectedResult).reason);
-            failAddress.push(REWARD_POOLS[poolAddresses[index]].rewardsAddress);
-            newApr[REWARD_POOLS[poolAddresses[index]].rewardsAddress] =
-              undefined;
-          }
-        });
-
-        if (!active) {
-          return;
-        }
-        setApr(newApr);
-        if (reasonList.length > 0) {
-          throw reasonList;
-        }
-      } catch (e) {
-        console.error(e);
-        setTimeout(() => {
-          loadApr(failAddress, newApr);
-        }, 3000);
-      }
-    }
-
-    return () => {
-      active = false;
-    };
-  }, [hakkaPrice, tokenPrice]);
 
   const rewardsPoolRenderer = useCallback(
     (pool: Pool, currentChain: ChainId, active = false) => {
@@ -306,6 +273,7 @@ const RewardsPage = () => {
                 ? CHAIN_SWITCH_TAB_INFO[chainId].img
                 : CHAIN_SWITCH_TAB_INFO[chainId].imgGray
             }
+            alt={CHAIN_SWITCH_TAB_INFO[chainId].displayName}
           />
         ) : (
           CHAIN_SWITCH_TAB_INFO[chainId].displayName
@@ -336,9 +304,9 @@ const RewardsPage = () => {
                 onChange={() => setIsShowStakedOnly(!isShowStakedOnly)}
               />
               {isShowStakedOnly ? (
-                <img src={images.iconChekBoxChecked} />
+                <img src={images.iconChekBoxChecked} alt='Staked Only' />
               ) : (
-                <img src={images.iconChekBoxUnchecked} />
+                <img src={images.iconChekBoxUnchecked} alt='Staked Only' />
               )}
               <span>Staked Only</span>
             </label>
@@ -376,7 +344,10 @@ const RewardsPage = () => {
               sx={styles.archivedTitle}
             >
               <p>Archived ({archivedPools.length})</p>
-              <img src={isShowArchived ? images.iconUp : images.iconDown} />
+              <img
+                src={isShowArchived ? images.iconUp : images.iconDown}
+                alt={isShowArchived ? 'Up' : 'Down'}
+              />
             </div>
           </div>
           {isShowArchived && (

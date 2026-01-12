@@ -13,12 +13,20 @@ const DappHeader = (props: { toggleSidebar: () => void }) => {
     <>
       <Box sx={styles.headerContainer} width='100%'>
         <Box>
-          <img sx={styles.headerBg} src={images.dappHeaderLogo} alt='dapp header logo' />
+          <img
+            sx={styles.headerBg}
+            src={images.dappHeaderLogo}
+            alt='dapp header logo'
+          />
         </Box>
       </Box>
 
       <Box sx={styles.mobile_header} justifyContent='space-between'>
-        <img sx={styles.headerBg} src={images.dappHeaderLogo3x} alt='dapp header logo 3x' />
+        <img
+          sx={styles.headerBg}
+          src={images.dappHeaderLogo3x}
+          alt='dapp header logo 3x'
+        />
         <img sx={styles.logoRespon} src={images.hakkaLogo} alt='' />
         <img
           onClick={handleToggleSidebar}

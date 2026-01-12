@@ -7,7 +7,5 @@ export const Route = createFileRoute('/farms/')({
 });
 
 function FarmsPage() {
-  return (
-      <RewardsPage />
-  );
+  return <RewardsPage />;
 }

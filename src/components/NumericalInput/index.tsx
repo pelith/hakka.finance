@@ -1,4 +1,3 @@
-
 import { parseUnits } from 'viem';
 import styles from './styles';
 import { escapeRegExp } from '../../utils/index';

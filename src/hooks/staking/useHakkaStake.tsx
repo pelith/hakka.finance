@@ -52,17 +52,19 @@ export function useHakkaStake(
       return;
     }
 
-    console.log('stake', {spender: sender, amountParsedRaw, lockSec, stakeAddress, chainId});
+    console.log('stake', {
+      spender: sender,
+      amountParsedRaw,
+      lockSec,
+      stakeAddress,
+      chainId,
+    });
 
     const encodedData = encodeFunctionData({
       abi: STAKING_ABI,
       functionName: 'stake',
-      args: [
-        sender as `0x${string}`,
-        amountParsedRaw,
-        BigInt(lockSec),
-      ],
-    })
+      args: [sender as `0x${string}`, amountParsedRaw, BigInt(lockSec)],
+    });
 
     try {
       const estimatedGas = await publicClient.estimateGas({
@@ -90,7 +92,9 @@ export function useHakkaStake(
       console.error(err);
       if (err instanceof Object) {
         if ('shortMessage' in err) {
-          toast.error(<div>{err.shortMessage as string}</div>, { containerId: 'error' });
+          toast.error(<div>{err.shortMessage as string}</div>, {
+            containerId: 'error',
+          });
           return;
         }
         if (err instanceof Error) {

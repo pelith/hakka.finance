@@ -185,7 +185,11 @@ const RestakeModal = ({
       <div sx={styles.container}>
         <div sx={styles.heading}>
           <h2>Restake</h2>
-          <img src={images.iconDeleteRound} onClick={toggleRestakeModal} alt='delete' />
+          <img
+            src={images.iconDeleteRound}
+            onClick={toggleRestakeModal}
+            alt='delete'
+          />
         </div>
         <StayTheSameSwitchWithTitle
           title='Stake more HAKKA?'

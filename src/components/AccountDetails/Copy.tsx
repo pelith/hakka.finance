@@ -1,4 +1,3 @@
-
 import { CheckCircle, Copy } from 'react-feather';
 import useCopyClipboard from '../../hooks/useCopyClipboard';
 import styles from './styles';

@@ -1,4 +1,3 @@
-
 import type { ITableData } from '../types';
 import styles from '../styles';
 import images from '../../../../images';

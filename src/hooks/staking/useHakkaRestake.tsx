@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';

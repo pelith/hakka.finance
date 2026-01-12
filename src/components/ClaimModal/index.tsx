@@ -1,4 +1,3 @@
-
 import {
   useClaimModalOpen,
   useClaimModalToggle,

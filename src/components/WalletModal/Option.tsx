@@ -8,7 +8,7 @@ export default function Option({
   icon,
   id,
 }: {
-  onClick?: (() => void);
+  onClick?: () => void;
   header: React.ReactNode;
   icon: string;
   id: string;

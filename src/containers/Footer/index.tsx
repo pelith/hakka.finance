@@ -33,7 +33,6 @@ const LIST_ITEM = [
   },
 ] as const;
 function Footer() {
-
   const renderListIcon = () =>
     LIST_ITEM.map((item, i) => (
       <Box key={item.url}>

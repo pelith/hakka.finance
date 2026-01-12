@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Box, Flex, Link } from 'rebass';
 import images from '../../../../images';

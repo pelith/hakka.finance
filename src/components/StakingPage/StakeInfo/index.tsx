@@ -24,7 +24,9 @@ const InfoItem = ({ icon, title, value }: InfoItemProps) => (
     </div>
     <span
       sx={
-        !BigNumber(value ?? '0').isZero() ? { color: 'rgba(37, 62, 71, 0.5)' } : {}
+        !BigNumber(value ?? '0').isZero()
+          ? { color: 'rgba(37, 62, 71, 0.5)' }
+          : {}
       }
     >
       {value || '0.00'}

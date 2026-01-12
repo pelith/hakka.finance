@@ -1,4 +1,3 @@
-
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import styles from './styles';
 import PoolDetail from './PoolDetail';

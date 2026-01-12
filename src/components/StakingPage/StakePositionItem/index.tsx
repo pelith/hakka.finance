@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { parseUnits } from 'viem';
 import BigNumber from 'bignumber.js';
@@ -141,7 +140,10 @@ const StakePositionItem = (props: StakePositionProps) => {
                 onClick={() => setIsShowRedeem(!isShowRedeem)}
               >
                 <span>Redeem</span>
-                <img src={isShowRedeem ? images.iconTop : images.iconDown} alt='icon' />
+                <img
+                  src={isShowRedeem ? images.iconTop : images.iconDown}
+                  alt='icon'
+                />
               </div>
             )}
           </div>

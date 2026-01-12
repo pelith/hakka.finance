@@ -20,7 +20,10 @@ export default function PlayToEarnLevelUpModal() {
         <p sx={styles.subtitle}>Level Up!</p>
         <div sx={styles.decorativeThreadContainer}>
           {DECORATIVE_THREAD_COLOR_LIST.map((ele) => (
-            <div key={ele} sx={{ background: ele, ...styles.decorativeThread }} />
+            <div
+              key={ele}
+              sx={{ background: ele, ...styles.decorativeThread }}
+            />
           ))}
         </div>
         <p sx={styles.content}>

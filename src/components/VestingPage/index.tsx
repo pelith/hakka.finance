@@ -1,4 +1,3 @@
-
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { useMemo, useState, useEffect } from 'react';
 import Countdown, { zeroPad } from 'react-countdown';

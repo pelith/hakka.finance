@@ -135,10 +135,7 @@ export function getGainAprFunc(
   chainId: ChainId,
 ): (hakkaPrice: bigint, tokenPrice: number) => Promise<bigint> {
   const now = Math.round(Date.now() / 1000);
-  return async (
-    hakkaPrice: bigint,
-    tokenPrice: number,
-  ): Promise<bigint> => {
+  return async (hakkaPrice: bigint, tokenPrice: number): Promise<bigint> => {
     const client = JSON_RPC_PROVIDER[chainId];
     const rewardsAddress = REWARD_POOLS[iGainAddress].rewardsAddress; // farm address
     const tokenAddress = REWARD_POOLS[iGainAddress].tokenAddress; // igain lp address

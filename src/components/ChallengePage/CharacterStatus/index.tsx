@@ -1,4 +1,3 @@
-
 import { isMobile } from 'react-device-detect';
 import styles from './styles';
 import ProgressBar from '../../Common/ProgressBar';

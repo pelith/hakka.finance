@@ -20,12 +20,12 @@ const withWrongNetworkCheckWrapper =
       children,
     } = props;
 
-    const {switchChain, isPending} = useSwitchChain()
+    const { switchChain, isPending } = useSwitchChain();
 
     const isDisabled = isCorrectNetwork ? disabled : isDisabledWhenNotPrepared;
     const handleClick = isCorrectNetwork
       ? onClick
-      : () => switchChain({chainId: targetNetwork ?? ChainId.MAINNET});
+      : () => switchChain({ chainId: targetNetwork ?? ChainId.MAINNET });
     const childrenElement =
       !isCorrectNetwork && !isDisabledWhenNotPrepared
         ? 'Change Network'

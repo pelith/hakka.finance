@@ -7,7 +7,7 @@ import Footer from '../Footer';
 import styles from './styles';
 import images from '../../images';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/ReactToastify.css'
+import 'react-toastify/ReactToastify.css';
 // import './ReactToastify.css';
 
 const DappLayout = ({
@@ -53,9 +53,7 @@ const DappLayout = ({
           width='100%'
           sx={styles.custom_scroll_bar}
         >
-          <DappHeader
-            toggleSidebar={toggleSideBar}
-          />
+          <DappHeader toggleSidebar={toggleSideBar} />
           <Box sx={styles.content}>
             <ToastContainer
               containerId={'tx'}

@@ -1,18 +1,18 @@
-
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { getEtherscanLink, shortenTxId } from '../../utils';
 import { parseUnits } from 'viem';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
 import { REWARD_POOLS } from '../../constants/rewards';
-import { ChainId } from '@/constants';
+import type { ChainId } from '@/constants';
 import {
   usePublicClient,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from 'wagmi';
 import STAKING_REWARDS_ABI from '@/constants/abis/staking_rewards';
+import useAppWriteContract from '../contracts/useAppWriteContract';
 
 export enum DepositState {
   UNKNOWN,
@@ -32,10 +32,8 @@ export function useRewardsDeposit(
     data,
     isPending: isWritePending,
     isSuccess: isWriteSuccess,
-    isError: isWriteError,
-    error: writeError,
     reset,
-  } = useWriteContract();
+  } = useAppWriteContract(chainId as ChainId);
   const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
     hash: data,
     query: {
@@ -69,19 +67,9 @@ export function useRewardsDeposit(
         abi: STAKING_REWARDS_ABI,
         functionName: 'stake',
         args: [amountParsed],
+        chainId: chainId as ChainId,
       });
 
-      toast(
-        <a
-          target='_blank'
-          href={getEtherscanLink(chainId ?? 1, txHash, 'transaction')}
-          rel='noreferrer noopener'
-          sx={{ textDecoration: 'none', color: '#253e47' }}
-        >
-          {shortenTxId(txHash)} <ExternalLink size={16} />
-        </a>,
-        { containerId: 'tx' },
-      );
       await publicClient.waitForTransactionReceipt({
         hash: txHash,
       });

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, memo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { UAuthConnector } from '@uauth/web3-react';

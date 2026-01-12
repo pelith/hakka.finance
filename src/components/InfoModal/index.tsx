@@ -1,4 +1,3 @@
-
 import { ArrowRightCircle } from 'react-feather';
 import { useStakingDataV2, useStakingDataV1 } from '../../data/StakingData';
 import ERC20_ABI from '../../constants/abis/erc20';
