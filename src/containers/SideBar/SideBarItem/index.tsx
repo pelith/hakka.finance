@@ -1,30 +1,38 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+
 import { Box, Flex, Text } from 'rebass';
 import styles from './styles';
 import { upperCaseFirstLetter } from '../../../common/functions';
 import { NOTIFICATION_DOT } from '..';
 
-const SideBarItem = (props, { location, data }) => {
+const SideBarItem = (props: {
+  icon: string;
+  text: string;
+  path: string;
+  subIcon?: string;
+  isViewAllNotifiedMission?: boolean;
+}) => {
   const {
-    icon, text, path, subIcon, isViewAllNotifiedMission
+    icon,
+    text,
+    path,
+    subIcon = '',
+    isViewAllNotifiedMission = false,
   } = props;
-  const [selectedNavPath, setSelectedNavPath] = useState('');
   const isBrowser = typeof window !== 'undefined';
-  const currentPath = isBrowser ? window.location.pathname.replace(/\//g, '').split('0',1) : '';
-
-  useEffect(() => {
-    setSelectedNavPath(currentPath[0]);
-  }, []);
+  const [currentPath] = isBrowser
+    ? window.location.pathname.replace(/\//g, '').split('0', 1)
+    : '';
 
   return (
-    <Box sx={selectedNavPath === path ? styles.sidebar_item_active : styles.sidebar_item}>
-      <Flex sx={{ width: '100%' }} justifyContent="space-between">
+    <Box
+      sx={
+        currentPath === path ? styles.sidebar_item_active : styles.sidebar_item
+      }
+    >
+      <Flex sx={{ width: '100%' }} justifyContent='space-between'>
         <Flex>
-          <img src={icon} />
-          <Text sx={styles.sidebar_text} className="sidebar-text" ml="12px">
+          <img src={icon} alt='icon' />
+          <Text sx={styles.sidebar_text} className='sidebar-text' ml='12px'>
             {upperCaseFirstLetter(text)}
           </Text>
         </Flex>
@@ -33,10 +41,8 @@ const SideBarItem = (props, { location, data }) => {
               <div sx={styles.notification_dot_container}>
                 <div sx={styles.notification_dot} />
               </div>
-          ) : ( 
-            <img src={subIcon} /> 
-          )
-        }
+            )
+          : (subIcon && <img src={subIcon} alt='subIcon' />) || null}
       </Flex>
     </Box>
   );

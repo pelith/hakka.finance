@@ -1,71 +1,84 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import { JSBI, TokenAmount } from '@uniswap/sdk';
-import { useWeb3React } from '@web3-react/core';
-import { Interface } from '@ethersproject/abi';
 import { ArrowRightCircle } from 'react-feather';
-import { useStakingData } from '../../data/StakingData';
-import ERC20_ABI from '../../constants/abis/erc20.json';
-import { ChainId, HAKKA, VESTING_ADDRESSES } from '../../constants';
+import { useStakingDataV2, useStakingDataV1 } from '../../data/StakingData';
+import ERC20_ABI from '../../constants/abis/erc20';
+import { type ChainId, HAKKA, VESTING_ADDRESSES } from '../../constants';
 import {
   useInfoModalOpen,
   useInfoModalToggle,
 } from '../../state/application/hooks';
-import { useMultipleContractMultipleData } from '../../state/multicall/hooks';
 import useTokenPrice from '../../hooks/useTokenPrice';
 import images from '../../images';
 import Modal from '../Modal';
 import styles from './styles';
-import AddToMetamaskBtn from '../AddToMetamaskBtn';
+import AddHakkaToMetamaskBtn from '../AddToMetamaskBtn';
+import { useNavigate } from '@tanstack/react-router';
+import { useAccount, useReadContract } from 'wagmi';
+import { formatUnits, type Address } from 'viem';
+import BigNumber from 'bignumber.js';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 
 export default function InfoModal() {
-  const { chainId, account, isActive } = useWeb3React();
+  const { address, chainId, isConnected } = useAccount();
   const hakkaPrice = useTokenPrice('hakka-finance');
-  const isHakkaExist = !!HAKKA[chainId as ChainId]
+  const isHakkaExist = !!HAKKA[chainId as ChainId];
 
-  const ERC20_INTERFACE = new Interface(ERC20_ABI);
-  const hakkaBalances = useMultipleContractMultipleData({
-    addresses: [
-      HAKKA[chainId as ChainId]?.address,
-      VESTING_ADDRESSES[chainId as ChainId],
-    ],
-    contractInterface: ERC20_INTERFACE,
-    methodName: 'balanceOf',
-    callInputs: [[account], [account]],
-    enabled: Boolean(isActive && account),
+  const { data: hakkaBalance } = useReadContract({
+    address: HAKKA[chainId as ChainId]?.address as Address,
+    abi: ERC20_ABI,
+    functionName: 'balanceOf',
+    args: [address!],
+    query: {
+      enabled: Boolean(isConnected && address) && isHakkaExist,
+      select(data) {
+        return new BigNumber(formatUnits(data, 18));
+      },
+    },
   });
 
-  const [hakkaValueAmount, vestingValueAmount] = hakkaBalances?.map(
-    (balance) => isHakkaExist ? new TokenAmount(
-      HAKKA[(chainId as ChainId) || 1],
-      JSBI.BigInt(balance?.result?.[0] ?? 0)
-    ) : undefined
-  );
+  const { data: vestingBalance } = useReadContract({
+    address: VESTING_ADDRESSES[chainId as ChainId] as Address,
+    abi: ERC20_ABI,
+    functionName: 'balanceOf',
+    args: [address!],
+    query: {
+      enabled: Boolean(isConnected && address) && isHakkaExist,
+      select(data) {
+        return new BigNumber(formatUnits(data, 18));
+      },
+    },
+  });
 
-  const { stakingBalance: v2StakingBalance } = useStakingData('v2');
-  const { stakingBalance: v1StakingBalance } = useStakingData('v1');
+  const { data: v2StakingBalance } = useStakingDataV2();
+  const { data: v1StakingBalance } = useStakingDataV1();
 
   const infoModalOpen = useInfoModalOpen();
   const toggleInfoModal = useInfoModalToggle();
+
+  const navigate = useNavigate();
 
   function getModalContent() {
     return (
       <div sx={styles.upperSection}>
         <div sx={styles.illustration} />
         <div sx={styles.closeIcon} onClick={toggleInfoModal}>
-          <img src={images.iconDeleteRound} />
+          <img src={images.iconDeleteRound} alt='delete' />
         </div>
         <div>
           <div sx={styles.title}>Your HAKKA breakdown</div>
         </div>
-        <img sx={styles.sakura} src={images.sakura} />
+        <img sx={styles.sakura} src={images.sakura} alt='sakura' />
         <div sx={styles.contentWrapper}>
           <div sx={styles.balance}>
-            <img sx={styles.hakkaIcon} src={images.hakkaAccount} />
-            <div sx={styles.hakkaValue}>
-              {hakkaValueAmount?.toFixed(2) || '-'}
-            </div>
-            <AddToMetamaskBtn />
+            <img
+              sx={styles.hakkaIcon}
+              src={images.hakkaAccount}
+              alt='hakka account'
+            />
+            <div sx={styles.hakkaValue}>{hakkaBalance?.toFixed(2) || '-'}</div>
+            <AddHakkaToMetamaskBtn
+              address={HAKKA[chainId as ChainId]?.address as string}
+              selectedChainId={chainId as ChainId}
+            />
           </div>
           <div sx={styles.displayBetween}>
             <div sx={styles.label}>Price</div>
@@ -78,34 +91,38 @@ export default function InfoModal() {
             <div>
               <div sx={styles.label}>Staking balance (v2)</div>
               <div sx={styles.data}>
-                {v2StakingBalance?.toFixed(2) || '-'} HAKKA
+                {formatCommonNumber(v2StakingBalance?.stakingBalance) || '-'}{' '}
+                HAKKA
               </div>
             </div>
             <button
+              type='button'
               onClick={() => {
-                location.href = '/staking';
+                navigate({ to: '/staking' });
               }}
               sx={styles.pageBtn}
             >
               Staking V2
-              <ArrowRightCircle sx={styles.pageBtn.icon} size="20" />
+              <ArrowRightCircle sx={styles.pageBtn.icon} size='20' />
             </button>
           </div>
           <div sx={styles.displayBetween}>
             <div>
               <div sx={styles.label}>Staking balance (V1)</div>
               <div sx={styles.data}>
-                {v1StakingBalance?.toFixed(2) || '-'} HAKKA
+                {formatCommonNumber(v1StakingBalance?.stakingBalance) || '-'}{' '}
+                HAKKA
               </div>
             </div>
             <button
+              type='button'
               onClick={() => {
-                location.href = '/staking-v1';
+                navigate({ to: '/staking-v1' });
               }}
               sx={styles.pageBtn}
             >
               Staking V1
-              <ArrowRightCircle sx={styles.pageBtn.icon} size="20" />
+              <ArrowRightCircle sx={styles.pageBtn.icon} size='20' />
             </button>
           </div>
 
@@ -113,17 +130,18 @@ export default function InfoModal() {
             <div>
               <div sx={styles.label}>Vesting balance</div>
               <div sx={styles.data}>
-                {vestingValueAmount?.toFixed(2) || '-'} HAKKA
+                {vestingBalance?.toFixed(2) || '-'} HAKKA
               </div>
             </div>
             <button
+              type='button'
               onClick={() => {
-                location.href = '/vesting';
+                navigate({ to: '/vesting' });
               }}
               sx={styles.pageBtn}
             >
               Vesting
-              <ArrowRightCircle sx={styles.pageBtn.icon} size="20" />
+              <ArrowRightCircle sx={styles.pageBtn.icon} size='20' />
             </button>
           </div>
         </div>

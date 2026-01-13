@@ -1,9 +1,7 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
 import { useState, useEffect, memo } from 'react';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { UAuthConnector } from '@uauth/web3-react';
-import { Connector } from '@web3-react/types';
+import type { Connector } from '@web3-react/types';
 import usePrevious from '../../hooks/usePrevious';
 import {
   useWalletModalOpen,
@@ -78,9 +76,8 @@ function WalletModal({ ENSName }: { ENSName?: string }) {
     try {
       await connector?.activate();
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
   };
 
   // get wallets user can switch too, depending on device/browser
@@ -118,7 +115,7 @@ function WalletModal({ ENSName }: { ENSName?: string }) {
       <div sx={styles.upperSection}>
         <div sx={styles.illustration} />
         <div sx={styles.closeIcon} onClick={toggleWalletModal}>
-          <img src={images.iconDeleteRound} />
+          <img src={images.iconDeleteRound} alt='delete' />
         </div>
         {walletView !== WALLET_VIEWS.ACCOUNT ? (
           <div sx={styles.headerRow}>
@@ -150,4 +147,4 @@ function WalletModal({ ENSName }: { ENSName?: string }) {
   );
 }
 
-export default memo(WalletModal)
+export default memo(WalletModal);

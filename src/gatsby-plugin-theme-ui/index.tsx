@@ -8,9 +8,12 @@ const colorsLinear = [
   '#1F887A',
   '#136D6A',
   '#0B555A',
-].reduce((target, curr, i) => {
-  return { ...target, [`primary-${i}00`]: curr };
-}, {} as { [key: string]: string });
+].reduce(
+  (target, curr, i) => {
+    return { ...target, [`primary-${i}00`]: curr };
+  },
+  {} as { [key: string]: string },
+);
 
 export default {
   breakpoints: ['576px', '1560px', '1680px', '1900px'],
@@ -32,7 +35,7 @@ export default {
     'neutral-300': '#DAE1E3',
     'neutral-600': '#52666D',
     'neutral-900': '#253E47',
-    ...colorsLinear
+    ...colorsLinear,
   },
   background_linears: {
     backgroundImage: 'linear-gradient(to right, #6ad7c1, #8cebb9)',

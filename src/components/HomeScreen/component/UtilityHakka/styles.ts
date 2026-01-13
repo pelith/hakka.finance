@@ -19,7 +19,6 @@ export default {
   utilityText: {
     fontSize: [2, 2, 3, 4],
     color: '#253e47',
-
   },
 
   utilityLink: {

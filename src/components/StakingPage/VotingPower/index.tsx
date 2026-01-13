@@ -1,8 +1,7 @@
-/** @jsx jsx */
-import React from 'react';
-import { jsx } from 'theme-ui';
+/** @jsxFrag */
+
 import styles from './style';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { StakingVersion } from '../../../containers/VotingPowerContainer';
 import { isMobile } from 'react-device-detect';
 import images from '../../../images/index';
@@ -24,64 +23,101 @@ interface ProportionItemProps {
   img?: any;
 }
 
-const ProportionItem = ({ proportionValue, img }: ProportionItemProps) => { 
-  return(
+const ProportionItem = ({ proportionValue, img }: ProportionItemProps) => {
+  return (
     <div sx={styles.proportionItem}>
-      <img src={img} />
+      <img src={img} alt='proportion' />
       <p>{proportionValue}%</p>
     </div>
-  )
+  );
 };
 
 const VotingPowerArea = (props: VotingPowerAreaProps) => {
-  const { 
-    totalVotingPower, 
-    v1VotingPowerProportion, 
-    v2VotingPowerProportion, 
-    ethProportion, 
-    bscProportion, 
-    polygonProportion, 
-    v1VotingPowerWeight, 
-    v2VotingPowerWeight, 
-    stakingVersion 
+  const {
+    totalVotingPower,
+    v1VotingPowerProportion,
+    v2VotingPowerProportion,
+    ethProportion,
+    bscProportion,
+    polygonProportion,
+    v1VotingPowerWeight,
+    v2VotingPowerWeight,
+    stakingVersion,
   } = props;
 
-  return(
+  return (
     <div sx={styles.main}>
       <div sx={styles.votingPowerContainer}>
         <div sx={styles.votingPowerTitle}>
           <p>Voting Power</p>
-          <img src={images.iconQuestion} data-tip data-for='votingPower' />
-          <ReactTooltip id='votingPower' effect='solid' backgroundColor='#253E47' className='tooltips'>
-            <span>Due to the version upgrade, the new voting power is derived from V1 x {v1VotingPowerWeight} + V2 x {v2VotingPowerWeight}</span>
+          <img src={images.iconQuestion} data-tip data-for='votingPower' alt='question' />
+          <ReactTooltip
+            id='votingPower'
+            float
+            style={{
+              backgroundColor: '#253E47',
+            }}
+          >
+            <span>
+              Due to the version upgrade, the new voting power is derived from
+              V1 x {v1VotingPowerWeight} + V2 x {v2VotingPowerWeight}
+            </span>
           </ReactTooltip>
-        </div> 
+        </div>
         <div sx={styles.votingPowerValueWrapper}>
           <p>{totalVotingPower ? totalVotingPower : '-'}</p>
-          {isMobile ? 
-            (
-              <span> V1: {v1VotingPowerProportion || 0}% V2: {v2VotingPowerProportion || 0}%</span>
-            ) : (
-              <>
-                <img src={images.iconProportion} data-tip data-for='votingPowerValue' />
-                <ReactTooltip id='votingPowerValue' place='bottom' effect='solid' backgroundColor='#253E47'>
-                  <span>proportion V1:{v1VotingPowerProportion || 0}% V2:{v2VotingPowerProportion || 0}%</span>
-                </ReactTooltip>
-              </>
-            )
-          }
+          {isMobile ? (
+            <span>
+              {' '}
+              V1: {v1VotingPowerProportion || 0}% V2:{' '}
+              {v2VotingPowerProportion || 0}%
+            </span>
+          ) : (
+            <>
+              <img
+                src={images.iconProportion}
+                data-tip
+                data-for='votingPowerValue'
+                alt='proportion'
+              />
+              <ReactTooltip
+                id='votingPowerValue'
+                place='bottom'
+                float
+                style={{
+                  backgroundColor: '#253E47',
+                }}
+              >
+                <span>
+                  proportion V1:{v1VotingPowerProportion || 0}% V2:
+                  {v2VotingPowerProportion || 0}%
+                </span>
+              </ReactTooltip>
+            </>
+          )}
         </div>
       </div>
-      <div style={stakingVersion === StakingVersion.V1 ? {display: 'none'} : {}}>
+      <div
+        style={stakingVersion === StakingVersion.V1 ? { display: 'none' } : {}}
+      >
         <p>Proportion (V2 only)</p>
         <div sx={styles.proportionItemContainer}>
-          <ProportionItem proportionValue={ethProportion || '-'} img={images.iconEthereumDarkBg} />
-          <ProportionItem proportionValue={bscProportion || '-'} img={images.iconBSCDarkBg} />
-          <ProportionItem proportionValue={polygonProportion || '-'} img={images.iconPolygonDarkBg} />
+          <ProportionItem
+            proportionValue={ethProportion || '-'}
+            img={images.iconEthereumDarkBg}
+          />
+          <ProportionItem
+            proportionValue={bscProportion || '-'}
+            img={images.iconBSCDarkBg}
+          />
+          <ProportionItem
+            proportionValue={polygonProportion || '-'}
+            img={images.iconPolygonDarkBg}
+          />
         </div>
       </div>
     </div>
-  )
-} ;
+  );
+};
 
 export default VotingPowerArea;

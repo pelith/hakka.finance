@@ -1,20 +1,16 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import { useWeb3React } from '@web3-react/core';
-import {
-  JSBI,
-  TokenAmount,
-} from '@uniswap/sdk';
+
 import { useMemo, useState, useEffect } from 'react';
 import Countdown, { zeroPad } from 'react-countdown';
-import { AddressZero } from '@ethersproject/constants';
-import _omit from 'lodash/omit';
+import { formatUnits, isAddress, isAddressEqual, zeroAddress } from 'viem';
 import Web3Status from '../Web3Status';
 import images from '../../images';
 import styles from './styles';
 import MyButton from '../../components/Common/MyButton/index';
 import useTokenPrice from '../../hooks/useTokenPrice';
-import { useVestingWithdraw, VestingState } from '../../hooks/vesting/useVestingWithdraw';
+import {
+  useVestingWithdraw,
+  VestingState,
+} from '../../hooks/vesting/useVestingWithdraw';
 import {
   ChainId,
   ChainNameWithIcon,
@@ -24,9 +20,13 @@ import {
 import { useWalletModalToggle } from '../../state/application/hooks';
 import withConnectWalletCheckWrapper from '../../hoc/withConnectWalletCheckWrapper';
 import withWrongNetworkCheckWrapper from '../../hoc/withWrongNetworkCheckWrapper';
-import AddToMetamaskBtn from '../AddToMetamaskBtn';
+import AddHakkaToMetamaskBtn from '../AddToMetamaskBtn';
 import { TabGroup } from '../Common/TabGroup';
 import useVestingInfo from '../../hooks/vesting/useVestingInfo';
+import { useActiveWeb3React } from '@/hooks/useActiveWeb3React';
+import { fromUnixTime } from 'date-fns';
+import BigNumber from 'bignumber.js';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 
 const hakkaSupportChain = Object.keys(ChainNameWithIcon).map((key) => {
   return {
@@ -35,23 +35,29 @@ const hakkaSupportChain = Object.keys(ChainNameWithIcon).map((key) => {
     icon: ChainNameWithIcon[+key as ChainId].iconName,
   };
 });
-
-const vestingSupportChain = hakkaSupportChain.filter((chain) => 
-  VESTING_ADDRESSES[chain.value] !== AddressZero);
+const ClaimButton = withWrongNetworkCheckWrapper(
+  withConnectWalletCheckWrapper(MyButton),
+);
+const vestingSupportChain = hakkaSupportChain.filter(
+  (chain) => VESTING_ADDRESSES[chain.value] !== zeroAddress,
+);
 
 const vestingSupportChainIdSet = new Set(
-  vestingSupportChain.map((ele) => ele.value)
+  vestingSupportChain.map((ele) => ele.value),
 );
 
 const VestingPage = () => {
-  const { chainId, account } = useWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const hakkaPrice = useTokenPrice('hakka-finance');
-  const [claimState, claim] = useVestingWithdraw(VESTING_ADDRESSES[chainId], account);
+  const [claimState, claim] = useVestingWithdraw(
+    VESTING_ADDRESSES[chainId],
+    account,
+  );
 
   const isConnected = !!account;
   const isChainSupported = vestingSupportChainIdSet.has(chainId);
   const [activeChainTab, setActiveChainTab] = useState(
-    isChainSupported ? chainId! : ChainId.MAINNET
+    isChainSupported ? chainId! : ChainId.MAINNET,
   );
 
   useEffect(() => {
@@ -65,29 +71,53 @@ const VestingPage = () => {
   const { vestingInfo } = useVestingInfo();
 
   const isWaitingCycle = useMemo(
-    () => vestingInfo[activeChainTab]?.lastWithdrawalTime && Date.now() - parseInt(vestingInfo[activeChainTab].lastWithdrawalTime?.toString()) * 1000 < 1641600000,
-    [vestingInfo[activeChainTab]?.lastWithdrawalTime , activeChainTab],
+    () =>
+      vestingInfo[activeChainTab]?.lastWithdrawalTimeRaw &&
+      Date.now() -
+        Number.parseInt(
+          vestingInfo[activeChainTab].lastWithdrawalTimeRaw?.toString(), 10
+        ) *
+          1000 <
+        1641600000,
+    [vestingInfo[activeChainTab]?.lastWithdrawalTimeRaw, activeChainTab],
   );
   const vestingValueAmount = useMemo(
-    () => (vestingInfo[activeChainTab]?.vestingValue && activeChainTab
-      ? new TokenAmount(HAKKA[activeChainTab || 1], vestingInfo[activeChainTab].vestingValue.toString())
-      : new TokenAmount(HAKKA[activeChainTab || 1], '0')),
-    [vestingInfo[activeChainTab]?.vestingValue, activeChainTab],
+    () =>
+      formatUnits(
+        vestingInfo[activeChainTab]?.vestingValueRaw ?? 0n,
+        HAKKA[activeChainTab || 1].decimals,
+      ),
+    [vestingInfo[activeChainTab]?.vestingValueRaw, activeChainTab],
   );
 
   const vestingValuePrice = useMemo(
-    () => vestingValueAmount.multiply(JSBI.BigInt((hakkaPrice * 1e8).toFixed(0))).divide(JSBI.BigInt(1e8)),
-    [vestingValueAmount],
+    () =>
+      BigNumber(vestingValueAmount).multipliedBy(
+        BigNumber(hakkaPrice).multipliedBy(1e8),
+      ),
+    [vestingValueAmount, hakkaPrice],
   );
   const vestingProportionAmount = useMemo(
-    () => (vestingInfo[activeChainTab]?.vestingProportion && activeChainTab
-      ? new TokenAmount(HAKKA[activeChainTab || 1], vestingInfo[activeChainTab].vestingProportion.toString())
-      : new TokenAmount(HAKKA[activeChainTab || 1], '0')),
-    [vestingInfo[activeChainTab]?.vestingProportion, activeChainTab],
+    () =>
+      vestingInfo[activeChainTab]?.vestingProportionRaw && activeChainTab
+        ? formatUnits(
+            vestingInfo[activeChainTab].vestingProportionRaw ?? 0n,
+            HAKKA[activeChainTab || 1].decimals,
+          )
+        : '0',
+    [vestingInfo[activeChainTab]?.vestingProportionRaw, activeChainTab],
   );
 
   const countdownRenderer = ({
-    days, hours, minutes, seconds,
+    days,
+    hours,
+    minutes,
+    seconds,
+  }: {
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
   }) => (
     <div>
       {zeroPad(days)}D {zeroPad(hours)}H {zeroPad(minutes)}M {zeroPad(seconds)}S
@@ -95,18 +125,21 @@ const VestingPage = () => {
   );
 
   const toggleWalletModal = useWalletModalToggle();
-  const ClaimButton = withWrongNetworkCheckWrapper(
-    withConnectWalletCheckWrapper(MyButton)
-  );
 
   return (
     <div sx={styles.container}>
       <div sx={styles.vestingPageWrapper}>
         <div sx={styles.header}>
           <h1 sx={styles.title}>Vesting</h1>
-          <Web3Status unsupported={VESTING_ADDRESSES[chainId as ChainId] === AddressZero} />
+          <Web3Status
+            unsupported={
+              isAddress(VESTING_ADDRESSES[chainId as ChainId]) &&
+              isAddressEqual(VESTING_ADDRESSES[chainId as ChainId], zeroAddress)
+            }
+          />
         </div>
-        <h3 sx={styles.heading}></h3>
+        {/** biome-ignore lint/a11y/useHeadingContent: ignore */}
+        <h3 sx={styles.heading} />
         <div sx={styles.tabWrapper}>
           <TabGroup
             list={vestingSupportChain}
@@ -118,60 +151,77 @@ const VestingPage = () => {
           <div sx={styles.vestingCard}>
             <div sx={styles.balanceCard}>
               <div sx={styles.iconWaitingBackgroundColor}>
-                <img src={images.iconWaiting} />
+                <img src={images.iconWaiting} alt='iconWaiting' />
               </div>
               <p sx={styles.vestingCardItemHeading}>Vesting Balance</p>
               <div sx={styles.balanceValueCard}>
                 <span sx={styles.balanceAmount}>
-                  {vestingValueAmount.toFixed(4)}
-                  {' '}
-                  HAKKA
+                  {formatCommonNumber(vestingValueAmount)} HAKKA
                 </span>
                 <span sx={styles.vestingBalanceValue}>
                   (=
-                  {vestingValuePrice.toFixed(4)}
-                  {' '}
-                  USD)
+                  {formatCommonNumber(vestingValuePrice)} USD)
                 </span>
               </div>
             </div>
             <div sx={styles.claimableCard}>
               <div sx={styles.iconWithdrawAvailableBackgroundColor}>
-                <img src={images.iconWithdrawAvailable} />
+                <img src={images.iconWithdrawAvailable} alt='iconWithdrawAvailable' />
               </div>
               <p sx={styles.vestingCardItemHeading}>Claimable Amount</p>
               <div sx={styles.displayFlex}>
                 <span sx={styles.claimableAmount}>
-                  {vestingValueAmount.multiply(vestingProportionAmount).toFixed(4)}
-                  {' '}
+                  {formatCommonNumber(
+                    BigNumber(vestingValueAmount).multipliedBy(
+                      vestingProportionAmount,
+                    ),
+                  )}{' '}
                   HAKKA
                 </span>
-                <AddToMetamaskBtn />
+                <AddHakkaToMetamaskBtn
+                  selectedChainId={activeChainTab as ChainId}
+                />
               </div>
             </div>
           </div>
           <div sx={styles.activeArea}>
-            <a sx={styles.linkWrapper} target="_blank" href="https://medium.com/hakkafinance/vesting-contract-9ab2ff24bf76" rel="noreferrer noopener">
+            <a
+              sx={styles.linkWrapper}
+              target='_blank'
+              href='https://medium.com/hakkafinance/vesting-contract-9ab2ff24bf76'
+              rel='noreferrer noopener'
+            >
               <span>Check vesting terms and learn more</span>
-              <img src={images.iconLinkNormal} sx={styles.iconLink} />
+              <img src={images.iconLinkNormal} sx={styles.iconLink} alt='iconLinkNormal' />
             </a>
             <div sx={styles.claimBtn}>
               <ClaimButton
-                styleKit={"green"}
+                styleKit={'green'}
                 isDisabledWhenNotPrepared={false}
                 isConnected={isConnected}
                 connectWallet={toggleWalletModal}
                 isCorrectNetwork={isTabInCorrectNetwork}
                 targetNetwork={activeChainTab}
                 onClick={claim}
-                disabled={claimState === VestingState.PENDING || isWaitingCycle}
+                disabled={Boolean(
+                  claimState === VestingState.PENDING || isWaitingCycle,
+                )}
               >
                 {isWaitingCycle ? (
                   <Countdown
-                    date={parseInt(vestingInfo?.[activeChainTab].lastWithdrawalTime.toString()) * 1000 + 1641600000}
+                    date={
+                      fromUnixTime(
+                        Number(
+                          vestingInfo?.[activeChainTab]
+                            ?.lastWithdrawalTimeRaw as bigint,
+                        ),
+                      ).getTime() + 1641600000
+                    }
                     renderer={countdownRenderer}
                   />
-                ) : 'Claim'}
+                ) : (
+                  'Claim'
+                )}
               </ClaimButton>
             </div>
           </div>

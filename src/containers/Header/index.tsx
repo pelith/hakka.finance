@@ -1,12 +1,11 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import React from 'react';
 import { Box, Flex } from 'rebass';
 import images from '../../images/index';
 import styles from './styles';
-import SideBar from '../SideBar';
 
-const Header = (props) => {
+interface HeaderProps {
+  toggleSidebar: () => void;
+}
+const Header = (props: HeaderProps) => {
   const listIcon = [
     {
       url: 'iconTelegram',
@@ -36,32 +35,47 @@ const Header = (props) => {
       url: 'iconReddit',
       href: 'https://www.reddit.com/r/hakkafinance/',
     },
-  ];
+  ] as const;
   const { toggleSidebar } = props;
 
   const handleToggleSidebar = () => {
     toggleSidebar();
   };
-  const renderListIcon = () => listIcon.map((item, i) => (
-    <a key={i} target="_blank" href={item.href} rel="noreferrer noopener">
-      <img sx={styles.imgIcon} src={images[item.url]} />
-    </a>
-  ));
+  const renderListIcon = () =>
+    listIcon.map((item, _i) => (
+      <a
+        key={item.url}
+        target='_blank'
+        href={item.href}
+        rel='noreferrer noopener'
+      >
+        <img sx={styles.imgIcon} src={images[item.url]} alt={item.url} />
+      </a>
+    ));
 
   return (
     <>
-      <Box sx={styles.headerContainer} width="100%">
+      <Box sx={styles.headerContainer} width='100%'>
         {/* <Flex ><img sx={styles.iconMenuLeft} src={images.iconMenu} alt="" /></Flex> */}
         <Box>
-          <img sx={styles.headerBg} src={images.headerLogo} />
+          <img sx={styles.headerBg} src={images.headerLogo} alt='header logo' />
         </Box>
-        <Flex mr="28px">{renderListIcon()}</Flex>
+        <Flex mr='28px'>{renderListIcon()}</Flex>
       </Box>
 
-      <Box sx={styles.mobile_header} justifyContent="space-between">
-        <img sx={styles.headerBg} src={images.headerLogo3x} />
-        <img sx={styles.logoRespon} src={images.hakkaLogo} alt="" />
-        <img onClick={handleToggleSidebar} sx={styles.iconMenu} src={images.iconMenu} alt="" />
+      <Box sx={styles.mobile_header} justifyContent='space-between'>
+        <img
+          sx={styles.headerBg}
+          src={images.headerLogo3x}
+          alt='header logo 3x'
+        />
+        <img sx={styles.logoRespon} src={images.hakkaLogo} alt='' />
+        <img
+          onClick={handleToggleSidebar}
+          sx={styles.iconMenu}
+          src={images.iconMenu}
+          alt=''
+        />
       </Box>
       {/* </Box> */}
     </>

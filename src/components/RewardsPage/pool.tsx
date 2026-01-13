@@ -1,12 +1,11 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import styles from './styles';
 import PoolDetail from './PoolDetail';
 import Web3Status from '../Web3Status';
 import { REWARD_POOLS } from '../../constants/rewards';
+import type { Address } from 'viem';
 
-const PoolPage = ({ pool }) => {
+const PoolPage = ({ pool }: { pool: Address }) => {
   const { chainId } = useWeb3React();
 
   return (
@@ -17,7 +16,7 @@ const PoolPage = ({ pool }) => {
           <Web3Status unsupported={REWARD_POOLS[pool].chain !== chainId} />
         </div>
 
-        <PoolDetail pool={pool}/>
+        <PoolDetail pool={pool} />
       </div>
     </div>
   );

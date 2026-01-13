@@ -1,64 +1,100 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import { useState, useCallback, useMemo } from 'react';
-import { MaxUint256 } from '@ethersproject/constants';
-import { useWeb3React } from '@web3-react/core';
-import { Token } from '@uniswap/sdk';
-import { useTokenAllowance } from '../data/Allowances';
-import { useTokenContract } from './useContract';
+import { useCallback, useMemo, useEffect } from 'react';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
+import { useTokenAllowance } from './contracts/token/useTokenAllowance';
 import { useActiveWeb3React } from './web3Manager';
-import { getEtherscanLink, shortenTxId, tryParseAmount } from '../utils';
-import { toast } from 'react-toastify';
-import { ExternalLink } from 'react-feather';
 import isZero from '../utils/isZero';
+import { erc20Abi, formatUnits, isAddress, type Address } from 'viem';
+import { useTokenInfoAndBalance } from './contracts/token/useTokenInfoAndBalance';
+import BigNumber from 'bignumber.js';
+import type { ChainId } from '@/constants';
+import { useWaitForTransactionReceipt } from 'wagmi';
+import useAppWriteContract from './contracts/useAppWriteContract';
 
 export enum ApprovalState {
-  UNKNOWN,
-  NOT_APPROVED,
-  PENDING,
-  APPROVED,
+  UNKNOWN = 'UNKNOWN',
+  NOT_APPROVED = 'NOT_APPROVED',
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
 }
 
 export function useTokenApprove(
-  tokenToApprove: Token,
+  tokenToApprove: string,
   spender: string,
   requiredAllowance: string,
 ): [ApprovalState, () => Promise<void>] {
   const { account } = useActiveWeb3React();
   const { chainId } = useWeb3React();
-  const token = tokenToApprove;
-  const currentAllowance = useTokenAllowance(
-    token,
-    account ?? undefined,
-    spender,
+  const { data: currentAllowance = 0n, refetch: refetchCurrentAllowance } =
+    useTokenAllowance(
+      account as string,
+      tokenToApprove,
+      spender,
+      chainId as ChainId,
+    );
+  const { data: tokenInfoAndBalance } = useTokenInfoAndBalance(
+    account as string,
+    tokenToApprove,
   );
-  const [currentTransaction, setCurrentTransaction] = useState(null);
+
+  const {
+    writeContractAsync,
+    data,
+    reset: resetWriteContract,
+    isSuccess: isWriteSuccess,
+    isPending: isWritePending,
+  } = useAppWriteContract(chainId as ChainId);
+
+  const { isLoading: isWaitForLoading, isSuccess: isWaitForSuccess } =
+    useWaitForTransactionReceipt({
+      hash: data,
+      query: {
+        enabled: !!data && isWriteSuccess,
+      },
+    });
 
   const approvalState: ApprovalState = useMemo(() => {
     if (!tokenToApprove || !spender) return ApprovalState.UNKNOWN;
-    if (!currentAllowance) return ApprovalState.UNKNOWN;
+    if (currentAllowance === undefined) return ApprovalState.UNKNOWN;
 
-    return currentAllowance.lessThan(tryParseAmount(requiredAllowance)) || currentAllowance.equalTo(tryParseAmount('0'))
-      ? currentTransaction
+    const currentAllowanceAmount = new BigNumber(
+      formatUnits(currentAllowance, tokenInfoAndBalance?.decimals ?? 18),
+    );
+
+    return currentAllowanceAmount.lt(requiredAllowance) ||
+      currentAllowanceAmount.eq(0)
+      ? isWritePending || isWaitForLoading
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [currentTransaction, tokenToApprove, currentAllowance, spender]);
+  }, [
+    isWritePending,
+    isWaitForLoading,
+    tokenToApprove,
+    currentAllowance,
+    spender,
+    requiredAllowance,
+    tokenInfoAndBalance?.balance,
+  ]);
 
-  const tokenContract = useTokenContract(token?.address);
+  useEffect(() => {
+    if (isWaitForSuccess) {
+      refetchCurrentAllowance();
+    }
+  }, [isWaitForSuccess, refetchCurrentAllowance]);
 
   const approve = useCallback(async (): Promise<void> => {
+    const MAX_UINT256 = 2n ** 256n - 1n;
     if (approvalState !== ApprovalState.NOT_APPROVED) {
       console.error('approve was called unnecessarily');
       return;
     }
-    if (!token) {
+    if (!tokenToApprove) {
       console.error('no token');
       return;
     }
 
-    if (!tokenContract) {
-      console.error('tokenContract is null');
+    if (!isAddress(tokenToApprove)) {
+      console.error('invalid token address');
       return;
     }
 
@@ -67,32 +103,18 @@ export function useTokenApprove(
       return;
     }
 
+    console.log('writing contract');
     try {
-      const tx = await tokenContract.approve(spender, MaxUint256);
-      setCurrentTransaction(tx.hash);
-      toast(
-        <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
-          sx={{ textDecoration: 'none', color: '#253e47' }}
-        >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-      , { containerId: 'tx' });
-      await tx.wait();
-    } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>,  { containerId: 'error' });
+      await writeContractAsync({
+        address: tokenToApprove as Address,
+        abi: erc20Abi,
+        functionName: 'approve',
+        args: [spender as Address, MAX_UINT256],
+      });
     } finally {
-      setCurrentTransaction(null);
+      resetWriteContract();
     }
-  }, [
-    approvalState,
-    token,
-    tokenContract,
-    tokenToApprove,
-    spender,
-  ]);
+  }, [approvalState, tokenToApprove, writeContractAsync, spender]);
 
   return [approvalState, approve];
 }

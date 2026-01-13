@@ -1,14 +1,8 @@
-import React from 'react';
-import DappLayout from '../containers/DappLayout';
 import PoolPage from '../components/RewardsPage/pool';
+import type { Address } from 'viem';
 
-const Pools = ({ pageContext }) => {
-  const { pool } = pageContext
-  return (
-  <DappLayout title="Hakka Finance | Farms">
-    <PoolPage pool={pool} />
-  </DappLayout>
-  )
+const Pools = ({ pool }: { pool: Address }) => {
+  return <PoolPage pool={pool} />;
 };
 
 export default Pools;

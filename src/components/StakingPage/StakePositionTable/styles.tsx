@@ -1,4 +1,4 @@
-import { ThemeUIStyleObject } from 'theme-ui';
+import type { ThemeUIStyleObject } from 'theme-ui';
 
 const imgWrapper: ThemeUIStyleObject = {
   size: '40px',
@@ -87,7 +87,7 @@ const switchWrapper: ThemeUIStyleObject = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-}
+};
 
 const switchBtn: ThemeUIStyleObject = {
   position: 'relative',
@@ -119,7 +119,7 @@ const switchBtn: ThemeUIStyleObject = {
       backgroundColor: 'white',
       transition: '.4s',
       borderRadius: '50%',
-    }
+    },
   },
   '& input:checked + .slider': {
     backgroundColor: '#3EBD93',
@@ -130,7 +130,7 @@ const switchBtn: ThemeUIStyleObject = {
   '& input:checked + .slider:before': {
     transform: 'translateX(10px)',
   },
-}
+};
 
 const valueWrapper: ThemeUIStyleObject = {
   textAlign: 'left',
@@ -168,5 +168,5 @@ export default {
   cardWrapper,
   switchBtn,
   switchLabel,
-  switchWrapper
+  switchWrapper,
 };

@@ -1,66 +1,65 @@
-/** @jsx jsx */
-import { jsx } from "theme-ui";
-import { useState, useMemo, useCallback } from "react";
-import { useWeb3React } from "@web3-react/core";
-import { AddressZero } from "@ethersproject/constants";
-import ReactTooltip from "react-tooltip";
-import { navigate } from "gatsby";
-import { isMobile } from "react-device-detect";
-import images from "../../images";
-import styles from "./styles-v1";
-import Web3Status from "../Web3Status";
-import { useStakingData } from "../../data/StakingData";
-import StakePositionItem from "./StakePositionItem/index";
-import {
-  ChainId,
-  STAKING_ADDRESSES,
-} from "../../constants";
-import VotingPowerContainer, { StakingVersion } from "../../containers/VotingPowerContainer";
+import { useState, useMemo, useCallback } from 'react';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
+import { zeroAddress } from 'viem';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { useNavigate } from '@tanstack/react-router';
+import { isMobile } from 'react-device-detect';
+import images from '../../images';
+import styles from './styles-v1';
+import Web3Status from '../Web3Status';
+import { useStakingDataV1 } from '../../data/StakingData';
+import StakePositionItem from './StakePositionItem/index';
+import { type ChainId, STAKING_ADDRESSES } from '../../constants';
+import VotingPowerContainer, {
+  StakingVersion,
+} from '../../containers/VotingPowerContainer';
 import { botSideBarItems } from '../../containers/SideBar';
-import NavigateLink from './NavigateLink';
+import {
+  useStakingVaultV1,
+  type VaultType,
+} from '@/hooks/staking/useStakingVault';
+import { createBigNumberSort } from '@/utils/sort';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 
 interface StakingInfoItemProps {
   title: string;
   content: string;
-};
+}
 
-const StakingInfoItem = ({title, content}: StakingInfoItemProps) => {
+const StakingInfoItem = ({ title, content }: StakingInfoItemProps) => {
   return (
     <div sx={styles.stakingInfoItemWrapper}>
       <p className='title'>{title}</p>
       <p className='content'>{content}</p>
     </div>
   );
-}; 
+};
 
 const Staking = () => {
   const { chainId } = useWeb3React();
   const [isShowArchived, setIsShowArchived] = useState<boolean>(true);
   const [isSortByUnlockTime, setIsSortByUnlockTime] = useState<boolean>(false);
-
-  const {
-    stakingBalance,
-    sHakkaBalance,
-    vaults,
-  } = useStakingData();
+  const navigate = useNavigate();
+  const { data: { stakingBalance, sHakkaBalance } = {} } = useStakingDataV1();
+  const { vault: vaults } = useStakingVaultV1(chainId as ChainId);
 
   const isCorrectNetwork = useMemo<boolean>(() => {
     if (chainId) {
-      return STAKING_ADDRESSES[chainId as ChainId] !== AddressZero;
+      return STAKING_ADDRESSES[chainId as ChainId] !== zeroAddress;
     }
     return true;
   }, [chainId]);
 
   const governanceLink = useMemo(() => {
-    return botSideBarItems.find((ele) => ele.name === 'governance').href;
+    return botSideBarItems.find((ele) => ele.name === 'governance')!.href;
   }, []);
 
   const [unarchivePosition, archivedPosition] = useMemo(() => {
-    let archivedPosition = [];
-    let unarchivePosition = [];
+    let archivedPosition: (VaultType & { index: number })[] = [];
+    const unarchivePosition: (VaultType & { index: number })[] = [];
 
     vaults.forEach((vault, index) => {
-      if (vault?.result?.hakkaAmount.isZero()) {
+      if (vault?.hakkaAmount.eq(0)) {
         archivedPosition.push({ ...vault, index: index });
       } else {
         unarchivePosition.push({ ...vault, index: index });
@@ -73,21 +72,16 @@ const Staking = () => {
 
   const sortedUnarchivePosition = useMemo(() => {
     if (isSortByUnlockTime) {
-      unarchivePosition.sort(function(a, b) {
-        return a?.result?.unlockTime - b?.result?.unlockTime;
-      });
-      return unarchivePosition;
-    } else {
-      unarchivePosition.sort(function(a, b) {
-        return b?.index - a?.index;
-      });
+      unarchivePosition.sort(createBigNumberSort('asc', 'unlockTime'));
       return unarchivePosition;
     }
+    unarchivePosition.sort(createBigNumberSort('desc', 'index'));
+    return unarchivePosition;
   }, [isSortByUnlockTime, unarchivePosition]);
 
   const handleSortBtnClick = useCallback(
     () => setIsSortByUnlockTime(!isSortByUnlockTime),
-    [isSortByUnlockTime]
+    [isSortByUnlockTime],
   );
 
   return (
@@ -96,17 +90,23 @@ const Staking = () => {
         <div sx={styles.heading}>
           <h1>Staking</h1>
           {isMobile && (
-          <div sx={styles.btnBack} onClick={() => navigate(`/staking`)}>
-            <img src={images.iconBack} />
-            <span>Back to V2</span>
-          </div>
-        )}
+            <div
+              sx={styles.btnBack}
+              onClick={() => navigate({ to: '/staking' })}
+            >
+              <img src={images.iconBack} alt='' aria-hidden='true' />
+              <span>Back to V2</span>
+            </div>
+          )}
           <Web3Status unsupported={!isCorrectNetwork} />
         </div>
         <div sx={styles.body}>
           {!isMobile && (
-            <div sx={styles.btnBack} onClick={() => navigate(`/staking`)}>
-              <img src={images.iconBack} />
+            <div
+              sx={styles.btnBack}
+              onClick={() => navigate({ to: '/staking' })}
+            >
+              <img src={images.iconBack} alt='' aria-hidden='true' />
               <span>Back to V2</span>
             </div>
           )}
@@ -116,20 +116,22 @@ const Staking = () => {
               <div>
                 <a
                   data-tip
-                  data-for="governance"
-                  className="ml-auto"
+                  data-for='governance'
+                  className='ml-auto'
                   href={governanceLink}
-                  rel="noreferrer noopener"
-                  target="_blank"
+                  rel='noreferrer noopener'
+                  target='_blank'
                   sx={styles.governanceButton}
                 >
-                  <img src={images.iconToGovernance} />
+                  <img src={images.iconToGovernance} alt='Go to governance' />
                 </a>
                 <ReactTooltip
-                  place="bottom"
-                  id="governance"
-                  effect="solid"
-                  backgroundColor="#253E47"
+                  place='bottom'
+                  id='governance'
+                  float={true}
+                  style={{
+                    backgroundColor: '#253E47',
+                  }}
                 >
                   <span>Go to governance</span>
                 </ReactTooltip>
@@ -143,8 +145,14 @@ const Staking = () => {
               <span>Only position redemption available on V1</span>
             </div>
             <div sx={styles.stakingInfoContainer}>
-              <StakingInfoItem title='Wallet sHAKKA (V1) balance' content={sHakkaBalance?.toFixed(2)} />
-              <StakingInfoItem title='Staked HAKKA amount' content={stakingBalance?.toFixed(2)} />
+              <StakingInfoItem
+                title='Wallet sHAKKA (V1) balance'
+                content={formatCommonNumber(sHakkaBalance)}
+              />
+              <StakingInfoItem
+                title='Staked HAKKA amount'
+                content={formatCommonNumber(stakingBalance)}
+              />
             </div>
           </div>
         </div>
@@ -152,6 +160,7 @@ const Staking = () => {
           <div sx={styles.positionHeader}>
             <h2 sx={styles.positionTitle}>Stake position</h2>
             <button
+              type='button'
               sx={
                 isSortByUnlockTime
                   ? { ...styles.sortBtn, ...styles.activeSortBtn }
@@ -162,41 +171,47 @@ const Staking = () => {
               <img
                 sx={!isSortByUnlockTime ? styles.inactiveSVG : {}}
                 src={images.iconSort}
+                alt=''
+                aria-hidden='true'
               />
               <span>Sort by expiry date</span>
             </button>
           </div>
-          {sortedUnarchivePosition.map((vault, index) => {
+          {sortedUnarchivePosition.map((vault, _index) => {
             return (
               <StakePositionItem
-                key={index}
-                sHakkaBalance={sHakkaBalance}
+                key={vault.index}
+                sHakkaBalance={sHakkaBalance ?? '0'}
                 index={vault.index}
-                stakedHakka={vault?.result?.hakkaAmount}
-                sHakkaReceived={vault?.result?.wAmount}
-                until={vault?.result?.unlockTime}
+                stakedHakka={vault.hakkaAmount}
+                sHakkaReceived={vault.wAmount}
+                until={vault.unlockTime}
               />
             );
           })}
-          <div sx={{ display: "inline-block" }}>
+          <div sx={{ display: 'inline-block' }}>
             <div
               onClick={() => setIsShowArchived(!isShowArchived)}
               sx={styles.archivedTitle}
             >
               <p>Archived</p>
-              <img src={isShowArchived ? images.iconUp : images.iconDown} />
+              <img
+                src={isShowArchived ? images.iconUp : images.iconDown}
+                alt=''
+                aria-hidden='true'
+              />
             </div>
           </div>
           {isShowArchived &&
-            archivedPosition.map((vault, index) => {
+            archivedPosition.map((vault, _index) => {
               return (
                 <StakePositionItem
-                  key={index}
-                  sHakkaBalance={sHakkaBalance}
+                  key={vault.index}
+                  sHakkaBalance={sHakkaBalance ?? '0'}
                   index={vault.index}
-                  stakedHakka={vault?.result?.hakkaAmount}
-                  sHakkaReceived={vault?.result?.wAmount}
-                  until={vault?.result?.unlockTime}
+                  stakedHakka={vault.hakkaAmount}
+                  sHakkaReceived={vault.wAmount}
+                  until={vault.unlockTime}
                 />
               );
             })}

@@ -1,11 +1,12 @@
-export default {
+import createSX from '../../../utils/createSX';
+export default createSX({
   container: {
     display: 'flex',
     justifyContent: 'center',
     marginLeft: '34px',
 
     p: {
-      margin: '0'
+      margin: '0',
     },
 
     '@media screen and (max-width: 1200px)': {
@@ -102,7 +103,7 @@ export default {
       flexDirection: 'column',
       alignItems: 'flex-start',
       marginBottom: '30px',
-    }
+    },
   },
 
   oat: {
@@ -113,7 +114,7 @@ export default {
     '@media screen and (max-width: 576px)': {
       width: '240px',
       height: '287px',
-    }
+    },
   },
 
   fakeImg: {
@@ -179,5 +180,5 @@ export default {
     fontSize: '14px',
     lineHeight: '20px',
     whiteSpace: 'pre-line',
-  }
-};
+  },
+});

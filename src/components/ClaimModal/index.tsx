@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
 import {
   useClaimModalOpen,
   useClaimModalToggle,
@@ -11,12 +9,12 @@ import { MyButton } from '../Common';
 import { ClaimState } from '../../hooks/farm/useRewardsClaim';
 
 interface ClaimModalInterface {
-  claim: ()=> void
-  claimState: ClaimState
-  claimableReward: string
+  claim: () => void;
+  claimState: ClaimState;
+  claimableReward: string;
 }
 
-const ClaimModal = (props:ClaimModalInterface) => {
+const ClaimModal = (props: ClaimModalInterface) => {
   const { claim, claimState, claimableReward } = props;
   const claimModalOpen = useClaimModalOpen();
   const toggleClaimModal = useClaimModalToggle();
@@ -24,20 +22,24 @@ const ClaimModal = (props:ClaimModalInterface) => {
   function getModalContent() {
     return (
       <div sx={styles.container}>
-        <div sx={styles.illustration}/>
+        <div sx={styles.illustration} />
         <div sx={styles.heading}>
           <h2>Claim Reward</h2>
-          <img src={images.iconDeleteRound} onClick={toggleClaimModal} />
+          <img
+            src={images.iconDeleteRound}
+            onClick={toggleClaimModal}
+            alt='Delete Round'
+          />
         </div>
         <div sx={styles.stateCard}>
-          <div sx={{fontSize: "0px"}}>
-            <img src={images.iconStep1} />
+          <div sx={{ fontSize: '0px' }}>
+            <img src={images.iconStep1} alt='Step 1' />
             <div sx={styles.lineStyle} />
             <div sx={styles.activeRing}>
-              <img src={images.iconStep2} />
+              <img src={images.iconStep2} alt='Step 2' />
             </div>
             <div sx={styles.lineStyle} />
-            <img src={images.iconStep3} />
+            <img src={images.iconStep3} alt='Step 3' />
           </div>
           <div sx={styles.stateInfo}>
             <h4>Staked</h4>
@@ -50,23 +52,25 @@ const ClaimModal = (props:ClaimModalInterface) => {
         </div>
         <p sx={styles.message}>
           Your
-          <span> {claimableReward} HAKKA</span>
-          {' '}
-          rewards will be moved to vesting contract
+          <span> {claimableReward} HAKKA</span> rewards will be moved to vesting
+          contract
         </p>
         <div sx={{ display: 'inline-block' }}>
-          <a 
+          <a
             href='https://medium.com/hakkafinance/vesting-contract-9ab2ff24bf76'
             sx={styles.learnMoreLink}
-            target="_blank"
-            rel="noreferrer noopener"
+            target='_blank'
+            rel='noreferrer noopener'
           >
             <span>Learn more </span>
-            <img src={images.iconLinkNormal} />
+            <img src={images.iconLinkNormal} alt='Link Normal' />
           </a>
         </div>
         <div sx={styles.confirmBtn}>
-          <MyButton onClick={claim} disabled={claimState === ClaimState.PENDING}>
+          <MyButton
+            onClick={claim}
+            disabled={claimState === ClaimState.PENDING}
+          >
             {claimState === ClaimState.PENDING ? 'Pending' : 'Confirm'}
           </MyButton>
         </div>
@@ -75,13 +79,10 @@ const ClaimModal = (props:ClaimModalInterface) => {
   }
 
   return (
-    <Modal
-      isOpen={claimModalOpen}
-      onDismiss={toggleClaimModal}
-    >
+    <Modal isOpen={claimModalOpen} onDismiss={toggleClaimModal}>
       <div>{getModalContent()}</div>
     </Modal>
   );
-}
+};
 
 export default ClaimModal;

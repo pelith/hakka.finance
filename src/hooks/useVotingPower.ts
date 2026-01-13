@@ -1,94 +1,73 @@
-import { AddressZero } from '@ethersproject/constants';
-import {
-  Contract as MulticallContract,
-  Provider as MulticallProvider,
-} from '@pelith/ethers-multicall';
-import { useWeb3React } from '@web3-react/core';
+import { isAddress, type Address } from 'viem';
 import {
   ChainDataFetchingState,
   NEW_SHAKKA_ADDRESSES,
-  JSON_RPC_PROVIDER,
   ChainId,
 } from '../constants';
-import throttle from 'lodash/throttle';
-import { BigNumber } from '@ethersproject/bignumber';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useBlockNumber } from '../state/application/hooks';
-import STAKING_ABI from '../constants/abis/shakka.json';
+import { useMemo } from 'react';
+import STAKING_ABI from '../constants/abis/shakka';
+import { useActiveWeb3React } from './useActiveWeb3React';
+import { useReadContract } from 'wagmi';
 
-export type VotingPowerType = {
-  [chainId in ChainId]: BigNumber;
-};
+export type VotingPowerType = Record<ChainId, bigint>;
 
 export default function useVotingPower(): {
   votingPowerInfo: VotingPowerType;
   fetchVotingPowerState: ChainDataFetchingState;
 } {
-  const { account } = useWeb3React();
-  const latestBlockNumber = useBlockNumber();
-  const [votingPowerInfo, setVotingPowerInfo] = useState<VotingPowerType>({});
-  const [transactionSuccess, setTransactionSuccess] = useState(false);
+  const { account } = useActiveWeb3React();
+
+  const { data: mainnetVotingPower } = useReadContract({
+    address: NEW_SHAKKA_ADDRESSES[ChainId.MAINNET] as Address,
+    abi: STAKING_ABI,
+    functionName: 'votingPower',
+    args: [account as Address],
+    chainId: ChainId.MAINNET,
+    query: {
+      enabled:
+        isAddress(account ?? '') &&
+        isAddress(NEW_SHAKKA_ADDRESSES[ChainId.MAINNET]),
+    },
+  });
+
+  const { data: bscVotingPower } = useReadContract({
+    address: NEW_SHAKKA_ADDRESSES[ChainId.BSC] as Address,
+    abi: STAKING_ABI,
+    functionName: 'votingPower',
+    args: [account as Address],
+    chainId: ChainId.BSC,
+    query: {
+      enabled:
+        isAddress(account ?? '') &&
+        isAddress(NEW_SHAKKA_ADDRESSES[ChainId.BSC]),
+    },
+  });
+  const { data: polygonVotingPower } = useReadContract({
+    address: NEW_SHAKKA_ADDRESSES[ChainId.POLYGON] as Address,
+    abi: STAKING_ABI,
+    functionName: 'votingPower',
+    args: [account as Address],
+    chainId: ChainId.POLYGON,
+    query: {
+      enabled:
+        isAddress(account ?? '') &&
+        isAddress(NEW_SHAKKA_ADDRESSES[ChainId.POLYGON]),
+    },
+  });
 
   const fetchDataState: ChainDataFetchingState = useMemo(() => {
-    return transactionSuccess
+    return mainnetVotingPower && bscVotingPower && polygonVotingPower
       ? ChainDataFetchingState.SUCCESS
       : ChainDataFetchingState.LOADING;
-  }, [transactionSuccess]);
+  }, [mainnetVotingPower, bscVotingPower, polygonVotingPower]);
 
-  const providers = JSON_RPC_PROVIDER;
-  const getVotingPower = useCallback(
-    async (
-      chainId: ChainId,
-      account: string
-    ): Promise<[ChainId, BigNumber]> => {
-      if (NEW_SHAKKA_ADDRESSES[chainId] === AddressZero)
-        return [chainId, undefined];
-      if (account === AddressZero || !account) return [chainId, undefined];
-      const multicallProvider = new MulticallProvider(
-        providers[chainId],
-        chainId
-      );
-      const sHakkaContract = new MulticallContract(
-        NEW_SHAKKA_ADDRESSES[chainId],
-        STAKING_ABI
-      );
-      const [votingPower] = await multicallProvider.all([
-        sHakkaContract.votingPower(account),
-      ]);
-      return [chainId, votingPower as BigNumber];
+  return {
+    votingPowerInfo: {
+      [ChainId.MAINNET]: mainnetVotingPower ?? 0n,
+      [ChainId.BSC]: bscVotingPower ?? 0n,
+      [ChainId.POLYGON]: polygonVotingPower ?? 0n,
+      [ChainId.FANTOM]: 0n,
     },
-    []
-  );
-
-  const fetchVotingPower = useCallback(async (account: string) => {
-    setTransactionSuccess(false);
-    try {
-      const fetchingList = [
-        getVotingPower(ChainId.MAINNET, account),
-        getVotingPower(ChainId.BSC, account),
-        getVotingPower(ChainId.POLYGON, account),
-      ];
-      const votingPowerList = await Promise.all(fetchingList);
-
-      setVotingPowerInfo(
-        Object.fromEntries(votingPowerList) as typeof votingPowerInfo
-      );
-      setTransactionSuccess(true);
-    } catch (e) {
-      console.log(e);
-      console.log('fetch user voting power error');
-    }
-  }, []);
-
-  const throttledFetchVotingPower = useMemo(
-    () => throttle(fetchVotingPower, 2000),
-    []
-  );
-
-  useEffect(() => {
-    if (account === AddressZero || !account) return;
-    throttledFetchVotingPower(account);
-  }, [latestBlockNumber, account]);
-
-  return { votingPowerInfo, fetchVotingPowerState: fetchDataState };
+    fetchVotingPowerState: fetchDataState,
+  };
 }

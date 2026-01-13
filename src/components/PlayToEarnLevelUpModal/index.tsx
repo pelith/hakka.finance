@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
 import {
   usePlayToEarnLevelUpModalOpen,
   usePlayToEarnLevelUpModalToggle,
@@ -17,25 +15,31 @@ export default function PlayToEarnLevelUpModal() {
   function getModalContent() {
     return (
       <div sx={styles.container}>
-        <img height="270px" src={images.levelUpGif} />
+        <img height='270px' src={images.levelUpGif} alt='level up gif' />
         <p sx={styles.title}>Mission Hakka-plished! 🎉</p>
         <p sx={styles.subtitle}>Level Up!</p>
         <div sx={styles.decorativeThreadContainer}>
-          {DECORATIVE_THREAD_COLOR_LIST.map((ele) => <div sx={{background: ele , ...styles.decorativeThread}} />)}
+          {DECORATIVE_THREAD_COLOR_LIST.map((ele) => (
+            <div
+              key={ele}
+              sx={{ background: ele, ...styles.decorativeThread }}
+            />
+          ))}
         </div>
-        <p sx={styles.content}>You’ve completed all 7 DeFi missions, well done!</p>
+        <p sx={styles.content}>
+          You’ve completed all 7 DeFi missions, well done!
+        </p>
         <div sx={styles.buttonSection}>
-          <MyButton onClick={togglePlayToEarnModal} styleKit="green">Explore New Missions</MyButton>
+          <MyButton onClick={togglePlayToEarnModal} styleKit='green'>
+            Explore New Missions
+          </MyButton>
         </div>
       </div>
     );
   }
 
   return (
-    <Modal
-      isOpen={isPlayToEarnModalOpen}
-      onDismiss={togglePlayToEarnModal}
-    >
+    <Modal isOpen={isPlayToEarnModalOpen} onDismiss={togglePlayToEarnModal}>
       <div style={{ width: '100%' }}>{getModalContent()}</div>
     </Modal>
   );

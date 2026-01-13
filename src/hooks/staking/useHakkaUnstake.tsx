@@ -1,72 +1,82 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useWeb3React } from '@web3-react/core';
-import { BigNumber } from 'ethers';
-import { useStakeContract } from '../useContract';
+import { useMemo, useEffect } from 'react';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { getEtherscanLink, shortenTxId } from '../../utils';
 import { toast } from 'react-toastify';
 import { ExternalLink } from 'react-feather';
 import { TransactionState } from '../../constants';
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import STAKING_ABI from '@/constants/abis/shakka';
 
 export function useHakkaUnstake(
   unstakeAddress: string,
   spender: string,
   index: number,
-  amountParsed: BigNumber,
+  amountParsed: bigint,
 ): [TransactionState, () => Promise<void>] {
   const { chainId } = useWeb3React();
-  const [currentTransaction, setCurrentTransaction] = useState(null);
-  const [transactionState, setTransactionState] = useState<TransactionState>(TransactionState.UNKNOWN);
+
+  const {
+    writeContractAsync,
+    data,
+    isSuccess: isWriteSuccess,
+    isError: isWriteError,
+    error: writeError,
+    reset,
+  } = useWriteContract();
+
+  const {
+    isSuccess: isWaitForSuccess,
+    isError: isWaitForError,
+    error: waitForError,
+  } = useWaitForTransactionReceipt({
+    hash: data,
+    query: {
+      enabled: isWriteSuccess,
+    },
+  });
 
   const unstakeState: TransactionState = useMemo(() => {
     if (!spender) return TransactionState.UNKNOWN;
+    if (isWriteSuccess) return TransactionState.PENDING;
+    if (isWaitForSuccess) return TransactionState.SUCCESS;
+    if (isWriteError || isWaitForError) return TransactionState.ERROR;
+    return TransactionState.UNKNOWN;
+  }, [isWriteSuccess, isWaitForSuccess, isWriteError, isWaitForError, spender]);
 
-    return currentTransaction
-      ? TransactionState.PENDING
-      : transactionState
-  }, [currentTransaction, transactionState, spender]);
-
-  const unstakeContract = useStakeContract(unstakeAddress);
-
-  const unstake = useCallback(async (): Promise<void> => {
-    setTransactionState(TransactionState.UNKNOWN);
-    if (!spender) {
-      console.error('no spender');
-      return;
-    }
-
-    try {
-      const tx = await unstakeContract.unstake(spender, index, amountParsed);
-      setCurrentTransaction(tx.hash);
-      toast(
-        <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
-          sx={{ textDecoration: 'none', color: '#253e47' }}
-        >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-      , { containerId: 'tx' });
-      await tx.wait();
-      setTransactionState(TransactionState.SUCCESS);
-    } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>,  { containerId: 'error' });
-      setTransactionState(TransactionState.ERROR);
-    } finally {
-      setCurrentTransaction(null);
-    }
-  }, [
-    unstakeContract,
-    spender,
-    index,
-    amountParsed,
-  ]);
+  async function unstake() {
+    const txHash = await writeContractAsync({
+      address: unstakeAddress as `0x${string}`,
+      abi: STAKING_ABI,
+      functionName: 'unstake',
+      args: [spender as `0x${string}`, BigInt(index), amountParsed],
+    });
+    toast(
+      <a
+        target='_blank'
+        href={getEtherscanLink(chainId ?? 1, txHash, 'transaction')}
+        rel='noreferrer noopener'
+        sx={{ textDecoration: 'none', color: '#253e47' }}
+      >
+        {shortenTxId(txHash)} <ExternalLink size={16} />
+      </a>,
+      { containerId: 'tx' },
+    );
+  }
 
   useEffect(() => {
-    setTransactionState(TransactionState.UNKNOWN);
-  }, [index])
+    if (!isWaitForError || !isWriteError) return;
+    if (isWriteError) {
+      toast.error(<div>{writeError?.message}</div>, { containerId: 'error' });
+    }
+
+    if (isWaitForError) {
+      toast.error(<div>{waitForError?.message}</div>, { containerId: 'error' });
+    }
+  }, [isWaitForError, isWriteError, waitForError, writeError]);
+
+  useEffect(() => {
+    reset();
+  }, [index]);
 
   return [unstakeState, unstake];
 }

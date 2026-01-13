@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -43,7 +45,7 @@ export default {
 
     '@media screen and (max-width: 576px)': {
       marginBottom: '20px',
-    }
+    },
   },
 
   backBtn: {
@@ -210,4 +212,4 @@ export default {
       marginBottom: '20px',
     },
   },
-};
+});

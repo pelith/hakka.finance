@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   container: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -21,7 +23,7 @@ export default {
 
     '@media screen and (max-width: 576px)': {
       marginBottom: '15px',
-    }
+    },
   },
 
   firstSectionWrapper: {
@@ -32,8 +34,7 @@ export default {
 
     '@media screen and (max-width: 576px)': {
       marginRight: '10px',
-      
-    }
+    },
   },
 
   taskStatusWrapper: {
@@ -65,7 +66,7 @@ export default {
     alignItems: 'center',
     fontSize: '18px',
     lineHeight: '24px',
-    
+
     h4: {
       margin: '0',
       marginRight: '16px',
@@ -78,7 +79,7 @@ export default {
       fontWeight: '600',
       fontSize: '18px',
     },
-    
+
     '@media screen and (max-width: 576px)': {
       flexDirection: 'column',
       alignItems: 'flex-start',
@@ -121,7 +122,7 @@ export default {
 
     '@media screen and (max-width: 576px)': {
       marginLeft: '14px',
-    }
+    },
   },
 
   upcomingImg: {
@@ -129,4 +130,4 @@ export default {
     height: '72px',
     backgroundColor: '#F1F1F1',
   },
-}
+});

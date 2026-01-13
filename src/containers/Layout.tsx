@@ -1,6 +1,4 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Box, Flex } from 'rebass';
 import SideBar from './SideBar';
@@ -8,49 +6,48 @@ import Header from './Header';
 import Footer from './Footer';
 import styles from './styles';
 import images from '../images';
-import Web3ReactManager from '../components/Web3ReactManager';
 
-const Layout = ({ children, title }) => {
+const Layout = ({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title: string;
+}) => {
   const [isShowSideBar, setIsShowSideBar] = useState(false);
 
   const toggleSideBar = () => {
     setIsShowSideBar(!isShowSideBar);
   };
-  const handleClose = (value) => {
+  const handleClose = (value: boolean) => {
     setIsShowSideBar(value);
   };
 
-  useEffect(() => {
-    const gatsbyFocusWrapper = document.getElementById('gatsby-focus-wrapper');
-    gatsbyFocusWrapper.removeAttribute('tabIndex');
-    document.getElementById('wrapper').focus();
-  }, [isShowSideBar]);
-
   return (
     <div>
-      <Helmet>
-        <meta charSet="utf-8" />
-        <title>{title || 'Hakka Finance'}</title>
-        <meta property="og:image" content={images.iconOgImage} />
-        <meta name="google-site-verification" content="G25AvNxxuCFDIzy7gGrcN1-WdOUS1t3I0eJtjGj_JYo" />
-      </Helmet>
+      <Helmet
+        title={title || 'Hakka Finance'}
+        meta={[
+          {
+            charSet: 'utf-8',
+          },
+          {
+            property: 'og:image',
+            content: images.iconOgImage,
+          },
+        ]}
+      />
       <Flex>
         <SideBar isShowSideBar={isShowSideBar} onCloseSideBar={handleClose} />
 
         <Box
-          id="wrapper"
-          tabIndex="-1"
-          width="100%"
+          id='wrapper'
+          tabIndex={-1}
+          width='100%'
           sx={styles.custom_scroll_bar}
         >
-          <Header sx={styles.content_wrapper} toggleSidebar={toggleSideBar} />
-          <Box
-            sx={styles.content}
-          >
-            <Web3ReactManager>
-              {children}
-            </Web3ReactManager>
-          </Box>
+          <Header toggleSidebar={toggleSideBar} />
+          <Box sx={styles.content}>{children}</Box>
           <Footer />
         </Box>
       </Flex>

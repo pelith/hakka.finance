@@ -1,33 +1,33 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import React from 'react';
 import styles from './styles';
 import logos from '../../assets';
+import identiy from 'lodash/identity';
 
 export default function Option({
-  onClick = null,
+  onClick = identiy,
   header,
   icon,
   id,
 }: {
-  onClick?: null | (() => void);
+  onClick?: () => void;
   header: React.ReactNode;
   icon: string;
   id: string;
 }) {
   const content = (
     <div
-      sx={Object.assign(styles.optionCardClickable, styles.optionCard, styles.infoCard)}
+      sx={Object.assign(
+        styles.optionCardClickable,
+        styles.optionCard,
+        styles.infoCard,
+      )}
       id={id}
       onClick={onClick}
     >
       <div sx={styles.optionCardLeft}>
-        <div sx={styles.headerText}>
-          {header}
-        </div>
+        <div sx={styles.headerText}>{header}</div>
       </div>
       <div sx={styles.iconWrapper}>
-        <img src={logos[icon]} alt="Icon" />
+        <img src={logos[icon as keyof typeof logos]} alt='Icon' />
       </div>
     </div>
   );

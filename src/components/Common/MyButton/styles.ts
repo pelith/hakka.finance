@@ -1,4 +1,6 @@
-export default {
+import createSX from 'src/utils/createSX';
+
+export default createSX({
   mybutton: {
     padding: '14px 16px',
     backgroundColor: '#fff',
@@ -58,4 +60,4 @@ export default {
       border: 'none',
     },
   },
-};
+});

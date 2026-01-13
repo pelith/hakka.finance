@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   progressBarContainer: {
     position: 'relative',
     display: 'flex',
@@ -27,4 +29,4 @@ export default {
       color: '#ffffff',
     },
   },
-}
+});

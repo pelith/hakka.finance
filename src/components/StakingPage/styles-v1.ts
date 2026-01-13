@@ -1,7 +1,8 @@
-import { ThemeUICSSObject } from 'theme-ui';
+import type { ThemeUICSSObject } from 'theme-ui';
 import { NormalButton } from './StakePositionItem/buttonStyle';
+import createSX from '@/utils/createSX';
 
-export default {
+export default createSX({
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -143,13 +144,13 @@ export default {
       alignItems: 'flex-start',
       span: {
         paddingTop: '8px',
-      }
+      },
     },
   },
 
   stakingInfoContainer: {
     display: 'flex',
-    
+
     p: {
       margin: '0',
     },
@@ -487,7 +488,9 @@ export default {
   },
 
   governanceButton: {
-    ...NormalButton, ml: 'auto', mr: '1rem',
+    ...NormalButton,
+    ml: 'auto',
+    mr: '1rem',
   } as ThemeUICSSObject,
 
   votingPowerWrapper: {
@@ -496,4 +499,4 @@ export default {
     marginTop: '8px',
     alignItems: 'center',
   },
-};
+});

@@ -1,11 +1,12 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   totalValueContainer: {
     paddingLeft: '20px',
     position: 'relative',
   },
 
-  totalValueHeadNum: {
-  },
+  totalValueHeadNum: {},
 
   totalValueHead: {
     fontSize: [3, 3, 4, 5],
@@ -49,7 +50,8 @@ export default {
     top: '-90px',
     zIndex: '-1',
     width: '25vw',
-    backgroundImage: 'radial-gradient(circle at 0 100%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 62%)',
+    backgroundImage:
+      'radial-gradient(circle at 0 100%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 62%)',
 
     '@media screen and (max-width: 768px)': {
       width: '200px',
@@ -58,4 +60,4 @@ export default {
       top: '-80px',
     },
   },
-};
+});

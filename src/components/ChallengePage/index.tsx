@@ -1,12 +1,10 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styles from './styles';
 import Web3Status from '../Web3Status';
 import MissionSection from './MissionSection';
 import CharacterStatus from './CharacterStatus';
 import images from '../../images';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { shortenAddress } from '../../utils';
 import useProjectGalaxyCampaignsInfo from '../../hooks/useProjectGalaxyCampaignsInfo';
 import {
@@ -23,13 +21,10 @@ import PlayToEarnLevelUpModal from '../PlayToEarnLevelUpModal';
 
 const Challenge = () => {
   const [isUserLevelUp, setIsUserLevelUp] = useState<boolean>(false);
-  const [isAnimationCanBePlayed, setIsAnimationCanBePlayed] = useState<boolean>(
-    false
-  );
-  const [
-    isLevelUpAnimationCompleted,
-    setIsLevelUpAnimationCompleted,
-  ] = useState<boolean>(false);
+  const [isAnimationCanBePlayed, setIsAnimationCanBePlayed] =
+    useState<boolean>(false);
+  const [isLevelUpAnimationCompleted, setIsLevelUpAnimationCompleted] =
+    useState<boolean>(false);
   const { account } = useWeb3React();
   const campaignsInfo = useProjectGalaxyCampaignsInfo();
   const togglePlayToEarnLevelUpModal = usePlayToEarnLevelUpModalToggle();
@@ -39,16 +34,14 @@ const Challenge = () => {
     return !!campaignsInfo && Object.keys(campaignsInfo).length > 0;
   }, [campaignsInfo]);
 
-  const userLevel = useMemo(() => {
-    const levelList = Object.keys(LevelInfo).map(
-      (level) => LevelInfo[level].missionList
-    );
+  const userLevel = useMemo<`${number}`>(() => {
+    const levelList = [LevelInfo['1'].missionList, LevelInfo['2'].missionList];
     if (
       !campaignsInfo ||
       Object.keys(campaignsInfo).length === 0 ||
       levelList.length <= 1
     ) {
-      return 1;
+      return '1';
     }
     for (let i = 0; i < levelList.length; i++) {
       for (let j = 0; j < levelList[i].length; j++) {
@@ -59,11 +52,11 @@ const Challenge = () => {
           campaignsInfo[id]?.status === MissionStatusOptions.FINISHED
         ) {
           const userLevel = i + 1;
-          return userLevel;
+          return `${userLevel}`;
         }
       }
     }
-    return levelList.length;
+    return `${levelList.length}`;
   }, [campaignsInfo]);
 
   useEffect(() => {
@@ -148,12 +141,12 @@ const Challenge = () => {
             </span>
             <a
               sx={styles.learnMoreLink}
-              target="_blank"
-              href="https://hakkafinance.medium.com/play-to-earn-with-hakka-finance-a3b3cf50cfb5"
-              rel="noreferrer noopener"
+              target='_blank'
+              href='https://hakkafinance.medium.com/play-to-earn-with-hakka-finance-a3b3cf50cfb5'
+              rel='noreferrer noopener'
             >
               <span>Read more </span>
-              <img src={images.iconLinkSmallGreen} />
+              <img src={images.iconLinkSmallGreen} alt='Link Small Green' />
             </a>
           </div>
           <CharacterStatus

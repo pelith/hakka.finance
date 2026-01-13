@@ -1,9 +1,11 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   flexSpaceBetween: {
     display: 'flex',
     justifyContent: 'space-between',
-  },  
-  
+  },
+
   container: {
     width: '100%',
     position: 'relative',
@@ -80,7 +82,7 @@ export default {
     justifyContent: 'space-between',
     marginTop: '4px',
     marginBottom: '28px',
-  },  
+  },
 
   sHakkaPoolLink: {
     display: 'flex',
@@ -89,7 +91,7 @@ export default {
     fontWeight: '600',
 
     p: {
-      marginRight: '4px'
+      marginRight: '4px',
     },
 
     ':hover': {
@@ -103,7 +105,6 @@ export default {
 
   receiveHakkaTitle: {
     fontWeight: 'bold',
-
   },
 
   receiveHakkaWrapper: {
@@ -117,5 +118,4 @@ export default {
       marginLeft: '8px',
     },
   },
-};
-  
+});

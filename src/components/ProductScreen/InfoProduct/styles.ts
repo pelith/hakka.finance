@@ -38,7 +38,6 @@ export default {
       display: 'flex',
       alignItems: 'flex-end',
     },
-
   },
   infoContent: {
     flex: '2',
@@ -67,7 +66,7 @@ export default {
     color: 'black',
     paddingLeft: '20px',
     paddingRight: '20px',
-    whiteSpace: 'pre-line'
+    whiteSpace: 'pre-line',
   },
   tag_box: {
     backgroundColor: 'active_green',

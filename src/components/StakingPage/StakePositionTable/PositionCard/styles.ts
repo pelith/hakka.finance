@@ -1,4 +1,4 @@
-import { ThemeUICSSObject } from 'theme-ui';
+import type { ThemeUICSSObject } from 'theme-ui';
 
 const cardContainer: ThemeUICSSObject = {
   border: 'solid 1px var(--theme-ui-colors-neutral-300)',
@@ -8,11 +8,11 @@ const cardContainer: ThemeUICSSObject = {
   flexDirection: 'column',
   gap: '20px',
   '& button': {
-    flexGrow: 1
+    flexGrow: 1,
   },
   '.button-group': {
     display: 'flex',
-  }
+  },
 };
 
 const rowEle: ThemeUICSSObject = {
@@ -28,18 +28,17 @@ const rowEle: ThemeUICSSObject = {
     marginRight: 'auto',
     '.icon': {
       marginRight: '5px',
-      verticalAlign: 'middle'
+      verticalAlign: 'middle',
     },
     '&.semi': {
       fontWeight: '600',
-    }
+    },
   },
   '.sub-title': {
     color: 'rgba(37, 62, 71, 0.5)',
     float: 'right',
     fontWeight: '600',
   },
-  
 };
 
 export default {

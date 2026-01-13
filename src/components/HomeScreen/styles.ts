@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   homescreenContainer: {
     paddingLeft: '12.8%',
     paddingRight: '14.4%',
@@ -36,7 +38,6 @@ export default {
     fontSize: [2, 2, 3, 4],
     color: 'black',
     maxWidth: '1200px',
-
   },
 
   // Card top
@@ -65,7 +66,6 @@ export default {
   // token metrics
   tokenMetrics: {
     paddingBottom: ['100px', '160px', '160px', '160px'],
-
   },
   // utility hakka
   utilityHakka: {
@@ -97,7 +97,6 @@ export default {
     '@media screen and (max-width: 1280px)': {
       justifyContent: 'center',
     },
-
   },
   imgPartner_wrapper: {
     alignItems: 'center',
@@ -158,7 +157,6 @@ export default {
 
   blur_img_green_section_mobile: {
     position: 'relative',
-
   },
   blur_img_green_mobile: {
     display: 'none',
@@ -255,9 +253,9 @@ export default {
     borderRadius: '8px',
     fontSize: '16px',
     fontWeight: '600',
-    
+
     ':focus': {
       outline: 'none',
     },
   },
-};
+});

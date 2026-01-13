@@ -1,12 +1,12 @@
-import type { ThemeUICSSObject } from 'theme-ui';
 
-const tabActive: ThemeUICSSObject = {
+
+const tabActive = {
   backgroundColor: '#ebf0f2',
   color: '#253e47',
   '& img': {
     opacity: '1',
-  }
-}
+  },
+};
 
 export default {
   display: 'flex',
@@ -24,7 +24,7 @@ export default {
       color: '#253e47',
       '& img': {
         opacity: '0.8',
-      }
+      },
     },
 
     display: 'flex',
@@ -33,9 +33,8 @@ export default {
     img: {
       mr: '8px',
       opacity: '0.5',
-    }
+    },
   },
 
-
-  'div.active' : tabActive
-}
+  'div.active': tabActive,
+};

@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   card: {
     height: '100%',
     backgroundColor: '#fff',
@@ -84,7 +86,6 @@ export default {
     '@media screen and (max-width: 576px)': {
       flexDirection: 'column',
       alignItems: 'unset',
-
     },
   },
   dropdown_text: {
@@ -136,4 +137,4 @@ export default {
       display: 'none',
     },
   },
-};
+});

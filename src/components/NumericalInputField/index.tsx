@@ -1,8 +1,5 @@
-/** @jsx jsx */
 import { useState, useEffect } from 'react';
-import { CurrencyAmount } from '@uniswap/sdk';
-import { WeiPerEther } from '@ethersproject/constants';
-import { jsx } from 'theme-ui';
+
 import BigNumber from 'bignumber.js';
 import styles from './styles';
 import NumercialInput from '../NumericalInput';
@@ -11,35 +8,34 @@ import { ApprovalState } from '../../hooks/useTokenApprove';
 import { useActiveWeb3React } from '../../hooks/web3Manager';
 
 interface NumericalInputFieldProps {
-  value: string ;
-  onUserInput: (input: string) => void;
-  tokenBalance: CurrencyAmount;
-  approve: any;
+  value: string;
+  onUserInput: (inputAmount: string) => void;
+  tokenBalanceAmount: string;
+  approve: () => void;
   approveState: ApprovalState;
-  setIsCorrectInput: any;
-  decimal?: number;
+  setIsCorrectInput: (isCorrect: boolean) => void;
 }
 
 const NumericalInputField = (props: NumericalInputFieldProps) => {
   const {
-    value,
+    value: inputAmount,
     onUserInput,
-    tokenBalance,
+    tokenBalanceAmount,
     approve,
     approveState,
     setIsCorrectInput,
-    decimal,
   } = props;
-  
+
   // check amount, balance
   const { chainId } = useActiveWeb3React();
-  const tokenDecimal = new BigNumber(decimal ? 10 ** decimal : WeiPerEther.toString());
   const [amountError, setAmountError] = useState<string>('');
 
   useEffect(() => {
-    if (value && tokenBalance) {
-      const bigNumberInputAmount = new BigNumber(new BigNumber(value).isNaN() ? 0 : value)
-      const bigNumberHakkaBalance = new BigNumber(tokenBalance.raw.toString()).dividedBy(tokenDecimal)
+    if (inputAmount && tokenBalanceAmount) {
+      const bigNumberInputAmount = new BigNumber(
+        new BigNumber(inputAmount).isNaN() ? 0 : inputAmount,
+      );
+      const bigNumberHakkaBalance = new BigNumber(tokenBalanceAmount);
 
       if (bigNumberInputAmount.isGreaterThan(bigNumberHakkaBalance)) {
         console.log(
@@ -52,44 +48,49 @@ const NumericalInputField = (props: NumericalInputFieldProps) => {
     } else {
       setAmountError('');
     }
-  }, [tokenBalance, value, approveState, chainId]);
+  }, [tokenBalanceAmount, inputAmount, approveState, chainId]);
 
+  useEffect(() => {
+    const isFalseInput =
+      amountError ||
+      new BigNumber(inputAmount).isNaN() ||
+      new BigNumber(inputAmount).eq(0) ||
+      !inputAmount;
+    setIsCorrectInput(!isFalseInput);
+  }, [inputAmount, amountError]);
 
-  useEffect(()=>{
-    if (amountError || parseFloat(value) === 0 || !value) {
-      setIsCorrectInput(false);
-    } else {
-      setIsCorrectInput(true);
-    }
-  },[value, amountError])
-
-  return(
-    <div sx={amountError ? styles.InputCardErrorWrapper : styles.InputCardWrapper}>
+  return (
+    <div
+      sx={amountError ? styles.InputCardErrorWrapper : styles.InputCardWrapper}
+    >
       <NumercialInput
-        value={value}
+        value={inputAmount}
         onUserInput={onUserInput}
         sx={styles.input}
       />
       <div sx={styles.activeArea}>
-        {(approveState !== ApprovalState.APPROVED)
-          ? (
-            <img
-              src={images.iconLock}
-              alt="Unlock token to continue"
-              sx={styles.iconLock}
-              onClick={() => approve()}
-            />
-          )
-          : ''}
+        {approveState !== ApprovalState.APPROVED ? (
+          <img
+            src={images.iconLock}
+            alt='Unlock token to continue'
+            sx={styles.iconLock}
+            onClick={() => approve()}
+          />
+        ) : (
+          ''
+        )}
         <button
+          type='button'
           sx={styles.maxButton}
-          onClick={() => { onUserInput(tokenBalance?.toSignificant(1000) || ''); }}
+          onClick={() => {
+            onUserInput(tokenBalanceAmount || '0');
+          }}
         >
           MAX
         </button>
       </div>
     </div>
   );
-}
+};
 
 export default NumericalInputField;

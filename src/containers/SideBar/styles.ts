@@ -1,7 +1,7 @@
 export default {
-//   displayFlex: {
-//     display: "flex",
-//   },
+  //   displayFlex: {
+  //     display: "flex",
+  //   },
   sidebar_responsive: {
     zIndex: '50',
     transition: 'all ease-out 0.5s',
@@ -54,7 +54,6 @@ export default {
     '@media screen and (max-width: 576px)': {
       display: 'block',
       padding: '0px 12px',
-
     },
   },
   sidebar_subText: {
@@ -68,7 +67,6 @@ export default {
     color: 'black',
     fontWeight: '600',
     fontSize: '16px',
-
   },
   bold_text_link: {
     color: 'text_grey',

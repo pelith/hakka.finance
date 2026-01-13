@@ -1,29 +1,24 @@
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { Token } from '@uniswap/sdk';
-import { Connector as AbstractConnector } from '@web3-react/types';
-import { AddressZero } from '@ethersproject/constants';
+import type { Connector as AbstractConnector } from '@web3-react/types';
+import type { Address, PublicClient } from 'viem';
+import { createPublicClient, http, zeroAddress } from 'viem';
+import { mainnet, bsc, polygon, fantom } from 'viem/chains';
 
-import {
-  walletconnect,
-  walletlink,
-  injected,
-  uauth,
-} from '../connectors';
+import { walletconnect, walletlink, injected, uauth } from '../connectors';
 import { ChainId } from './chainDetail';
 
 export enum ChainDataFetchingState {
-  LOADING,
-  SUCCESS,
+  LOADING = 'LOADING',
+  SUCCESS = 'SUCCESS',
 }
 
 export enum TransactionState {
-  UNKNOWN,
-  PENDING,
-  SUCCESS,
-  ERROR,
+  UNKNOWN = 'UNKNOWN',
+  PENDING = 'PENDING',
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
 }
 
-export const stakingMonth = [1, 3, 6, 12];
+export const STAKING_OPTION_MONTH = [1, 3, 6, 12] as const;
 
 export const ChainName: { [chainId in ChainId]: string } = {
   1: 'Ethereum Mainnet',
@@ -112,114 +107,130 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
 
 export const NetworkContextName = 'NETWORK';
 
-export const HAKKA: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(
-    1,
+export type TokenInfo = {
+  chainId: ChainId;
+  address: Address;
+  decimals: number;
+  symbol: string;
+  name: string;
+};
+function createToken(
+  chainId: ChainId,
+  address: Address,
+  decimals: number,
+  symbol: string,
+  name: string,
+): TokenInfo {
+  return { chainId, address, decimals, symbol, name };
+}
+
+export const HAKKA: { [chainId in ChainId]: TokenInfo } = {
+  [ChainId.MAINNET]: createToken(
+    ChainId.MAINNET,
     '0x0E29e5AbbB5FD88e28b2d355774e73BD47dE3bcd',
     18,
     'HAKKA',
-    'Hakka Finance'
+    'Hakka Finance',
   ),
-  [ChainId.BSC]: new Token(
-    56,
+  [ChainId.BSC]: createToken(
+    ChainId.BSC,
     '0x1d1eb8e8293222e1a29d2c0e4ce6c0acfd89aaac',
     18,
     'HAKKA',
-    'Hakka Finance'
+    'Hakka Finance',
   ),
-  [ChainId.POLYGON]: new Token(
-    137,
+  [ChainId.POLYGON]: createToken(
+    ChainId.POLYGON,
     '0x978338A9d2d0aa2fF388d3dc98b9bF25bfF5efB4',
     18,
     'HAKKA',
-    'Hakka Finance'
+    'Hakka Finance',
   ),
-  [ChainId.FANTOM]: new Token(
-    250,
+  [ChainId.FANTOM]: createToken(
+    ChainId.FANTOM,
     '0xda803c6AD8078c51c5334B51aA4Cc3f440d56D5F',
     18,
     'HAKKA',
-    'Hakka Finance'
+    'Hakka Finance',
   ),
 };
 
-export const STAKING_ADDRESSES: { [chainId in ChainId]: string } = {
+export const STAKING_ADDRESSES: { [chainId in ChainId]: Address } = {
   [ChainId.MAINNET]: '0xd9958826bce875a75cc1789d5929459e6ff15040',
-  [ChainId.BSC]: AddressZero,
-  [ChainId.POLYGON]: AddressZero,
-  [ChainId.FANTOM]: AddressZero,
+  [ChainId.BSC]: zeroAddress,
+  [ChainId.POLYGON]: zeroAddress,
+  [ChainId.FANTOM]: zeroAddress,
 };
 
-export const VESTING_ADDRESSES: { [chainId in ChainId]: string } = {
+export const VESTING_ADDRESSES: { [chainId in ChainId]: Address } = {
   [ChainId.MAINNET]: '0x51F12323820b3c0077864990d9E6aD9604238Ed6',
   [ChainId.BSC]: '0x6dbff20CAFf68B99b1e67B50D14A9D7BBdfA94DC',
   [ChainId.POLYGON]: '0xeC4b77e7369325b52A1f9d1Ae080B59954B8001a',
   [ChainId.FANTOM]: '0x3792ee68E736b8214D4eDC91b1B3340B525e00BF',
 };
 
-export const BURNER_ADDRESS: { [chainId in ChainId]: string } = {
+export const BURNER_ADDRESS: { [chainId in ChainId]: Address } = {
   [ChainId.MAINNET]: '0xde02313f8BF17f31380c63e41CDECeE98Bc2b16d',
-  [ChainId.BSC]: AddressZero,
-  [ChainId.POLYGON]: AddressZero,
-  [ChainId.FANTOM]: AddressZero,
+  [ChainId.BSC]: zeroAddress,
+  [ChainId.POLYGON]: zeroAddress,
+  [ChainId.FANTOM]: zeroAddress,
 };
 
-export const GUILDBANK: { [chainId in ChainId]: string } = {
+export const GUILDBANK: { [chainId in ChainId]: Address } = {
   [ChainId.MAINNET]: '0x83D0D842e6DB3B020f384a2af11bD14787BEC8E7',
-  [ChainId.BSC]: AddressZero,
-  [ChainId.POLYGON]: AddressZero,
-  [ChainId.FANTOM]: AddressZero,
+  [ChainId.BSC]: zeroAddress,
+  [ChainId.POLYGON]: zeroAddress,
+  [ChainId.FANTOM]: zeroAddress,
 };
 
-export const ETHADDRESS: string = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+export const ETHADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
-const NAME: string = 'name';
-const SYMBOL: string = 'symbol';
-const DECIMALS: string = 'decimals';
-
-export const VAULT_TOKENS: { [chainId in ChainId]: any } = {
+export const VAULT_TOKENS: {
+  [chainId in ChainId]: {
+    [x: string]: { name: string; symbol: string; decimals: number };
+  };
+} = {
   [ChainId.MAINNET]: {
     '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': {
-      [NAME]: 'Ether',
-      [SYMBOL]: 'ETH',
-      [DECIMALS]: 18,
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18,
     },
-    '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2': {
-      [NAME]: 'Maker',
-      [SYMBOL]: 'MKR',
-      [DECIMALS]: 18,
+    '0x56072C95FAA701256059aa122697B133aDEd9279': {
+      name: 'SKY',
+      symbol: 'SKY',
+      decimals: 18,
     },
     '0x35101c731b1548B5e48bb23F99eDBc2f5c341935': {
-      [NAME]: 'BlackHoleSwap-Compound DAI/USDC v1',
-      [SYMBOL]: 'BHSc$',
-      [DECIMALS]: 18,
+      name: 'BlackHoleSwap-Compound DAI/USDC v1',
+      symbol: 'BHSc$',
+      decimals: 18,
     },
     '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48': {
-      [NAME]: 'USD Coin',
-      [SYMBOL]: 'USDC',
-      [DECIMALS]: 6,
+      name: 'USD Coin',
+      symbol: 'USDC',
+      decimals: 6,
     },
     '0x00CaAFC7d2C82C4A05504e116327bD398E19985c': {
-      [NAME]: 'Dyson Sphere',
-      [SYMBOL]: 'DYSN',
-      [DECIMALS]: 18,
-    }
+      name: 'Dyson Sphere',
+      symbol: 'DYSN',
+      decimals: 18,
+    },
   },
   [ChainId.BSC]: {},
   [ChainId.POLYGON]: {},
   [ChainId.FANTOM]: {},
 };
 
-// TODO: check this address
-export const NEW_SHAKKA_ADDRESSES: { [chainId in ChainId]: string } = {
+export const NEW_SHAKKA_ADDRESSES: { [chainId in ChainId]: Address } = {
   [ChainId.MAINNET]: '0xb925863a15ebdeae1a638bf2b6fd00d4db897a62',
   [ChainId.BSC]: '0x51DE1EeF029b5cc1Ef359E62aA98101F56f29bE6',
   [ChainId.POLYGON]: '0x7F8093f5F49a9D7F0334f8017fF777F1893032d5',
-  [ChainId.FANTOM]: AddressZero,
+  [ChainId.FANTOM]: zeroAddress,
 };
 
 export const STAKING_RATE_MODEL_RELEASE_TIME: {
-  [address: typeof NEW_SHAKKA_ADDRESSES[ChainId]]: number;
+  [address: (typeof NEW_SHAKKA_ADDRESSES)[ChainId]]: number;
 } = {
   [NEW_SHAKKA_ADDRESSES[ChainId.MAINNET]]: 1655110318,
   [NEW_SHAKKA_ADDRESSES[ChainId.BSC]]: 1655108868,
@@ -234,7 +245,7 @@ export const DEFAULT_TOKENS_COIN_GECKO_ID_BOOK: {
   '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2': 'maker',
   '0x35101c731b1548B5e48bb23F99eDBc2f5c341935':
     'blackholeswap-compound-dai-usdc',
-  '0x00CaAFC7d2C82C4A05504e116327bD398E19985c': 'dyson-sphere'
+  '0x00CaAFC7d2C82C4A05504e116327bD398E19985c': 'dyson-sphere',
 };
 
 export const BHS_USDC_DAI_HAKKA_BPT =
@@ -318,13 +329,23 @@ export const TOKEN_PRICE_SLUGS: string[] = [
   'dyson-sphere',
 ];
 
-export const JSON_RPC_PROVIDER: { [chainId in ChainId]: JsonRpcProvider } = {
-  [ChainId.MAINNET]: new JsonRpcProvider(process.env.GATSBY_NETWORK_URL),
-  [ChainId.BSC]: new JsonRpcProvider(process.env.GATSBY_BSC_NETWORK_URL),
-  [ChainId.POLYGON]: new JsonRpcProvider(
-    process.env.GATSBY_POLYGON_NETWORK_URL
-  ),
-  [ChainId.FANTOM]: new JsonRpcProvider(process.env.GATSBY_FANTOM_NETWORK_URL),
+export const JSON_RPC_PROVIDER: { [chainId in ChainId]: PublicClient } = {
+  [ChainId.MAINNET]: createPublicClient({
+    chain: mainnet,
+    transport: http(import.meta.env.APP_NETWORK_URL),
+  }),
+  [ChainId.BSC]: createPublicClient({
+    chain: bsc,
+    transport: http(import.meta.env.APP_BSC_NETWORK_URL),
+  }),
+  [ChainId.POLYGON]: createPublicClient({
+    chain: polygon,
+    transport: http(import.meta.env.APP_POLYGON_NETWORK_URL),
+  }),
+  [ChainId.FANTOM]: createPublicClient({
+    chain: fantom,
+    transport: http(import.meta.env.APP_FANTOM_NETWORK_URL),
+  }),
 };
 
 export * from './chainDetail';

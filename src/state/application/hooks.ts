@@ -1,24 +1,17 @@
 import { useCallback, useContext, useMemo } from 'react';
-import { useActiveWeb3React } from '../../hooks/web3Manager';
 import { ApplicationContext } from './context';
-import { PopupContent } from './actions';
-import { PopupList, ApplicationState } from './reducer';
+import type { PopupContent } from './actions';
+import type { PopupList, ApplicationState } from './reducer';
 import { useContextStateSelector } from '../index';
 
 export function useApplicationContextStateSelector<
-  K extends keyof ApplicationState
+  K extends keyof ApplicationState,
 >(selector: K): ApplicationState[K] {
   return useContextStateSelector(ApplicationContext, selector);
 }
 
 export function useApplicationContext() {
   return useContext(ApplicationContext);
-}
-
-export function useBlockNumber(): number | undefined {
-  const { chainId } = useActiveWeb3React();
-  const blockNumber = useApplicationContextStateSelector('blockNumber');
-  return blockNumber[chainId ?? -1];
 }
 
 export function useWalletModalOpen(): boolean {
@@ -62,7 +55,8 @@ export function useRedeemModalToggle(): () => void {
 }
 
 export function useRestakeModalOpen(): boolean {
-  const restakeModalOpen = useApplicationContextStateSelector('restakeModalOpen');
+  const restakeModalOpen =
+    useApplicationContextStateSelector('restakeModalOpen');
   return restakeModalOpen;
 }
 
@@ -72,7 +66,9 @@ export function useRestakeModalToggle(): () => void {
 }
 
 export function usePlayToEarnLevelUpModalOpen(): boolean {
-  const playToEarnLevelUpModalOpen = useApplicationContextStateSelector('playToEarnLevelUpModalOpen');
+  const playToEarnLevelUpModalOpen = useApplicationContextStateSelector(
+    'playToEarnLevelUpModalOpen',
+  );
   return playToEarnLevelUpModalOpen;
 }
 
@@ -82,7 +78,9 @@ export function usePlayToEarnLevelUpModalToggle(): () => void {
 }
 
 export function useYearlyReviewScoreModalOpen(): boolean {
-  const yearlyReviewScoreModalOpen = useApplicationContextStateSelector('yearlyReviewScoreModalOpen');
+  const yearlyReviewScoreModalOpen = useApplicationContextStateSelector(
+    'yearlyReviewScoreModalOpen',
+  );
   return yearlyReviewScoreModalOpen;
 }
 

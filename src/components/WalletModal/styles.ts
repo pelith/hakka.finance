@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   infoCard: {
     padding: '1rem',
     outline: 'none',
@@ -137,4 +139,4 @@ export default {
       cursor: 'pointer',
     },
   },
-};
+});

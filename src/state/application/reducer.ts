@@ -1,17 +1,15 @@
 import { nanoid } from 'nanoid';
 import {
-  PopupContent,
-  UpdateBlockNumberAction,
-  ToggleWalletModalAction,
-  ToggleInfoModalAction,
-  ToggleClaimModalAction,
-  ToggleRedeemModalAction,
-  ToggleRestakeModalAction,
-  TogglePlayToEarnLevelUpModalAction,
-  ToggleYearlyReviewScoreModalAction,
-  AddPopupAction,
-  RemovePopupAction,
-  UPDATE_BLOCK_NUMBER,
+  type PopupContent,
+  type ToggleWalletModalAction,
+  type ToggleInfoModalAction,
+  type ToggleClaimModalAction,
+  type ToggleRedeemModalAction,
+  type ToggleRestakeModalAction,
+  type TogglePlayToEarnLevelUpModalAction,
+  type ToggleYearlyReviewScoreModalAction,
+  type AddPopupAction,
+  type RemovePopupAction,
   TOGGLE_WALLET_MODAL,
   TOGGLE_INFO_MODAL,
   TOGGLE_CLAIM_MODAL,
@@ -33,7 +31,6 @@ type Popup = {
 export type PopupList = Array<Popup>;
 
 export interface ApplicationState {
-  readonly blockNumber: { readonly [chainId: number]: number };
   readonly popupList: PopupList;
   readonly walletModalOpen: boolean;
   readonly infoModalOpen: boolean;
@@ -45,7 +42,6 @@ export interface ApplicationState {
 }
 
 export const initialApplicationState: ApplicationState = {
-  blockNumber: {},
   popupList: [],
   walletModalOpen: false,
   infoModalOpen: false,
@@ -57,7 +53,6 @@ export const initialApplicationState: ApplicationState = {
 };
 
 type ApplicationAction =
-  | UpdateBlockNumberAction
   | ToggleWalletModalAction
   | ToggleInfoModalAction
   | ToggleClaimModalAction
@@ -74,24 +69,6 @@ export default function reducer(
 ): ApplicationState {
   const _state = JSON.parse(JSON.stringify(state));
   switch (action.type) {
-    case UPDATE_BLOCK_NUMBER: {
-      const { payload } = action as UpdateBlockNumberAction;
-      const { chainId } = payload;
-      const { blockNumber } = payload;
-
-      if (typeof state.blockNumber[chainId] !== 'number') {
-        _state.blockNumber[chainId] = blockNumber;
-      } else {
-        _state.blockNumber[chainId] = Math.max(
-          blockNumber,
-          state.blockNumber[chainId],
-        );
-      }
-
-      return {
-        ..._state,
-      };
-    }
     case TOGGLE_WALLET_MODAL: {
       return {
         ..._state,
@@ -140,9 +117,10 @@ export default function reducer(
       const { content } = payload;
       const removeAfterMs = payload.removeAfterMs ?? 1500;
 
-      _state.popupList = (key
-        ? state.popupList.filter((popup) => popup.key !== key)
-        : state.popupList
+      _state.popupList = (
+        key
+          ? state.popupList.filter((popup) => popup.key !== key)
+          : state.popupList
       ).concat([
         {
           key: key || nanoid(),

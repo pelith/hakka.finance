@@ -1,21 +1,21 @@
-/** @jsx jsx */
 import { useState, useMemo, useEffect } from 'react';
-import { useWeb3React } from '@web3-react/core';
-import { parseUnits } from 'ethers/lib/utils';
-import { jsx } from 'theme-ui';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
+import { parseUnits } from 'viem';
+
 import {
   HAKKA,
   NEW_SHAKKA_ADDRESSES,
-  ChainId,
+  type ChainId,
   SEC_OF_FOUR_YEARS,
 } from '../../../constants';
 import withApproveTokenCheckWrapper from '../../../hoc/withApproveTokenCheckWrapper';
 import withConnectWalletCheckWrapper from '../../../hoc/withConnectWalletCheckWrapper';
 import withWrongNetworkCheckWrapper from '../../../hoc/withWrongNetworkCheckWrapper';
-import { useHakkaStake } from '../../../hooks/staking/useHakkaStake';
-import { StakeState } from '../../../hooks/staking/useHakkaStakeV1';
+import {
+  useHakkaStake,
+  StakeState,
+} from '../../../hooks/staking/useHakkaStake';
 import { ApprovalState, useTokenApprove } from '../../../hooks/useTokenApprove';
-import { useTokenBalance } from '../../../state/wallet/hooks';
 import { transferToYear } from '../../../utils';
 import { stakeReceivedAmount } from '../../../utils/stakeReceivedAmount';
 import { MyButton } from '../../Common';
@@ -23,6 +23,8 @@ import NumericalInputField from '../../NumericalInputField';
 import LockPeriodOptions from './LockPeriodOptions.tsx';
 import styles from './styles';
 import VotingPowerSection from './VotingPowerSection';
+import { useTokenInfoAndBalance } from '@/hooks/contracts/token/useTokenInfoAndBalance.ts';
+import { formatCommonNumber } from '@/utils/formatCommonNumbers.ts';
 
 interface IProps {
   isCorrectNetwork: boolean;
@@ -31,40 +33,46 @@ interface IProps {
 }
 
 const StakeButton = withApproveTokenCheckWrapper(
-  withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton))
+  withWrongNetworkCheckWrapper(withConnectWalletCheckWrapper(MyButton)),
 );
 
-export default function StakingPanel (props: IProps) {
+export default function StakingPanel(props: IProps) {
   const { toggleWalletModal, chainId: activeChainId, isCorrectNetwork } = props;
   const { account } = useWeb3React();
   const isConnected = !!account;
 
-  const hakkaBalance = useTokenBalance(account, HAKKA[activeChainId]);
+  const { data: hakkaBalance } = useTokenInfoAndBalance(
+    account as string,
+    HAKKA[activeChainId].address,
+  );
 
   const [inputAmount, setInputAmount] = useState<string>('');
   const [isCorrectInput, setIsCorrectInput] = useState(true);
 
-  const safeInputAmount = useMemo(() => inputAmount === '' ? '0' : inputAmount, [inputAmount]);
+  const safeInputAmount = useMemo(
+    () => (inputAmount === '' ? '0' : inputAmount),
+    [inputAmount],
+  );
   const [approveState, approve] = useTokenApprove(
-    HAKKA[activeChainId],
+    HAKKA[activeChainId].address,
     NEW_SHAKKA_ADDRESSES[activeChainId],
-    safeInputAmount
+    safeInputAmount,
   );
   const [secondTimer, setSecondTimer] = useState<number>(SEC_OF_FOUR_YEARS);
   const [stakeState, stake] = useHakkaStake(
     NEW_SHAKKA_ADDRESSES[activeChainId],
     account!,
     parseUnits(safeInputAmount, 18),
-    secondTimer
+    secondTimer,
   );
 
   const receivedAmount = useMemo(() => {
     const received = +stakeReceivedAmount(
       safeInputAmount,
       transferToYear(secondTimer),
-      activeChainId
+      activeChainId,
     );
-    return isNaN(received) ? 0 : received;
+    return Number.isNaN(received) ? 0 : received;
   }, [stakeState.toString(), safeInputAmount, secondTimer, activeChainId]);
 
   useEffect(() => {
@@ -79,13 +87,15 @@ export default function StakingPanel (props: IProps) {
         <span>Amount</span>
         <span>
           HAKKA Balance:{' '}
-          {isCorrectNetwork ? hakkaBalance?.toFixed(4) || '0.0000' : '-'}
+          {isCorrectNetwork
+            ? formatCommonNumber(hakkaBalance?.balance) || '0.0000'
+            : '-'}
         </span>
       </div>
       <NumericalInputField
         value={inputAmount}
         onUserInput={setInputAmount}
-        tokenBalance={hakkaBalance}
+        tokenBalanceAmount={hakkaBalance?.balance || '0.00'}
         approve={approve}
         approveState={approveState}
         setIsCorrectInput={setIsCorrectInput}

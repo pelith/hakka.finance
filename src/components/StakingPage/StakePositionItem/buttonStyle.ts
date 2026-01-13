@@ -1,4 +1,4 @@
-import { ThemeUICSSObject } from 'theme-ui';
+import type { ThemeUICSSObject } from 'theme-ui';
 const ColorTheme = {
   '--neutral-900': '#253E47',
   '--background-color': '#f7fbfc',

@@ -1,102 +1,188 @@
-import { JSBI, CurrencyAmount } from '@uniswap/sdk';
-import { useMemo } from 'react';
-import { formatUnits } from '@ethersproject/units';
+import { formatUnits, isAddress, type Address } from 'viem';
 import { useActiveWeb3React } from '../hooks/web3Manager';
 
-import { getContract, tryParseAmount } from '../utils';
+import STAKING_V1_ABI from '../constants/abis/shakka_v1';
+import STAKING_ABI from '../constants/abis/shakka';
 import {
-  useSingleCallResult,
-  useSingleContractMultipleData,
-} from '../state/multicall/hooks';
-import STAKING_V1_ABI from '../constants/abis/shakka_v1.json';
-import STAKING_ABI from '../constants/abis/shakka.json';
-import {
-  ChainId,
+  type ChainId,
   STAKING_ADDRESSES,
   NEW_SHAKKA_ADDRESSES,
-  stakingMonth,
+  STAKING_OPTION_MONTH,
 } from '../constants';
+import { useReadContracts } from 'wagmi';
 
-const usedVersion = {
-  v1: {
-    abi: STAKING_V1_ABI,
-    address: STAKING_ADDRESSES,
-  },
-  v2: {
-    abi: STAKING_ABI,
-    address: NEW_SHAKKA_ADDRESSES,
-  },
-};
+export function useStakingDataV1(_chainId?: ChainId) {
+  const { chainId, account } = useActiveWeb3React();
+  const usingChainId = _chainId ?? chainId;
 
-export function useStakingData(
-  version: 'v1' | 'v2' = 'v1',
-  _chainId?: ChainId
-): {
-  stakingBalance: CurrencyAmount;
-  sHakkaBalance: CurrencyAmount;
-  votingPower: CurrencyAmount;
-  stakingRate: string[];
-  vaults: any[];
-} {
-  const { chainId, provider: library, account } = useActiveWeb3React();
+  return useReadContracts({
+    contracts: [
+      {
+        address: STAKING_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_V1_ABI,
+        functionName: 'stakedHakka',
+        args: [account as Address],
+      },
+      {
+        address: STAKING_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_V1_ABI,
+        functionName: 'balanceOf',
+        args: [account as Address],
+      },
+      {
+        address: STAKING_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_V1_ABI,
+        functionName: 'votingPower',
+        args: [account as Address],
+      },
+      {
+        address: STAKING_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_V1_ABI,
+        functionName: 'getStakingRate',
+        args: [BigInt(STAKING_OPTION_MONTH[0] * 2592000)],
+      },
+      {
+        address: STAKING_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_V1_ABI,
+        functionName: 'getStakingRate',
+        args: [BigInt(STAKING_OPTION_MONTH[1] * 2592000)],
+      },
+      {
+        address: STAKING_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_V1_ABI,
+        functionName: 'getStakingRate',
+        args: [BigInt(STAKING_OPTION_MONTH[2] * 2592000)],
+      },
+      {
+        address: STAKING_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_V1_ABI,
+        functionName: 'getStakingRate',
+        args: [BigInt(STAKING_OPTION_MONTH[3] * 2592000)],
+      },
+    ] as const,
+    query: {
+      enabled:
+        isAddress(account as Address) &&
+        isAddress(STAKING_ADDRESSES[usingChainId as ChainId]),
+      select(data) {
+        const [stakingBalance, sHakkaBalance, votingPower, ...stakingRate] =
+          data;
+        const result = {
+          stakingBalance: '',
+          sHakkaBalance: '',
+          votingPower: '',
+          stakingRate: [] as string[],
+        };
+        if (stakingBalance.status === 'success') {
+          result.stakingBalance = formatUnits(
+            stakingBalance.result as bigint,
+            18,
+          );
+        }
+        if (sHakkaBalance.status === 'success') {
+          result.sHakkaBalance = formatUnits(
+            sHakkaBalance.result as bigint,
+            18,
+          );
+        }
+        if (votingPower.status === 'success') {
+          result.votingPower = formatUnits(votingPower.result as bigint, 18);
+        }
+        if (stakingRate.every((rate) => rate.status === 'success')) {
+          result.stakingRate = stakingRate.map(
+            (rate) => rate.result?.toString() ?? '',
+          );
+        }
+        return result;
+      },
+    },
+  });
+}
 
-  if (_chainId === undefined) _chainId = chainId;
+export function useStakingDataV2(_chainId?: ChainId) {
+  const { chainId, account } = useActiveWeb3React();
+  const usingChainId = _chainId ?? chainId;
 
-  const contract = useMemo(() => {
-    const versionConfig = usedVersion[version]
-    return getContract(
-      versionConfig.address[_chainId || (1 as ChainId)] || versionConfig.address[(1 as ChainId)],
-      versionConfig.abi,
-      library as any,
-      account
-    );
-  }, [_chainId, version, library, account]);
-
-  const stakingBalance = useSingleCallResult(contract, 'stakedHakka', [
-    account,
-  ]);
-  const sHakkaBalance = useSingleCallResult(contract, 'balanceOf', [account]);
-  const votingPower = useSingleCallResult(contract, 'votingPower', [account]);
-  const stakingRate = useSingleContractMultipleData(
-    contract,
-    'getStakingRate',
-    stakingMonth.map((lockMonth) => [lockMonth * 2592000])
-  );
-  const vaultCount = useSingleCallResult(contract, 'vaultCount', [account]);
-  const vaults = useSingleContractMultipleData(
-    contract,
-    'vaults',
-    Array.from(
-      Array(vaultCount.result?.[0].toNumber() || 0).keys()
-    ).map((vaultNum) => [account, vaultNum])
-  );
-
-  return useMemo(
-    () =>
-      _chainId === 1 ||
-      (42 && stakingBalance && sHakkaBalance && votingPower && stakingRate)
-        ? {
-            stakingBalance: tryParseAmount(
-              formatUnits(stakingBalance.result?.[0] ?? 0)
-            ),
-            sHakkaBalance: tryParseAmount(
-              formatUnits(sHakkaBalance.result?.[0] ?? 0)
-            ),
-            votingPower: tryParseAmount(
-              formatUnits(votingPower.result?.[0] ?? 0)
-            ),
-            stakingRate: stakingRate.map((rate) =>
-              JSBI.BigInt(rate.result?.[0] ?? 0).toString()
-            ),
-            vaults,
-          }
-        : {
-            stakingBalance: undefined,
-            sHakkaBalance: undefined,
-            votingPower: undefined,
-            stakingRate: undefined,
-            vaults: [],
-          },
-    [_chainId, stakingBalance, votingPower, stakingRate, vaults]
-  );
+  return useReadContracts({
+    contracts: [
+      {
+        address: NEW_SHAKKA_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_ABI,
+        functionName: 'stakedHakka',
+        args: [account as Address],
+      },
+      {
+        address: NEW_SHAKKA_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_ABI,
+        functionName: 'balanceOf',
+        args: [account as Address],
+      },
+      {
+        address: NEW_SHAKKA_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_ABI,
+        functionName: 'votingPower',
+        args: [account as Address],
+      },
+      {
+        address: NEW_SHAKKA_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_ABI,
+        functionName: 'getStakingRate',
+        args: [BigInt(STAKING_OPTION_MONTH[0] * 2592000)],
+      },
+      {
+        address: NEW_SHAKKA_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_V1_ABI,
+        functionName: 'getStakingRate',
+        args: [BigInt(STAKING_OPTION_MONTH[1] * 2592000)],
+      },
+      {
+        address: NEW_SHAKKA_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_ABI,
+        functionName: 'getStakingRate',
+        args: [BigInt(STAKING_OPTION_MONTH[2] * 2592000)],
+      },
+      {
+        address: NEW_SHAKKA_ADDRESSES[usingChainId as ChainId] as Address,
+        abi: STAKING_ABI,
+        functionName: 'getStakingRate',
+        args: [BigInt(STAKING_OPTION_MONTH[3] * 2592000)],
+      },
+    ] as const,
+    query: {
+      enabled:
+        isAddress(account as Address) &&
+        isAddress(NEW_SHAKKA_ADDRESSES[usingChainId as ChainId]),
+      select(data) {
+        const [stakingBalance, sHakkaBalance, votingPower, ...stakingRate] =
+          data;
+        const result = {
+          stakingBalance: '',
+          sHakkaBalance: '',
+          votingPower: '',
+          stakingRate: [] as string[],
+        };
+        if (stakingBalance.status === 'success') {
+          result.stakingBalance = formatUnits(
+            stakingBalance.result as bigint,
+            18,
+          );
+        }
+        if (sHakkaBalance.status === 'success') {
+          result.sHakkaBalance = formatUnits(
+            sHakkaBalance.result as bigint,
+            18,
+          );
+        }
+        if (votingPower.status === 'success') {
+          result.votingPower = formatUnits(votingPower.result as bigint, 18);
+        }
+        if (stakingRate.every((rate) => rate.status === 'success')) {
+          result.stakingRate = stakingRate.map(
+            (rate) => rate.result?.toString() ?? '',
+          );
+        }
+        return result;
+      },
+    },
+  });
 }

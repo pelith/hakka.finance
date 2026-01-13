@@ -1,4 +1,4 @@
-import images from "../../images";
+import images from '../../images';
 
 export default {
   container: {
@@ -60,11 +60,11 @@ export default {
 
     '@media screen and (max-width: 576px)': {
       padding: '28px 20px 289px 20px',
-      backgroundImage: `linear-gradient(180deg, #44D2BA 1.93%, #75E3B9 39.47%, rgba(122, 229, 185, 0.81) 53.38%, rgba(140, 235, 185, 0.25) 64.66%, rgba(255, 255, 255, 0) 74.25%), url(${images.iconIntroGraph})`,  
+      backgroundImage: `linear-gradient(180deg, #44D2BA 1.93%, #75E3B9 39.47%, rgba(122, 229, 185, 0.81) 53.38%, rgba(140, 235, 185, 0.25) 64.66%, rgba(255, 255, 255, 0) 74.25%), url(${images.iconIntroGraph})`,
       backgroundPosition: 'top, bottom',
       backgroundSize: 'auto, contain',
     },
-    
+
     h4: {
       margin: '0',
       marginBottom: '36px',
@@ -73,7 +73,7 @@ export default {
       '@media screen and (max-width: 576px)': {
         fontSize: '32px',
         marginBottom: '11px',
-      }
+      },
     },
 
     p: {
@@ -83,7 +83,7 @@ export default {
 
       '@media screen and (max-width: 576px)': {
         fontSize: '14px',
-      }
+      },
     },
   },
 
@@ -101,4 +101,4 @@ export default {
       marginTop: '34px',
     },
   },
-}
+};

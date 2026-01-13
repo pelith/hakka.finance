@@ -1,82 +1,93 @@
-import { JSON_RPC_PROVIDER } from '../../constants/index';
-import {
-  Contract as MulticallContract,
-  Provider as MulticallProvider,
-} from '@pelith/ethers-multicall';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import {
   ChainDataFetchingState,
   VESTING_ADDRESSES,
-  ChainId,
+  type ChainId,
 } from '../../constants';
-import throttle from 'lodash/throttle';
-import { BigNumber } from '@ethersproject/bignumber';
-import { AddressZero } from '@ethersproject/constants';
-import { useEffect, useMemo, useState } from 'react';
-import { useBlockNumber } from '../../state/application/hooks';
-import VESTING_ABI from '../../constants/abis/vesting.json';
+import { isAddress, zeroAddress, type Address } from 'viem';
+import { useMemo } from 'react';
+import VESTING_ABI from '../../constants/abis/vesting';
+import { useReadContracts } from 'wagmi';
 
-export type FetchVestingInfoResultType = (ChainId | {vestingValue?: BigNumber, vestingProportion?: BigNumber, lastWithdrawalTime?: BigNumber})[];
+export type FetchVestingInfoResultType = {
+  vestingValueRaw?: bigint;
+  vestingProportionRaw?: bigint;
+  lastWithdrawalTimeRaw?: bigint;
+};
 
 export default function useFetchVestingInfo(chainId: ChainId): {
   fetchVestingInfoResult: FetchVestingInfoResultType;
   fetchDataState: ChainDataFetchingState;
 } {
-  const { account } = useWeb3React();
-  const latestBlockNumber = useBlockNumber();
-  const [fetchVestingInfoResult, setFetchVestingInfoResult] = useState<
-  FetchVestingInfoResultType
-  >();
-  const [transactionSuccess, setTransactionSuccess] = useState(false);
+  const { account = '' } = useWeb3React();
+  const vestingAddress = VESTING_ADDRESSES[chainId] as Address;
+
+  const isUnsupportedChain = vestingAddress === zeroAddress;
+  const enabled = !isUnsupportedChain && isAddress(account as Address);
+
+  const { data: vestingInfoResult, isLoading } = useReadContracts({
+    contracts: [
+      {
+        address: vestingAddress,
+        abi: VESTING_ABI,
+        functionName: 'balanceOf',
+        args: [account as Address],
+        chainId,
+      },
+      {
+        address: vestingAddress,
+        abi: VESTING_ABI,
+        functionName: 'proportion',
+        args: [],
+        chainId,
+      },
+      {
+        address: vestingAddress,
+        abi: VESTING_ABI,
+        functionName: 'lastWithdrawalTime',
+        args: [account as Address],
+        chainId,
+      },
+    ] as const,
+    query: {
+      enabled,
+      refetchInterval: 15_000,
+      select(data) {
+        const [vestingValue, vestingProportion, lastWithdrawalTime] = data;
+        return {
+          vestingValueRaw:
+            vestingValue.status === 'success'
+              ? (vestingValue.result as bigint)
+              : undefined,
+          vestingProportionRaw:
+            vestingProportion.status === 'success'
+              ? (vestingProportion.result as bigint)
+              : undefined,
+          lastWithdrawalTimeRaw:
+            lastWithdrawalTime.status === 'success'
+              ? (lastWithdrawalTime.result as bigint)
+              : undefined,
+        } satisfies FetchVestingInfoResultType;
+      },
+    },
+  });
+
+  const fetchVestingInfoResult = useMemo<FetchVestingInfoResultType>(() => {
+    if (!vestingInfoResult || isUnsupportedChain)
+      return {
+        vestingValueRaw: undefined,
+        vestingProportionRaw: undefined,
+        lastWithdrawalTimeRaw: undefined,
+      };
+    return vestingInfoResult;
+  }, [isUnsupportedChain, vestingInfoResult]);
 
   const fetchDataState: ChainDataFetchingState = useMemo(() => {
-    return transactionSuccess
-      ? ChainDataFetchingState.SUCCESS
-      : ChainDataFetchingState.LOADING;
-  }, [transactionSuccess]);
-
-  const providers = JSON_RPC_PROVIDER;
-
-  const getVestingInfo = async (chainId: ChainId, account: string) => {
-    const multicallProvider = new MulticallProvider(
-      providers[chainId],
-      chainId
-    );
-    if (VESTING_ADDRESSES[chainId] === AddressZero)
-      return [chainId, undefined];
-    const vestingContract = new MulticallContract(
-        VESTING_ADDRESSES[chainId],
-        VESTING_ABI
-    );
-    const [vestingValue, vestingProportion, lastWithdrawalTime] = await multicallProvider.all([
-        vestingContract.balanceOf(account),
-        vestingContract.proportion(),
-        vestingContract.lastWithdrawalTime(account),
-    ]);
-    return [chainId, {vestingValue, vestingProportion, lastWithdrawalTime}];
-  };
-
-  const fetchVestingInfo = async (account: string, chainId: ChainId) => {
-    setTransactionSuccess(false);
-    try {
-      const vestingInfoResult = await getVestingInfo(chainId, account);
-      setFetchVestingInfoResult(vestingInfoResult);
-      setTransactionSuccess(true);
-    } catch (e) {
-      console.log(e);
-      console.log('fetch user vesting info error');
-    }
-  };
-
-  const throttledFetchVestingInfo = useMemo(
-    () => throttle(fetchVestingInfo, 2000),
-    []
-  );
-
-  useEffect(() => {
-    if (account === AddressZero || !account || !latestBlockNumber) return;
-    throttledFetchVestingInfo(account, chainId);
-  }, [latestBlockNumber, account, chainId]);
+    if (isUnsupportedChain) return ChainDataFetchingState.SUCCESS;
+    return enabled && isLoading
+      ? ChainDataFetchingState.LOADING
+      : ChainDataFetchingState.SUCCESS;
+  }, [enabled, isLoading, isUnsupportedChain]);
 
   return { fetchVestingInfoResult, fetchDataState };
 }

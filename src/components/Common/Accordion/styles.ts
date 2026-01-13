@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   accordionHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -14,7 +16,7 @@ export default {
     img: {
       marginRight: '10px',
     },
-    
+
     ':hover': {
       cursor: 'pointer',
     },
@@ -25,7 +27,8 @@ export default {
     borderRadius: '0px 0px 8px 8px',
     border: '1px solid #DAE1E3',
     borderTop: '0',
-    transition: 'max-height 0.1s linear, padding 0.1s linear, borderBottom 0.2s',
+    transition:
+      'max-height 0.1s linear, padding 0.1s linear, borderBottom 0.2s',
     overflow: 'hidden',
     maxHeight: '2000px',
 
@@ -33,6 +36,4 @@ export default {
       padding: '12px 12px 32px 12px',
     },
   },
-
-
-}
+});

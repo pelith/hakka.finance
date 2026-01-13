@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   card_responsive: {
     display: 'grid',
     gridGap: 3,
@@ -120,4 +122,4 @@ export default {
   anchor: {
     textDecoration: 'none',
   },
-};
+});

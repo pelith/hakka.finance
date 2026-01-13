@@ -1,4 +1,4 @@
-import { VaultType } from '../../../hooks/staking/useStakingVault';
+import type { VaultType } from '../../../hooks/staking/useStakingVault';
 
 export interface ITableData extends VaultType {
   /** `2 redeem and restake` `1 restake` `0 expired and 0 in vault` */

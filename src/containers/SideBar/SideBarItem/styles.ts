@@ -45,7 +45,7 @@ export default {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
+
   notification_dot: {
     borderRadius: '8px',
     backgroundColor: 'red',

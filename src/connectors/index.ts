@@ -1,12 +1,10 @@
-import { Web3ReactHooks } from '@web3-react/core';
+import type { Web3ReactHooks } from '@web3-react/core';
 import { walletlink, walletlinkHooks } from './Coinbase';
 import { injected, injectedHooks } from './Injected';
 import { uauth, uauthhooks } from './UauthConnector';
 import { walletconnect, walletconnectHooks } from './WalletConnect';
-import { Connector } from '@web3-react/types';
+import type { Connector } from '@web3-react/types';
 import { network, networkHooks } from './NetworkConnector';
-const FORMATIC_KEY = process.env.GATSBY_FORTMATIC_KEY;
-const PORTIS_ID = process.env.GATSBY_PORTIS_ID;
 
 export const CONNECTORS = [
   [injected, injectedHooks],
@@ -17,7 +15,7 @@ export const CONNECTORS = [
 ] as [Connector, Web3ReactHooks][];
 
 // export const injected = new InjectedConnector({
-//   supportedChainIds: process.env.GATSBY_ENV === 'development' ? [1, 4, 42, 56, 137, 250] : [1, 56, 137, 250],
+//   supportedChainIds: import.meta.env.VITE_ENV === 'development' ? [1, 4, 42, 56, 137, 250] : [1, 56, 137, 250],
 // });
 
 // export const walletconnect = new WalletConnectConnector({

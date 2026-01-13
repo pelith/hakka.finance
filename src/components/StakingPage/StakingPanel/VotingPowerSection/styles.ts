@@ -1,5 +1,5 @@
-import type { ThemeUICSSObject } from 'theme-ui';
-export default {
+import createSX from '@/utils/createSX';
+export default createSX({
   wrapper: {
     display: 'flex',
     alignItems: 'center',
@@ -7,17 +7,16 @@ export default {
     color: 'rgba(37,62,71,0.5)',
     '.positive': {
       color: 'var(--theme-ui-colors-primary-600)',
-    }
+    },
   },
-  'img': {
+  img: {
     size: '21px',
-    mr: '11.5px'
-  } as ThemeUICSSObject,
+    mr: '11.5px',
+  },
 
   total: {
     color: 'rgba(37, 62, 71, 0.5)',
     fontSize: '14px',
-    ml: 'auto'
-  }
-
-}
+    ml: 'auto',
+  },
+});

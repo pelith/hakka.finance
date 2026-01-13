@@ -1,6 +1,5 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import React, { useState } from 'react'
+import type React from 'react';
+import { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styles from './styles';
 import images from '../../../images';
@@ -12,25 +11,45 @@ interface AccordionProps {
   isDefaultOpen?: boolean;
 }
 
-const Accordion = ({ children, headerContent, headerBgColor, isDefaultOpen = false }: AccordionProps) => {
+const Accordion = ({
+  children,
+  headerContent,
+  headerBgColor,
+  isDefaultOpen = false,
+}: AccordionProps) => {
   const [isCollapse, setIsCollapse] = useState<boolean>(!isDefaultOpen);
-  const desktopStyle = { maxHeight: '0px', padding: '0px 20px 0px 43px', borderBottom: '0px' }
-  const mobileStyle = { maxHeight: '0px', padding: '0px 12px 0px 12px', borderBottom: '0px' }
-  
+  const desktopStyle = {
+    maxHeight: '0px',
+    padding: '0px 20px 0px 43px',
+    borderBottom: '0px',
+  };
+  const mobileStyle = {
+    maxHeight: '0px',
+    padding: '0px 12px 0px 12px',
+    borderBottom: '0px',
+  };
+
   return (
     <div>
-      <div sx={styles.accordionHeader} style={{ background: headerBgColor }} onClick={() => setIsCollapse(!isCollapse)}>
-        <img src={isCollapse ? images.iconTriangleUp : images.iconTriangleDown } />
+      <div
+        sx={styles.accordionHeader}
+        style={{ background: headerBgColor }}
+        onClick={() => setIsCollapse(!isCollapse)}
+      >
+        <img
+          src={isCollapse ? images.iconTriangleUp : images.iconTriangleDown}
+          alt={isCollapse ? 'Triangle Up' : 'Triangle Down'}
+        />
         <p>{headerContent}</p>
       </div>
-      <div 
-        sx={styles.accordionCollapse} 
-        style={isCollapse ? isMobile ? mobileStyle : desktopStyle : {}}
+      <div
+        sx={styles.accordionCollapse}
+        style={isCollapse ? (isMobile ? mobileStyle : desktopStyle) : {}}
       >
         {children}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Accordion
+export default Accordion;

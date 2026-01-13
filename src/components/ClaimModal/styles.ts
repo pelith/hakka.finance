@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   container: {
     position: 'relative',
     padding: '25px',
@@ -63,7 +65,6 @@ export default {
     '@media screen and (max-width: 576px)': {
       paddingLeft: '28px',
     },
-
   },
 
   message: {
@@ -88,7 +89,7 @@ export default {
     filter: 'grayscale(100%)',
     transition: 'all 0.25s ease-out',
     textDecoration: 'none',
-    
+
     ':hover': {
       cursor: 'pointer',
       opacity: 1,
@@ -103,7 +104,7 @@ export default {
 
   activeRing: {
     boxShadow: '0 0 0 5px rgba(62, 189, 147, 0.25)',
-    borderRadius: '50%'
+    borderRadius: '50%',
   },
 
   lineStyle: {
@@ -112,7 +113,4 @@ export default {
     borderRight: '1px solid #2da287',
     paddingRight: '9px',
   },
-
-  
-
-};
+});

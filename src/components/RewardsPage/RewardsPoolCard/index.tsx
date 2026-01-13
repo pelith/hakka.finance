@@ -1,13 +1,13 @@
-/** @jsx jsx */
-import { useWeb3React } from '@web3-react/core';
-import { jsx } from 'theme-ui';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
+
 import styles from './styles';
 import images from '../../../images/index';
 import { MyButton } from '../../Common';
 import withConnectWalletCheckWrapper from '../../../hoc/withConnectWalletCheckWrapper';
 import withWrongNetworkCheckWrapper from '../../../hoc/withWrongNetworkCheckWrapper';
 import { useWalletModalToggle } from '../../../state/application/hooks';
-import { ChainId } from '../../../constants';
+import type { ChainId } from '../../../constants';
+import { useNavigate } from '@tanstack/react-router';
 
 interface RewardsPoolCardProps {
   tokenImage: string;
@@ -43,24 +43,23 @@ const RewardsPoolCard = (props: RewardsPoolCardProps) => {
   const { chainId, account } = useWeb3React();
   const toggleWalletModal = useWalletModalToggle();
   const MainButton = withWrongNetworkCheckWrapper(
-    withConnectWalletCheckWrapper(MyButton)
+    withConnectWalletCheckWrapper(MyButton),
   );
   const isConnected = !!account;
+  const navigate = useNavigate();
 
-  return(
+  return (
     <div sx={styles.container}>
       <div sx={styles.illustration} />
       <div sx={styles.header}>
-        <p>
-          APR {apr}%
-        </p>
-        <img sx={styles.icon} src={tokenImage} />
+        <p>APR {apr}%</p>
+        <img sx={styles.icon} src={tokenImage} alt='token' />
       </div>
       <p sx={styles.title}>{title}</p>
       {subtitle && <p sx={styles.subtitle}>{subtitle}</p>}
-      <a sx={styles.link} target='_blank' rel="noreferrer noopener" href={url}>
+      <a sx={styles.link} target='_blank' rel='noreferrer noopener' href={url}>
         <span>{linkContent}</span>
-        <img src={images.iconLinkNormal} />
+        <img src={images.iconLinkNormal} alt='link' />
       </a>
       <div sx={styles.rewardInfo}>
         <p>You deposited</p>
@@ -80,12 +79,14 @@ const RewardsPoolCard = (props: RewardsPoolCardProps) => {
         connectWallet={toggleWalletModal}
         isCorrectNetwork={chainId === currentChain}
         targetNetwork={currentChain}
-        onClick={() => { location.href = `/farms/${rewardsAddress}` }}
+        onClick={() => {
+          navigate({ to: `/farms/${rewardsAddress}` });
+        }}
       >
         {btnContent}
       </MainButton>
     </div>
-  )
-} ;
+  );
+};
 
 export default RewardsPoolCard;

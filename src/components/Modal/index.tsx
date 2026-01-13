@@ -1,6 +1,3 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import React from 'react';
 import { animated, useTransition } from 'react-spring';
 import { DialogOverlay, DialogContent } from '@reach/dialog';
 import { isMobile } from 'react-device-detect';
@@ -23,7 +20,8 @@ export default function Modal({
   initialFocusRef,
   children,
 }: ModalProps) {
-  const fadeTransition = useTransition(isOpen, null, {
+  const sx = styles as any;
+  const fadeTransition = useTransition(isOpen, {
     config: { duration: 200 },
     from: { opacity: 0 },
     enter: { opacity: 1 },
@@ -32,24 +30,23 @@ export default function Modal({
 
   return (
     <>
-      {fadeTransition.map(
-        ({ item, key, props }) => item && (
-        <AnimatedDialogOverlay
-          sx={styles.dialogOverlay}
-          key={key}
-          style={props}
-          onDismiss={onDismiss}
-          initialFocusRef={initialFocusRef}
-        >
-          <AnimatedDialogContent
-            sx={styles.dialogContent}
-            aria-label="dialog content"
+      {fadeTransition((props, item) =>
+        item ? (
+          <AnimatedDialogOverlay
+            sx={sx.dialogOverlay}
+            style={props}
+            onDismiss={onDismiss}
+            initialFocusRef={initialFocusRef}
           >
-            {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}
-            {children}
-          </AnimatedDialogContent>
-        </AnimatedDialogOverlay>
-        ),
+            <AnimatedDialogContent
+              sx={sx.dialogContent}
+              aria-label='dialog content'
+            >
+              {!initialFocusRef && isMobile ? <div /> : null}
+              {children}
+            </AnimatedDialogContent>
+          </AnimatedDialogOverlay>
+        ) : null,
       )}
     </>
   );

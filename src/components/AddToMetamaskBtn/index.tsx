@@ -1,40 +1,47 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
 import { useCallback } from 'react';
-import { useWeb3React } from '@web3-react/core';
 import images from '../../images';
-import { HAKKA } from '../../constants';
+import { ChainId, HAKKA } from '../../constants';
 import styles from './styles';
+import { useConnections, useWatchAsset } from 'wagmi';
+import { isAddress, type Address } from 'viem';
 
-const AddToMetamaskBtn = ({ address = null, selectedChainId }) => {
-  const { chainId } = useWeb3React();
+const AddHakkaToMetamaskBtn = ({
+  address = '',
+  selectedChainId,
+}: {
+  address?: string;
+  selectedChainId: ChainId;
+}) => {
+  const [connections] = useConnections();
+  const chainId = connections?.chainId ?? ChainId.MAINNET;
+  const { watchAsset } = useWatchAsset();
   const addToMetamask = useCallback(() => {
-    const _ethereum = window.ethereum;
-    _ethereum.request({
-      method: 'wallet_watchAsset',
-      params: {
+    if (isAddress(address)) {
+      watchAsset({
         type: 'ERC20',
         options: {
-          address: address || HAKKA[chainId || 1].address,
+          address: address || (HAKKA[selectedChainId]?.address as Address),
           symbol: 'HAKKA',
           decimals: 18,
-          image:
-            'https://assets.coingecko.com/coins/images/12163/small/Hakka-icon.png?1597746776',
         },
-      },
-    });
-  }, [address, chainId]);
+      });
+    }
+  }, [address, chainId, watchAsset]);
 
   return (
     <button
+      type='button'
       onClick={addToMetamask}
       sx={styles.addMetamaskBtn}
-      disabled={(selectedChainId && selectedChainId !== chainId) || !HAKKA[chainId]}
+      disabled={
+        (selectedChainId && selectedChainId !== chainId) ||
+        !Object.getOwnPropertyNames(HAKKA).includes(`${chainId}`)
+      }
     >
-      <img src={images.iconAdd} sx={styles.iconAdd} />
-      <img src={images.iconMetamask} />
+      <img src={images.iconAdd} sx={styles.iconAdd} alt='add to metamask' />
+      <img src={images.iconMetamask} alt='metamask' />
     </button>
   );
 };
 
-export default AddToMetamaskBtn;
+export default AddHakkaToMetamaskBtn;

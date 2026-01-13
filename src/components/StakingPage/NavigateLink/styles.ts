@@ -1,6 +1,6 @@
 import images from '../../../images';
-import { ThemeUICSSObject } from 'theme-ui';
-export default {
+import createSX from '@/utils/createSX';
+export default createSX({
   wrapper: {
     mt: '56px',
     boxSizing: 'border-box',
@@ -54,11 +54,11 @@ export default {
       margin: '26px -16px 20px',
       padding: '0 28px 0 16px',
       '& strong': {
-        alignSelf: 'end'
+        alignSelf: 'end',
       },
       '& .navigate-link': {
-        alignSelf: 'start'
+        alignSelf: 'start',
       },
-    }
-  } as ThemeUICSSObject,
-};
+    },
+  },
+});

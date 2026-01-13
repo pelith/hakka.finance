@@ -1,19 +1,25 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import { useWeb3React } from '@web3-react/core';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import images from '../../images';
 import styles from './styles';
 import { ChainId, ChainName } from '../../constants';
+
+const ChainIcon: Record<ChainId, string> = {
+  [ChainId.MAINNET]: images.iconEthereum,
+  [ChainId.BSC]: images.iconBinanceGold,
+  [ChainId.POLYGON]: images.iconPolygon,
+  [ChainId.FANTOM]: images.iconFantom,
+};
 
 const CurrentNetwork = ({ unsupported }: { unsupported?: boolean }) => {
   const { chainId } = useWeb3React();
 
   if (!chainId) {
     return <div />;
-  } if (unsupported) {
+  }
+  if (unsupported) {
     return (
       <div sx={styles.chainWrapper}>
-        <img src={images.iconSnapshot} alt="Chain Icon" />
+        <img src={images.iconSnapshot} alt='Chain Icon' />
         <span sx={styles.chainNameWrapper}>Wrong Network</span>
       </div>
     );
@@ -21,14 +27,12 @@ const CurrentNetwork = ({ unsupported }: { unsupported?: boolean }) => {
 
   return (
     <div sx={styles.chainWrapper}>
-      <img sx={styles.imgChain} src={chainId && chainId === ChainId.BSC
-        ? images.iconBinanceGold
-        : chainId && chainId === ChainId.POLYGON
-          ? images.iconPolygon
-          : chainId && chainId === ChainId.FANTOM
-            ? images.iconFantom
-            : images.iconEthereumDark} alt="Chain Icon" />
-      <span sx={styles.chainNameWrapper}>{ChainName[chainId]}</span>
+      <img
+        sx={styles.imgChain}
+        src={ChainIcon[chainId as ChainId] ?? images.iconEthereumDark}
+        alt='Chain Icon'
+      />
+      <span sx={styles.chainNameWrapper}>{ChainName[chainId as ChainId]}</span>
     </div>
   );
 };

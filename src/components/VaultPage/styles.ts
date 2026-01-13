@@ -1,4 +1,6 @@
-export default {
+import createSX from '@/utils/createSX';
+
+export default createSX({
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -87,7 +89,7 @@ export default {
   contractAddressDisabled: {
     pointerEvents: 'none',
     textDecoration: 'none',
-    color: '#253E47'
+    color: '#253E47',
   },
 
   hakkaBalance: {
@@ -209,5 +211,4 @@ export default {
   visitWikiLink: {
     color: '#2da287',
   },
-
-};
+});

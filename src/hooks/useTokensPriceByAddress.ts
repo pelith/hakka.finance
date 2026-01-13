@@ -1,27 +1,30 @@
-import useSWR from 'swr';
+import { useQuery } from '@tanstack/react-query';
 
-export default function useTokensPriceByAddress(tokensId:{[address:string]:string}) {
-  const addressArray = Object.keys(tokensId);
-  const idArray = Object.values(tokensId);
+export default function useTokensPriceByAddress(tokensId: {
+  [address: string]: string;
+}) {
+  const keys = Object.keys(tokensId).join(',');
 
-  // for coingecko api ex: ethereum%2Cdai%2Cusd-coin%2Ccompound-governance-token%2Cuniswap%2Cnexo
-  let tokenUrl = '';
-  for (let i = 0; i < idArray.length; i++) {
-    tokenUrl += `${String(idArray[i])}%2C`;
-  }
-
-  const fetcher = (url) => fetch(url).then((r) => r.json());
-  const { data } = useSWR(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${tokenUrl}&vs_currencies=usd`,
-    fetcher,
-  );
-
-  const tokensPrice: { [address: string]: number } = {};
-  if (data) {
-    for (let i = 0; i < idArray.length; i++) {
-      tokensPrice[addressArray[i]] = data[idArray[i]]?.usd;
-    }
-  }
-
-  return data ? tokensPrice : {};
+  return useQuery({
+    queryKey: ['tokens-price', keys],
+    queryFn: async () => {
+      const entries = Object.entries(tokensId);
+      const ids = encodeURIComponent(
+        entries.map(([, id]) => `${id}`).join(','),
+      );
+      const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
+      return fetch(url).then((r) => r.json()) as Promise<
+        Record<string, Record<'usd', number>>
+      >;
+    },
+    select: (data) => {
+      return Object.fromEntries(
+        Object.entries(tokensId).map(([address, id]) => [
+          address,
+          data?.[id]?.usd ?? 0,
+        ]),
+      );
+    },
+    initialData: {},
+  });
 }

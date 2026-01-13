@@ -19,11 +19,11 @@ export default {
 
   hr: {
     margin: '0',
-    borderTop: '0', 
+    borderTop: '0',
     borderColor: '#E6E6E6',
   },
 
   missionItemWrapper: {
-    marginBottom: '10px'
+    marginBottom: '10px',
   },
-}
+} as const;

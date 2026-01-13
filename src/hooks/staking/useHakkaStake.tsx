@@ -1,72 +1,119 @@
-/** @jsx jsx */
-import { jsx } from 'theme-ui';
-import { useState, useCallback, useMemo } from 'react';
-import { useWeb3React } from '@web3-react/core';
-import { BigNumber } from 'ethers';
+import { useCallback, useMemo } from 'react';
+import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { toast } from 'react-toastify';
-import { ExternalLink } from 'react-feather';
 
-import { useStakeContract } from '../useContract';
-import { calculateGasMargin, getEtherscanLink, shortenTxId } from '../../utils';
-import { useEffect } from 'react';
+import {
+  usePublicClient,
+  useWalletClient,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from 'wagmi';
+import type { ChainId } from '@/constants';
+import STAKING_ABI from '@/constants/abis/shakka';
+import { encodeFunctionData } from 'viem';
 
 export enum StakeState {
   UNKNOWN,
-  PENDING
+  PENDING,
 }
 
 export function useHakkaStake(
   stakeAddress: string,
-  spender: string,
-  amountParsed: BigNumber,
+  sender: string,
+  amountParsedRaw: bigint,
   lockSec: number,
 ): [StakeState, () => Promise<void>] {
   const { chainId } = useWeb3React();
-  const [currentTransaction, setCurrentTransaction] = useState(null);
+  const walletClient = useWalletClient({ chainId: chainId as ChainId })!;
+  const publicClient = usePublicClient({ chainId: chainId as ChainId })!;
+
+  const {
+    writeContractAsync,
+    data,
+    isPending: isWritePending,
+    isSuccess: isWriteSuccess,
+    reset,
+  } = useWriteContract();
+  const { isLoading: isWaitForLoading } = useWaitForTransactionReceipt({
+    hash: data,
+    query: {
+      enabled: isWriteSuccess,
+    },
+  });
 
   const stakeState: StakeState = useMemo(() => {
-    if (!spender) return StakeState.UNKNOWN;
-
-    return currentTransaction
-      ? StakeState.PENDING
-      : StakeState.UNKNOWN;
-  }, [currentTransaction, spender]);
-
-  const stakeContract = useStakeContract(stakeAddress);
+    if (isWritePending || isWaitForLoading) return StakeState.PENDING;
+    return StakeState.UNKNOWN;
+  }, [isWritePending, isWaitForLoading]);
 
   const stake = useCallback(async (): Promise<void> => {
-    if (!spender) {
+    if (!sender) {
       console.error('no spender');
       return;
     }
 
+    console.log('stake', {
+      spender: sender,
+      amountParsedRaw,
+      lockSec,
+      stakeAddress,
+      chainId,
+    });
+
+    const encodedData = encodeFunctionData({
+      abi: STAKING_ABI,
+      functionName: 'stake',
+      args: [sender as `0x${string}`, amountParsedRaw, BigInt(lockSec)],
+    });
+
     try {
-      const estimatedGas = await stakeContract.estimateGas.stake(spender, amountParsed, lockSec);
-      const tx = await stakeContract.stake(spender, amountParsed, lockSec, {
-        gasLimit: estimatedGas.mul(BigNumber.from(15000)).div(BigNumber.from(10000)),  // * 1.5
+      const estimatedGas = await publicClient.estimateGas({
+        to: stakeAddress as `0x${string}`,
+        data: encodedData,
+        account: walletClient.data!.account,
       });
-      setCurrentTransaction(tx.hash);
-      toast(
-        <a
-          target="_blank"
-          href={getEtherscanLink(chainId ?? 1, tx.hash, 'transaction')}
-          rel="noreferrer noopener"
-          sx={{ textDecoration: 'none', color: '#253e47' }}
-        >
-        {shortenTxId(tx.hash)} <ExternalLink size={16} />
-        </a>
-      , { containerId: 'tx' });
-      await tx.wait();
+
+      const increaseGas = (estimatedGas * 15000n) / 10000n;
+      const txHash = await writeContractAsync({
+        address: stakeAddress as `0x${string}`,
+        abi: STAKING_ABI,
+        functionName: 'stake',
+        args: [
+          sender as `0x${string}`,
+          BigInt(amountParsedRaw.toString()),
+          BigInt(lockSec),
+        ],
+        gas: increaseGas,
+      });
+      await publicClient.waitForTransactionReceipt({
+        hash: txHash,
+      });
     } catch (err) {
-      toast.error(<div>{err.data ? JSON.stringify(err.data) : err.message}</div>,  { containerId: 'error' });
+      console.error(err);
+      if (err instanceof Object) {
+        if ('shortMessage' in err) {
+          toast.error(<div>{err.shortMessage as string}</div>, {
+            containerId: 'error',
+          });
+          return;
+        }
+        if (err instanceof Error) {
+          toast.error(<div>{err.message}</div>, { containerId: 'error' });
+        }
+      }
     } finally {
-      setCurrentTransaction(null);
+      reset();
     }
   }, [
-    stakeContract,
-    spender,
-    amountParsed,
+    sender,
+    amountParsedRaw,
     lockSec,
+    stakeAddress,
+    chainId,
+    publicClient,
+    walletClient,
+    writeContractAsync,
+    reset,
   ]);
 
   return [stakeState, stake];
