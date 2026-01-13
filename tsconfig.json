@@ -35,7 +35,6 @@
       "state/*": ["./src/state/*"],
       "utils/*": ["./src/utils/*"],
       "data/*": ["./src/data/*"],
-      "connectors/*": ["./src/connectors/*"],
       "types/*": ["./src/types/*"],
       "containers/*": ["./src/containers/*"],
       "theme/*": ["./src/theme/*"],

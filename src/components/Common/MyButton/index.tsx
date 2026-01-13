@@ -1,5 +1,4 @@
 import { Button, Box } from 'rebass';
-import types from 'prop-types';
 import styles from './styles';
 
 interface IProps {
@@ -21,12 +20,6 @@ const MyButton = (props: IProps) => {
       <Box>{children}</Box>
     </Button>
   );
-};
-
-MyButton.propTypes = {
-  disabled: types.bool,
-  styleKit: types.oneOf(['green', 'default']),
-  onClick: types.func,
 };
 
 export default MyButton;

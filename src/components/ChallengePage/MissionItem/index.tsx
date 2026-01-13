@@ -29,7 +29,7 @@ const MissionItem = ({
   const missionTitle = oatAddress ? OAT_INFO[oatAddress].describeTitle : '';
   const oatImg = oatAddress ? images[OAT_INFO[oatAddress].img] : '';
   const isNewMission =
-    notificationMissionAddresses.indexOf(oatAddress,
+    notificationMissionAddresses.indexOf(oatAddress || '',
     ) >= 0;
 
   const [isImgLoading, setIsImgLoading] = useState(true);

@@ -1,9 +1,7 @@
-import type { Connector as AbstractConnector } from '@web3-react/types';
 import type { Address, PublicClient } from 'viem';
 import { createPublicClient, http, zeroAddress } from 'viem';
 import { mainnet, bsc, polygon, fantom } from 'viem/chains';
 
-import { walletconnect, walletlink, injected, uauth } from '../connectors';
 import { ChainId } from './chainDetail';
 
 export enum ChainDataFetchingState {
@@ -50,58 +48,6 @@ export const ChainNameWithIcon: Record<
   [ChainId.FANTOM]: {
     iconName: 'iconTabFantom',
     name: 'Fantom',
-  },
-};
-
-export interface WalletInfo {
-  connector?: AbstractConnector;
-  name: string;
-  iconName: string;
-  description: string;
-}
-
-export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
-  INJECTED: {
-    connector: injected,
-    name: 'Injected',
-    iconName: 'metamask',
-    description: 'Injected web3 provider.',
-  },
-  INJECTED_IMTOKEN: {
-    connector: injected,
-    name: 'imToken',
-    iconName: 'imToken',
-    description: 'Injected imToken provider.',
-  },
-  WALLET_CONNECT: {
-    connector: walletconnect,
-    name: 'WalletConnect',
-    iconName: 'walletConnectIcon',
-    description: 'Connect to Trust Wallet, Rainbow Wallet and more...',
-  },
-  WALLET_LINK: {
-    connector: walletlink,
-    name: 'Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon',
-    description: 'Use Coinbase Wallet app on mobile device',
-  },
-  // FORTMATIC: {
-  //   connector: fortmatic,
-  //   name: 'Fortmatic',
-  //   iconName: 'fortmaticIcon',
-  //   description: 'Login using Fortmatic hosted wallet',
-  // },
-  // Portis: {
-  //   connector: portis,
-  //   name: 'Portis',
-  //   iconName: 'portisIcon',
-  //   description: 'Login using Portis hosted wallet',
-  // },
-  UAuth: {
-    connector: uauth,
-    name: 'Unstoppable Domain',
-    iconName: 'unstoppableIcon',
-    description: 'Login using Unstoppable Domain',
   },
 };
 

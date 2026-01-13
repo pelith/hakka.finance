@@ -47,6 +47,9 @@ importers:
       '@theme-ui/css':
         specifier: ^0.17.4
         version: 0.17.4(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))
+      '@types/react-helmet':
+        specifier: ^6.1.11
+        version: 6.1.11
       '@uauth/js':
         specifier: ^3.0.1
         version: 3.0.1
@@ -74,6 +77,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      nanoid:
+        specifier: ^5.1.6
+        version: 5.1.6
       rc-table:
         specifier: ^7.24.1
         version: 7.55.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -2170,6 +2176,9 @@ packages:
     peerDependencies:
       '@types/react': ^19.2.0
 
+  '@types/react-helmet@6.1.11':
+    resolution: {integrity: sha512-0QcdGLddTERotCXo3VFlUSWO3ztraw8nZ6e3zJSgG7apwV5xt+pJUS8ewPBqT4NYB1optGLprNQzFleIY84u/g==}
+
   '@types/react-reconciler@0.28.9':
     resolution: {integrity: sha512-HHM3nxyUZ3zAylX8ZEyrDNd2XZOnQ0D5XfunJF5FLQnZbHHYq4UWvW1QfelQNXv1ICNkwYhfxjwfnqivYB6bFg==}
     peerDependencies:
@@ -4015,6 +4024,11 @@ packages:
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  nanoid@5.1.6:
+    resolution: {integrity: sha512-c7+7RQ+dMB5dPwwCp4ee1/iV/q2P6aK1mTZcfr1BTuVlyW9hJYiMPybJCcnBlQtuSmTIWNeazm/zqNoZSSElBg==}
+    engines: {node: ^18 || >=20}
     hasBin: true
 
   negotiator@0.6.3:
@@ -8669,6 +8683,10 @@ snapshots:
     dependencies:
       '@types/react': 19.2.7
 
+  '@types/react-helmet@6.1.11':
+    dependencies:
+      '@types/react': 19.2.7
+
   '@types/react-reconciler@0.28.9(@types/react@19.2.7)':
     dependencies:
       '@types/react': 19.2.7
@@ -11473,6 +11491,8 @@ snapshots:
   nano-base32@1.0.1: {}
 
   nanoid@3.3.11: {}
+
+  nanoid@5.1.6: {}
 
   negotiator@0.6.3: {}
 

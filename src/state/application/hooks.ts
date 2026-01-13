@@ -1,119 +1,78 @@
-import { useCallback, useContext, useMemo } from 'react';
-import { ApplicationContext } from './context';
-import type { PopupContent } from './actions';
-import type { PopupList, ApplicationState } from './reducer';
-import { useContextStateSelector } from '../index';
-
-export function useApplicationContextStateSelector<
-  K extends keyof ApplicationState,
->(selector: K): ApplicationState[K] {
-  return useContextStateSelector(ApplicationContext, selector);
-}
-
-export function useApplicationContext() {
-  return useContext(ApplicationContext);
-}
-
-export function useWalletModalOpen(): boolean {
-  const walletModalOpen = useApplicationContextStateSelector('walletModalOpen');
-  return walletModalOpen;
-}
+import { useAppKit } from '@reown/appkit/react';
+import { useCallback } from 'react';
+import {
+  infoModalOpenAtom,
+  claimModalOpenAtom,
+  redeemModalOpenAtom,
+  restakeModalOpenAtom,
+  playToEarnLevelUpModalOpenAtom,
+} from './appAtom';
+import { useAtomValue, useSetAtom } from 'jotai';
 
 export function useWalletModalToggle(): () => void {
-  const { toggleWalletModal } = useApplicationContext();
-  return toggleWalletModal;
+  const appkit = useAppKit();
+  return useCallback(() => {
+    appkit.open({
+      namespace: 'eip155',
+    });
+  }, []);
 }
 
 export function useInfoModalOpen(): boolean {
-  const infoModalOpen = useApplicationContextStateSelector('infoModalOpen');
+  const infoModalOpen = useAtomValue(infoModalOpenAtom);
   return infoModalOpen;
 }
 
 export function useInfoModalToggle(): () => void {
-  const { toggleInfoModal } = useApplicationContext();
-  return toggleInfoModal;
+  const toggleInfoModalOpen = useSetAtom(infoModalOpenAtom);
+  return useCallback(() => {
+    toggleInfoModalOpen();
+  }, []);
 }
 
 export function useClaimModalOpen(): boolean {
-  const claimModalOpen = useApplicationContextStateSelector('claimModalOpen');
+  const claimModalOpen = useAtomValue(claimModalOpenAtom);
   return claimModalOpen;
 }
 
 export function useClaimModalToggle(): () => void {
-  const { toggleClaimModal } = useApplicationContext();
-  return toggleClaimModal;
+  const toggleClaimModalOpen = useSetAtom(claimModalOpenAtom);
+  return useCallback(() => {
+    toggleClaimModalOpen();
+  }, []);
 }
 
 export function useRedeemModalOpen(): boolean {
-  const redeemModalOpen = useApplicationContextStateSelector('redeemModalOpen');
+  const redeemModalOpen = useAtomValue(redeemModalOpenAtom);
   return redeemModalOpen;
 }
 
 export function useRedeemModalToggle(): () => void {
-  const { toggleRedeemModal } = useApplicationContext();
-  return toggleRedeemModal;
+  const toggleRedeemModalOpen = useSetAtom(redeemModalOpenAtom);
+  return useCallback(() => {
+    toggleRedeemModalOpen();
+  }, []);
 }
 
 export function useRestakeModalOpen(): boolean {
-  const restakeModalOpen =
-    useApplicationContextStateSelector('restakeModalOpen');
+  const restakeModalOpen = useAtomValue(restakeModalOpenAtom);
   return restakeModalOpen;
 }
 
 export function useRestakeModalToggle(): () => void {
-  const { toggleRestakeModal } = useApplicationContext();
-  return toggleRestakeModal;
+  const toggleRestakeModalOpen = useSetAtom(restakeModalOpenAtom);
+  return useCallback(() => {
+    toggleRestakeModalOpen();
+  }, []);
 }
 
 export function usePlayToEarnLevelUpModalOpen(): boolean {
-  const playToEarnLevelUpModalOpen = useApplicationContextStateSelector(
-    'playToEarnLevelUpModalOpen',
-  );
-  return playToEarnLevelUpModalOpen;
+  return useAtomValue(playToEarnLevelUpModalOpenAtom);
 }
 
 export function usePlayToEarnLevelUpModalToggle(): () => void {
-  const { togglePlayToEarnLevelUpModal } = useApplicationContext();
-  return togglePlayToEarnLevelUpModal;
-}
-
-export function useYearlyReviewScoreModalOpen(): boolean {
-  const yearlyReviewScoreModalOpen = useApplicationContextStateSelector(
-    'yearlyReviewScoreModalOpen',
-  );
-  return yearlyReviewScoreModalOpen;
-}
-
-export function useYearlyReviewScoreModalToggle(): () => void {
-  const { toggleYearlyReviewScoreModal } = useApplicationContext();
-  return toggleYearlyReviewScoreModal;
-}
-
-// returns a function that allows adding a popup
-export function useAddPopup(): (content: PopupContent, key?: string) => void {
-  const { addPopup } = useApplicationContext();
-
-  return useCallback(
-    (content: PopupContent, key?: string) => {
-      addPopup({ content, key });
-    },
-    [addPopup],
-  );
-}
-
-// returns a function that allows removing a popup via its key
-export function useRemovePopup(): (key: string) => void {
-  const { removePopup } = useApplicationContext();
-  return useCallback(
-    (key: string) => {
-      removePopup({ key });
-    },
-    [removePopup],
-  );
-}
-
-// get the list of active popups
-export function useActivePopups(): PopupList {
-  const list = useApplicationContextStateSelector('popupList');
-  return useMemo(() => list.filter((item) => item.show), [list]);
+  const togglePlayToEarnLevelUpModalOpen = useSetAtom(playToEarnLevelUpModalOpenAtom);
+  return useCallback(() => {
+    togglePlayToEarnLevelUpModalOpen();
+  }, []);
 }

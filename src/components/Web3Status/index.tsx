@@ -8,7 +8,6 @@ import {
 } from '../../state/application/hooks';
 import { shortenAddress } from '../../utils';
 import { MyButton } from '../../components/Common';
-import WalletModal from '../WalletModal';
 import InfoModal from '../InfoModal';
 import CurrentNetwork from '../CurrentNetwork';
 import images from '../../images';
@@ -48,9 +47,6 @@ const Web3Status = ({ unsupported }: { unsupported?: boolean }) => {
           />
         </div>
       </div>
-
-      <WalletModal ENSName={ENSName || unstoppableDomain || undefined} />
-
       <InfoModal />
     </div>
   );
