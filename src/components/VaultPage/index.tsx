@@ -136,7 +136,7 @@ const VaultPage = () => {
     symbol: string;
     decimals: number;
   }) {
-    for (const [rewardTokenAddress, rewardTokenInfo] of Object.entries(
+    for (const [rewardTokenAddress, _rewardTokenInfo] of Object.entries(
       rewardTokens,
     )) {
       if (isAddressEqual(rewardTokenAddress as Address, input.address)) {

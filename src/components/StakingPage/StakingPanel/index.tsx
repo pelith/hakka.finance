@@ -5,7 +5,7 @@ import { parseUnits } from 'viem';
 import {
   HAKKA,
   NEW_SHAKKA_ADDRESSES,
-  ChainId,
+  type ChainId,
   SEC_OF_FOUR_YEARS,
 } from '../../../constants';
 import withApproveTokenCheckWrapper from '../../../hoc/withApproveTokenCheckWrapper';
@@ -72,7 +72,7 @@ export default function StakingPanel(props: IProps) {
       transferToYear(secondTimer),
       activeChainId,
     );
-    return isNaN(received) ? 0 : received;
+    return Number.isNaN(received) ? 0 : received;
   }, [stakeState.toString(), safeInputAmount, secondTimer, activeChainId]);
 
   useEffect(() => {

@@ -201,7 +201,7 @@ const RewardsPage = () => {
   const rewardsPoolRenderer = useCallback(
     (pool: Pool, currentChain: ChainId, active = false) => {
       if (!pool?.rewardsAddress) {
-        return <></>;
+        return null;
       }
       return (
         <RewardsPoolCard

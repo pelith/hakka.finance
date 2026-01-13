@@ -51,7 +51,7 @@ const CharacterStatus = ({
   isAnimationCanBePlayed,
   setIsLevelUpAnimationCompleted,
 }: CharacterStatusProps) => {
-  const levelNumber = Number.parseInt(level);
+  const levelNumber = Number.parseInt(level, 10);
   return (
     <div sx={styles.container}>
       <div

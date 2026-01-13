@@ -1,4 +1,4 @@
-import * as React from 'react';
+
 import Layout from '../containers/Layout';
 import HomeScreen from '../components/HomeScreen';
 

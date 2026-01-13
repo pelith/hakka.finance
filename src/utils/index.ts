@@ -42,7 +42,6 @@ export function getEtherscanLink(
     case 'token': {
       return `${prefix}/token/${data}`;
     }
-    case 'address':
     default: {
       return `${prefix}/address/${data}`;
     }
@@ -90,6 +89,7 @@ export function getNetworkName(networkId: number) {
 
 function bytes32ToString(bytes32: `0x${string}`): string {
   try {
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: ignore
     return hexToString(bytes32, { size: 32 }).replace(/\u0000/g, '');
   } catch {
     return '';

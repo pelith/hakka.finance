@@ -15,7 +15,7 @@ import { ApprovalState, useTokenApprove } from '../../hooks/useTokenApprove';
 import VotingPowerSection from '../StakingPage/StakingPanel/VotingPowerSection';
 import LockPeriodOptions from '../StakingPage/StakingPanel/LockPeriodOptions.tsx';
 import {
-  ChainId,
+  type ChainId,
   HAKKA,
   NEW_SHAKKA_ADDRESSES,
   TransactionState,

@@ -1,5 +1,5 @@
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import useENSName from '../../hooks/useENSName';
 import useUnstoppableDomains from '../../hooks/useUnstoppableDomains';
 import {

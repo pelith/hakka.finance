@@ -2,7 +2,7 @@ import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import {
   ChainDataFetchingState,
   VESTING_ADDRESSES,
-  ChainId,
+  type ChainId,
 } from '../../constants';
 import { isAddress, zeroAddress, type Address } from 'viem';
 import { useMemo } from 'react';

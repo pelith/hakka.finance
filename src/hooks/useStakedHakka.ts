@@ -1,11 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useMemo, } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
-import { isAddress, zeroAddress, type Address } from 'viem';
+import { isAddress, type Address } from 'viem';
 import {
   ChainDataFetchingState,
   NEW_SHAKKA_ADDRESSES,
   ChainId,
-  JSON_RPC_PROVIDER,
 } from '../constants';
 import STAKING_ABI from '../constants/abis/shakka';
 import { useReadContract } from 'wagmi';

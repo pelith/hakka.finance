@@ -1,7 +1,7 @@
 import { ArrowRightCircle } from 'react-feather';
 import { useStakingDataV2, useStakingDataV1 } from '../../data/StakingData';
 import ERC20_ABI from '../../constants/abis/erc20';
-import { ChainId, HAKKA, VESTING_ADDRESSES } from '../../constants';
+import { type ChainId, HAKKA, VESTING_ADDRESSES } from '../../constants';
 import {
   useInfoModalOpen,
   useInfoModalToggle,

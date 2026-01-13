@@ -55,7 +55,7 @@ const periodsGroup: [number, number[]][] = [
 ];
 
 const timestampGroups = periodsGroup
-  .map(([years, months]) =>
+  .flatMap(([years, months]) =>
     months.map((month) => ({
       years,
       months: month,
@@ -63,7 +63,6 @@ const timestampGroups = periodsGroup
         yearlyTimeSecondsTransfer(years) + monthlyTimeSecondsTransfer(month),
     })),
   )
-  .flat()
   .reduce(
     (prev, { years, months, timestamp }) => {
       prev[timestamp] = { years, months };
@@ -199,6 +198,7 @@ export default function LockPeriodOptions(props: IProps) {
             onClick={() => {
               onChange(30 * 60 + 70);
             }}
+            type='button'
           >
             set 30mins
           </button>

@@ -25,7 +25,6 @@ import StakePositionTable from './StakePositionTable';
 
 import StakingPanel from './StakingPanel';
 
-import _omit from 'lodash/omit';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { botSideBarItems } from '../../containers/SideBar';
 import { useRewardsData } from '../../data/RewardsData';
@@ -60,7 +59,7 @@ const Staking = () => {
   const { account, chainId } = useWeb3React();
   const activeChainId = chainId as ChainId;
   const [positionIndex, setPositionIndex] = useState<number | undefined>();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const toggleWalletModal = useWalletModalToggle();
   const toggleRedeemModal = useRedeemModalToggle();
   const toggleRestakeModal = useRestakeModalToggle();

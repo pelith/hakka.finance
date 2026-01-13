@@ -41,7 +41,7 @@ const InfoProduct = (props: InfoProductProps) => {
         >
           <Box>{cardName ?? 'BlackHoleSwap'}</Box>
           <Box sx={styles.icon_delete_title} onClick={onCloseInfo}>
-            <img src={images.iconDeleteRound} />
+            <img src={images.iconDeleteRound} alt='delete' />
           </Box>
         </Flex>
         <Flex flexWrap='wrap' mt='20px'>
@@ -65,6 +65,7 @@ const InfoProduct = (props: InfoProductProps) => {
               onClick={onCloseInfo}
               sx={styles.icon_delete}
               src={images.iconDeleteRound}
+              alt='delete'
             />
           </Flex>
         </Box>

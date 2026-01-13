@@ -20,7 +20,7 @@ export default function useRequestNetworkConfig(targetNetwork: ChainId): any {
           },
         ],
       };
-    } else if (targetNetwork === ChainId.FANTOM) {
+    }if (targetNetwork === ChainId.FANTOM) {
       return {
         method: 'wallet_addEthereumChain',
         params: [
@@ -37,7 +37,7 @@ export default function useRequestNetworkConfig(targetNetwork: ChainId): any {
           },
         ],
       };
-    } else if (targetNetwork === ChainId.POLYGON) {
+    }if (targetNetwork === ChainId.POLYGON) {
       return {
         method: 'wallet_addEthereumChain',
         params: [
@@ -54,7 +54,7 @@ export default function useRequestNetworkConfig(targetNetwork: ChainId): any {
           },
         ],
       };
-    } else {
+    }
       return {
         method: 'wallet_switchEthereumChain',
         params: [
@@ -63,7 +63,6 @@ export default function useRequestNetworkConfig(targetNetwork: ChainId): any {
           },
         ],
       };
-    }
   }, [targetNetwork]);
 
   return switchMethod;

@@ -18,7 +18,7 @@ const ChallengeIntroPage = () => {
   const toggleWalletModal = useWalletModalToggle();
   const isConnected = !!account || CHAIN_URL_MAP.has(chainId || -1);
   const supportedChain = Object.keys(ChainNameWithIcon).map((ele) =>
-    Number.parseInt(ele),
+    Number.parseInt(ele, 10),
   );
   const isCorrectNetwork = chainId ? supportedChain.includes(chainId) : false;
 

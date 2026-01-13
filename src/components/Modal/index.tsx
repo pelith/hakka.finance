@@ -42,7 +42,7 @@ export default function Modal({
               sx={sx.dialogContent}
               aria-label='dialog content'
             >
-              {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}
+              {!initialFocusRef && isMobile ? <div /> : null}
               {children}
             </AnimatedDialogContent>
           </AnimatedDialogOverlay>

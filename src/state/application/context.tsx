@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo, useReducer } from 'react';
+import type React from 'react';
+import { useCallback, useMemo, useReducer } from 'react';
 import { createContext } from 'use-context-selector';
 import { useAppKit } from '@reown/appkit/react';
 import reducer, {
@@ -8,7 +9,6 @@ import reducer, {
 import {
   type AddPopupPayload,
   type RemovePopupPayload,
-  toggleWalletModalAction,
   toggleInfoModalAction,
   toggleClaimModalAction,
   toggleRedeemModalAction,

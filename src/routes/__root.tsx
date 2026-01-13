@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet, HeadContent } from '@tanstack/react-router';
+import { createRootRoute, Outlet, } from '@tanstack/react-router';
 
 import RootLayout from '../../RootLayout';
 import NotFoundPage from '../pages/404';

@@ -4,7 +4,7 @@ import { useActiveWeb3React } from '../hooks/web3Manager';
 import STAKING_V1_ABI from '../constants/abis/shakka_v1';
 import STAKING_ABI from '../constants/abis/shakka';
 import {
-  ChainId,
+  type ChainId,
   STAKING_ADDRESSES,
   NEW_SHAKKA_ADDRESSES,
   STAKING_OPTION_MONTH,

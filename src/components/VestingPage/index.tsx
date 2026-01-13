@@ -1,8 +1,7 @@
-import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
+
 import { useMemo, useState, useEffect } from 'react';
 import Countdown, { zeroPad } from 'react-countdown';
 import { formatUnits, isAddress, isAddressEqual, zeroAddress } from 'viem';
-import _omit from 'lodash/omit';
 import Web3Status from '../Web3Status';
 import images from '../../images';
 import styles from './styles';
@@ -75,8 +74,8 @@ const VestingPage = () => {
     () =>
       vestingInfo[activeChainTab]?.lastWithdrawalTimeRaw &&
       Date.now() -
-        parseInt(
-          vestingInfo[activeChainTab].lastWithdrawalTimeRaw?.toString(),
+        Number.parseInt(
+          vestingInfo[activeChainTab].lastWithdrawalTimeRaw?.toString(), 10
         ) *
           1000 <
         1641600000,
@@ -139,7 +138,8 @@ const VestingPage = () => {
             }
           />
         </div>
-        <h3 sx={styles.heading}></h3>
+        {/** biome-ignore lint/a11y/useHeadingContent: ignore */}
+        <h3 sx={styles.heading} />
         <div sx={styles.tabWrapper}>
           <TabGroup
             list={vestingSupportChain}
@@ -151,7 +151,7 @@ const VestingPage = () => {
           <div sx={styles.vestingCard}>
             <div sx={styles.balanceCard}>
               <div sx={styles.iconWaitingBackgroundColor}>
-                <img src={images.iconWaiting} />
+                <img src={images.iconWaiting} alt='iconWaiting' />
               </div>
               <p sx={styles.vestingCardItemHeading}>Vesting Balance</p>
               <div sx={styles.balanceValueCard}>
@@ -166,7 +166,7 @@ const VestingPage = () => {
             </div>
             <div sx={styles.claimableCard}>
               <div sx={styles.iconWithdrawAvailableBackgroundColor}>
-                <img src={images.iconWithdrawAvailable} />
+                <img src={images.iconWithdrawAvailable} alt='iconWithdrawAvailable' />
               </div>
               <p sx={styles.vestingCardItemHeading}>Claimable Amount</p>
               <div sx={styles.displayFlex}>
@@ -192,7 +192,7 @@ const VestingPage = () => {
               rel='noreferrer noopener'
             >
               <span>Check vesting terms and learn more</span>
-              <img src={images.iconLinkNormal} sx={styles.iconLink} />
+              <img src={images.iconLinkNormal} sx={styles.iconLink} alt='iconLinkNormal' />
             </a>
             <div sx={styles.claimBtn}>
               <ClaimButton

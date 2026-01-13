@@ -20,7 +20,7 @@ const detailsInfo = [
 function UtilityHakka() {
   const navigate = useNavigate();
   const renderDetailsInfo = () =>
-    detailsInfo.map((item, i) => (
+    detailsInfo.map((item, _i) => (
       <Flex
         sx={styles.utilityInfoContainer}
         flexDirection='column'

@@ -23,7 +23,7 @@ export function useHakkaStake(
   amountParsedRaw: bigint,
   lockSec: number,
 ): [StakeState, () => Promise<void>] {
-  const { chainId, account } = useWeb3React();
+  const { chainId } = useWeb3React();
   const walletClient = useWalletClient({ chainId: chainId as ChainId })!;
   const publicClient = usePublicClient({ chainId: chainId as ChainId })!;
 
@@ -104,7 +104,17 @@ export function useHakkaStake(
     } finally {
       reset();
     }
-  }, [sender, amountParsedRaw, lockSec]);
+  }, [
+    sender,
+    amountParsedRaw,
+    lockSec,
+    stakeAddress,
+    chainId,
+    publicClient,
+    walletClient,
+    writeContractAsync,
+    reset,
+  ]);
 
   return [stakeState, stake];
 }

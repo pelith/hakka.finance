@@ -21,7 +21,7 @@ if (
 }
 
 export const NETWORK_CHAIN_ID: number = Number.parseInt(
-  import.meta.env.APP_CHAIN_ID ?? '1',
+  import.meta.env.APP_CHAIN_ID ?? '1', 10
 );
 
 const chainUrlList = [

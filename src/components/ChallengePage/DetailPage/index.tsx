@@ -34,7 +34,7 @@ const ChallengeDetailPage = ({ oatId }: ChallengeDetailPageProps) => {
       ? JSON.parse(localStorageViewedPages)
       : [];
 
-    if (viewedPages.findIndex((address) => address === oatId) === -1) {
+    if (viewedPages.indexOf(oatId) === -1) {
       viewedPages.push(oatId);
       window.localStorage.setItem('viewed-pages', JSON.stringify(viewedPages));
     }

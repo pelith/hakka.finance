@@ -1,18 +1,18 @@
-const buttons = {
+const _buttons = {
   primary: {
     color: 'red',
     bg: 'blue',
   },
 };
 
-const fontSizes = [];
+const _fontSizes = [];
 
-const colors = {
+const _colors = {
   background: 'black',
   primary: 'tomato',
 };
 
-const space = [0, 4, 8, 12, 16, 32, 64];
+const _space = [0, 4, 8, 12, 16, 32, 64];
 
 const defaultTheme = {
   colors: {

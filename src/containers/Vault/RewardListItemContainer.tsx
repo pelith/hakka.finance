@@ -5,7 +5,6 @@ import { useBalance } from 'wagmi';
 import RewardListItem from '../../components/VaultPage/RewardListItem/index';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo, useRef } from 'react';
-import { formatCommonNumber } from '@/utils/formatCommonNumbers';
 interface RewardListItemContainerProps {
   tokenAddress: Address;
   guildBankAddress: Address;

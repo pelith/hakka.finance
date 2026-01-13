@@ -2,7 +2,7 @@ import { parseUnits } from 'viem';
 import styles from './styles';
 import { escapeRegExp } from '../../utils/index';
 import { memo } from 'react';
-const inputRegex = RegExp('^\\d*(?:\\\\[.])?\\d*$'); // match escaped "." characters via in a non-capturing group
+const inputRegex = /^\d*(?:\\[.])?\d*$/; // match escaped "." characters via in a non-capturing group
 
 export const NumercialInput = memo(
   ({
@@ -26,7 +26,7 @@ export const NumercialInput = memo(
         // escape from underflow shutdown
         try {
           parseUnits(nextUserInput, 18);
-        } catch (error) {
+        } catch (_error) {
           nextUserInput = nextUserInput.substring(0, nextUserInput.length - 1);
         }
         onUserInput(nextUserInput);

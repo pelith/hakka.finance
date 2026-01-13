@@ -7,7 +7,6 @@ import styles from './styles';
 import {
   LevelInfo,
   MissionStatusOptions,
-  OAT_INFO,
 } from '../../../constants/challenge';
 
 import type { CampaignsInfoType } from '../../../hooks/useProjectGalaxyCampaignsInfo';
@@ -23,7 +22,7 @@ const MissionSection = ({
   isLoaded,
   userLevel,
 }: MissionSectionProps) => {
-  const userLevelNumber = Number.parseInt(userLevel);
+  const userLevelNumber = Number.parseInt(userLevel, 10);
   return (
     <div>
       <div sx={styles.missionHeader}>
@@ -47,7 +46,7 @@ const MissionSection = ({
       {isMobile && <MissionStatusHint />}
       {Object.keys(LevelInfo)
         .reverse()
-        .map((levelValue, index) => {
+        .map((levelValue, _index) => {
           if (userLevelNumber >= Number.parseInt(levelValue, 10)) {
             return (
               <div key={levelValue} sx={styles.missionItemWrapper}>
@@ -59,7 +58,7 @@ const MissionSection = ({
                   isDefaultOpen={userLevel === levelValue}
                 >
                   {LevelInfo[levelValue as `${number}`].missionList.map(
-                    (oatAddress, index) => (
+                    (oatAddress, _index) => (
                       <div key={`${oatAddress}`}>
                         <MissionItem
                           oatAddress={oatAddress}

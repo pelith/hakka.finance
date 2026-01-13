@@ -1,5 +1,5 @@
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, } from 'react';
 import { formatUnits, parseUnits } from 'viem';
 import styles from './styles';
 import useTokenPrice from '../../../hooks/useTokenPrice';
@@ -243,7 +243,7 @@ const PoolDetail = ({ pool }: { pool: string }) => {
                   <span sx={styles.infoValue}> ${tvl} </span>
                 </>
               ) : (
-                <></>
+                null
               )}
             </div>
             <div sx={styles.infoItem}>

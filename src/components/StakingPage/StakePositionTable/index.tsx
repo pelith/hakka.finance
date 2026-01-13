@@ -9,7 +9,6 @@ import {
   renderExpiryDate,
   renderVaultIcon,
 } from './TableComponent';
-import { formatUnits } from 'viem';
 import { createBigNumberSort } from '../../../utils/sort';
 import type { VaultType } from '../../../hooks/staking/useStakingVault';
 import { isMobile } from 'react-device-detect';
@@ -75,17 +74,17 @@ export default memo(function StakePositionTable(props: IProps) {
       return (
         <div className='button-group'>
           {state > 1 && (
-            <button sx={styles.button} onClick={() => onRedeem(record.index)}>
+            <button sx={styles.button} onClick={() => onRedeem(record.index)} type='button'>
               Redeem
             </button>
           )}
           {state > 0 && (
-            <button sx={styles.button} onClick={() => onRestake(record.index)}>
+            <button sx={styles.button} onClick={() => onRestake(record.index)} type='button'>
               Restake
             </button>
           )}
           {!state && (
-            <button sx={styles.button} disabled>
+            <button sx={styles.button} disabled type='button'>
               Redeemed
             </button>
           )}
@@ -134,7 +133,7 @@ export default memo(function StakePositionTable(props: IProps) {
               dataIndex='icon'
               render={renderVaultIcon}
               width={72}
-            ></Column>
+            />
 
             <Column<ITableData>
               title='Expiry date'
@@ -178,7 +177,7 @@ export default memo(function StakePositionTable(props: IProps) {
               checked={showArchive}
               onChange={handleArchive}
             />
-            <span className='slider'></span>
+            <span className='slider' />
           </label>
           <span sx={styles.switchLabel}>Show archive</span>
         </div>

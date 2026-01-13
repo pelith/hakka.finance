@@ -42,7 +42,7 @@ const Header = (props: HeaderProps) => {
     toggleSidebar();
   };
   const renderListIcon = () =>
-    listIcon.map((item, i) => (
+    listIcon.map((item, _i) => (
       <a
         key={item.url}
         target='_blank'

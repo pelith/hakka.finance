@@ -1,14 +1,13 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { useTokenAllowance } from './contracts/token/useTokenAllowance';
 import { useActiveWeb3React } from './web3Manager';
-import { toast } from 'react-toastify';
 import isZero from '../utils/isZero';
 import { erc20Abi, formatUnits, isAddress, type Address } from 'viem';
 import { useTokenInfoAndBalance } from './contracts/token/useTokenInfoAndBalance';
 import BigNumber from 'bignumber.js';
 import type { ChainId } from '@/constants';
-import { usePublicClient, useWaitForTransactionReceipt } from 'wagmi';
+import { useWaitForTransactionReceipt } from 'wagmi';
 import useAppWriteContract from './contracts/useAppWriteContract';
 
 export enum ApprovalState {

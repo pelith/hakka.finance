@@ -9,7 +9,7 @@ import styles from './styles-v1';
 import Web3Status from '../Web3Status';
 import { useStakingDataV1 } from '../../data/StakingData';
 import StakePositionItem from './StakePositionItem/index';
-import { ChainId, STAKING_ADDRESSES } from '../../constants';
+import { type ChainId, STAKING_ADDRESSES } from '../../constants';
 import VotingPowerContainer, {
   StakingVersion,
 } from '../../containers/VotingPowerContainer';
@@ -40,9 +40,7 @@ const Staking = () => {
   const [isShowArchived, setIsShowArchived] = useState<boolean>(true);
   const [isSortByUnlockTime, setIsSortByUnlockTime] = useState<boolean>(false);
   const navigate = useNavigate();
-  const {
-    data: { stakingBalance, sHakkaBalance, stakingRate, votingPower } = {},
-  } = useStakingDataV1();
+  const { data: { stakingBalance, sHakkaBalance } = {} } = useStakingDataV1();
   const { vault: vaults } = useStakingVaultV1(chainId as ChainId);
 
   const isCorrectNetwork = useMemo<boolean>(() => {
@@ -58,7 +56,7 @@ const Staking = () => {
 
   const [unarchivePosition, archivedPosition] = useMemo(() => {
     let archivedPosition: (VaultType & { index: number })[] = [];
-    let unarchivePosition: (VaultType & { index: number })[] = [];
+    const unarchivePosition: (VaultType & { index: number })[] = [];
 
     vaults.forEach((vault, index) => {
       if (vault?.hakkaAmount.eq(0)) {
@@ -76,10 +74,9 @@ const Staking = () => {
     if (isSortByUnlockTime) {
       unarchivePosition.sort(createBigNumberSort('asc', 'unlockTime'));
       return unarchivePosition;
-    } else {
-      unarchivePosition.sort(createBigNumberSort('desc', 'index'));
-      return unarchivePosition;
     }
+    unarchivePosition.sort(createBigNumberSort('desc', 'index'));
+    return unarchivePosition;
   }, [isSortByUnlockTime, unarchivePosition]);
 
   const handleSortBtnClick = useCallback(
@@ -97,7 +94,7 @@ const Staking = () => {
               sx={styles.btnBack}
               onClick={() => navigate({ to: '/staking' })}
             >
-              <img src={images.iconBack} />
+              <img src={images.iconBack} alt='' aria-hidden='true' />
               <span>Back to V2</span>
             </div>
           )}
@@ -109,7 +106,7 @@ const Staking = () => {
               sx={styles.btnBack}
               onClick={() => navigate({ to: '/staking' })}
             >
-              <img src={images.iconBack} />
+              <img src={images.iconBack} alt='' aria-hidden='true' />
               <span>Back to V2</span>
             </div>
           )}
@@ -126,7 +123,7 @@ const Staking = () => {
                   target='_blank'
                   sx={styles.governanceButton}
                 >
-                  <img src={images.iconToGovernance} />
+                  <img src={images.iconToGovernance} alt='Go to governance' />
                 </a>
                 <ReactTooltip
                   place='bottom'
@@ -163,6 +160,7 @@ const Staking = () => {
           <div sx={styles.positionHeader}>
             <h2 sx={styles.positionTitle}>Stake position</h2>
             <button
+              type='button'
               sx={
                 isSortByUnlockTime
                   ? { ...styles.sortBtn, ...styles.activeSortBtn }
@@ -173,14 +171,16 @@ const Staking = () => {
               <img
                 sx={!isSortByUnlockTime ? styles.inactiveSVG : {}}
                 src={images.iconSort}
+                alt=''
+                aria-hidden='true'
               />
               <span>Sort by expiry date</span>
             </button>
           </div>
-          {sortedUnarchivePosition.map((vault, index) => {
+          {sortedUnarchivePosition.map((vault, _index) => {
             return (
               <StakePositionItem
-                key={index}
+                key={vault.index}
                 sHakkaBalance={sHakkaBalance ?? '0'}
                 index={vault.index}
                 stakedHakka={vault.hakkaAmount}
@@ -195,14 +195,18 @@ const Staking = () => {
               sx={styles.archivedTitle}
             >
               <p>Archived</p>
-              <img src={isShowArchived ? images.iconUp : images.iconDown} />
+              <img
+                src={isShowArchived ? images.iconUp : images.iconDown}
+                alt=''
+                aria-hidden='true'
+              />
             </div>
           </div>
           {isShowArchived &&
-            archivedPosition.map((vault, index) => {
+            archivedPosition.map((vault, _index) => {
               return (
                 <StakePositionItem
-                  key={index}
+                  key={vault.index}
                   sHakkaBalance={sHakkaBalance ?? '0'}
                   index={vault.index}
                   stakedHakka={vault.hakkaAmount}

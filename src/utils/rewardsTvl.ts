@@ -1,4 +1,4 @@
-import { getContract, parseEther, parseUnits } from 'viem';
+import { parseEther, parseUnits } from 'viem';
 import ERC20_ABI from '../constants/abis/erc20';
 import {
   HAKKA,
@@ -138,7 +138,7 @@ export function getGainTvlFunc(
   chainId: ChainId,
   tokenPriceKey?: string,
 ): (tokenPrice: any) => Promise<bigint> {
-  return async function (tokenPrice: any): Promise<bigint> {
+  return async (tokenPrice: any): Promise<bigint> => {
     const client = JSON_RPC_PROVIDER[chainId];
     const rewardsAddress = REWARD_POOLS[iGainAddress].rewardsAddress; // farm address
     const tokenAddress = REWARD_POOLS[iGainAddress].tokenAddress; // igain lp address

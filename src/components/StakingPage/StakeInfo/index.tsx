@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { isMobile } from 'react-device-detect';
 import images from '../../../images';
 import styles from './styles';

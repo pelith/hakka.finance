@@ -1,4 +1,5 @@
-import React, { type Context } from 'react';
+import type React from 'react';
+import type { Context } from 'react';
 import { useContextSelector } from 'use-context-selector';
 
 import ApplicationContextProvider from './application/context';
@@ -15,6 +16,6 @@ export const ContextProviders: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => (
   <ApplicationContextProvider>
-    <>{children}</>
+    {children}
   </ApplicationContextProvider>
 );

@@ -30,7 +30,7 @@ export function useEagerConnect() {
  * wagmi handles wallet events automatically
  * This hook is kept for backwards compatibility but is mostly a no-op
  */
-export function useInactiveListener(suppress = false) {
+export function useInactiveListener(_suppress = false) {
   // wagmi handles chainChanged and accountsChanged events automatically
   // This hook is kept for backwards compatibility
   return;

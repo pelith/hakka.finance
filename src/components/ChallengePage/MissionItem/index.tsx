@@ -7,8 +7,6 @@ import {
   MISSION_STATUS,
   notificationMissionAddresses,
   OAT_INFO,
-  PriorityInfo,
-  PriorityOptions,
 } from '../../../constants/challenge';
 import { useNavigate } from '@tanstack/react-router';
 import images from '../../../images';
@@ -27,12 +25,11 @@ const MissionItem = ({
 }: MissionItemProps) => {
   const isUpcoming = missionStatus === MissionStatusOptions.UPCOMING;
   const missionIndex = oatAddress ? OAT_INFO[oatAddress].missionIndex : '';
-  const priority = oatAddress ? OAT_INFO[oatAddress].priority : '';
+  const _priority = oatAddress ? OAT_INFO[oatAddress].priority : '';
   const missionTitle = oatAddress ? OAT_INFO[oatAddress].describeTitle : '';
   const oatImg = oatAddress ? images[OAT_INFO[oatAddress].img] : '';
   const isNewMission =
-    notificationMissionAddresses.findIndex(
-      (address) => address === oatAddress,
+    notificationMissionAddresses.indexOf(oatAddress,
     ) >= 0;
 
   const [isImgLoading, setIsImgLoading] = useState(true);

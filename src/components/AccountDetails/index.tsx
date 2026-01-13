@@ -5,7 +5,7 @@ import Copy from './Copy';
 import { SUPPORTED_WALLETS } from '../../constants';
 import images from '../../../src/images';
 import CurrentNetwork from '../CurrentNetwork';
-import { injected, walletlink, uauth } from '../../connectors';
+import { injected, } from '../../connectors';
 import { MyButton } from '../Common';
 import styles from './styles';
 
@@ -26,7 +26,7 @@ export default function AccountDetails({
 
   function formatConnectorName() {
     const { ethereum } = window;
-    const isMetaMask = !!(ethereum && ethereum.isMetaMask);
+    const isMetaMask = !!(ethereum?.isMetaMask);
     const name = Object.keys(SUPPORTED_WALLETS)
       .filter(
         (k) =>

@@ -1,4 +1,4 @@
-import { type Address } from 'viem';
+import type { Address } from 'viem';
 import { STAKING_ADDRESSES } from '../constants';
 import { ChainId } from '../constants';
 

@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import {
   ChainDataFetchingState,
   NEW_SHAKKA_ADDRESSES,
-  ChainId,
+  type ChainId,
   STAKING_ADDRESSES,
 } from '../../constants';
 import STAKING_ABI from '../../constants/abis/shakka';

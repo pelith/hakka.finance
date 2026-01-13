@@ -3,7 +3,7 @@ import { walletlink, walletlinkHooks } from './Coinbase';
 import { injected, injectedHooks } from './Injected';
 import { uauth, uauthhooks } from './UauthConnector';
 import { walletconnect, walletconnectHooks } from './WalletConnect';
-import { Connector } from '@web3-react/types';
+import type { Connector } from '@web3-react/types';
 import { network, networkHooks } from './NetworkConnector';
 
 export const CONNECTORS = [

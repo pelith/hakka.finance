@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import VotingPowerArea from '../../components/StakingPage/VotingPower';
 import { formatUnits } from 'viem';
 import { ChainId } from '../../constants';
@@ -38,10 +38,10 @@ const VotingPowerContainer = ({
     );
     const v2Weight = v1Weight.sub(1).abs();
     const weightedV1VotingPower = v1Weight.mul(
-      parseFloat(formatUnits(v1VotingPower ?? ZERO, 18)),
+      Number.parseFloat(formatUnits(v1VotingPower ?? ZERO, 18)),
     );
     const weightedV2VotingPower = v2Weight.mul(
-      parseFloat(
+      Number.parseFloat(
         formatUnits(
           availableList.reduce((total, chainId) => {
             return total + (votingPowerInfo[chainId] ?? ZERO);
@@ -65,7 +65,7 @@ const VotingPowerContainer = ({
         }
         return (
           previousValue +
-          parseFloat(formatUnits(votingPowerInfo[currentChainId], 18))
+          Number.parseFloat(formatUnits(votingPowerInfo[currentChainId], 18))
         );
       },
       0,
@@ -75,7 +75,7 @@ const VotingPowerContainer = ({
       if (!votingPowerInfo[chainId]) {
         return '-';
       }
-      const molecular = parseFloat(formatUnits(votingPowerInfo[chainId], 18));
+      const molecular = Number.parseFloat(formatUnits(votingPowerInfo[chainId], 18));
       if (molecular > 0) {
         return ((molecular / v2ProportionSum) * 100).toFixed(2);
       }

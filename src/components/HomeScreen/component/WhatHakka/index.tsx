@@ -1,6 +1,6 @@
 /** @jsxFrag */
 
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Box, Flex } from 'rebass';
 import styles from './styles';
 import { useReadContracts } from 'wagmi';

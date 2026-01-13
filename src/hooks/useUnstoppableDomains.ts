@@ -26,7 +26,7 @@ export default function useUnstoppableDomains(address?: string): {
       new UAuth(uauthOptions).user().then((user) => {
         setDomain(user.sub || '');
       });
-    } catch (error) {
+    } catch (_error) {
       setDomain('');
     }
   }, [debouncedAddress, username, changed]);

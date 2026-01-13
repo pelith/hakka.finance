@@ -7,7 +7,7 @@ type Props = {
 
 const Skeleton = ({ isLoaded, className }: Props) => {
   if (isLoaded === undefined) {
-    return <></>;
+    return null;
   }
   return (
     <div style={{ display: isLoaded ? 'none' : '' }} className={className} />

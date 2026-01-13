@@ -26,7 +26,7 @@ interface ProportionItemProps {
 const ProportionItem = ({ proportionValue, img }: ProportionItemProps) => {
   return (
     <div sx={styles.proportionItem}>
-      <img src={img} />
+      <img src={img} alt='proportion' />
       <p>{proportionValue}%</p>
     </div>
   );
@@ -50,7 +50,7 @@ const VotingPowerArea = (props: VotingPowerAreaProps) => {
       <div sx={styles.votingPowerContainer}>
         <div sx={styles.votingPowerTitle}>
           <p>Voting Power</p>
-          <img src={images.iconQuestion} data-tip data-for='votingPower' />
+          <img src={images.iconQuestion} data-tip data-for='votingPower' alt='question' />
           <ReactTooltip
             id='votingPower'
             float
@@ -78,6 +78,7 @@ const VotingPowerArea = (props: VotingPowerAreaProps) => {
                 src={images.iconProportion}
                 data-tip
                 data-for='votingPowerValue'
+                alt='proportion'
               />
               <ReactTooltip
                 id='votingPowerValue'

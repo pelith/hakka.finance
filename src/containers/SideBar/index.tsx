@@ -88,7 +88,7 @@ function SideBar(props: {
   isShowSideBar: boolean;
 }) {
   const { onCloseSideBar, isShowSideBar } = props;
-  const [selectedNav, setSelectedNav] = useState('');
+  const [_selectedNav, setSelectedNav] = useState('');
   const [isViewAllNotifiedMission, setIsViewAllNotifiedMission] =
     useState<boolean>(true);
   const isBrowser = typeof window !== 'undefined';
@@ -123,14 +123,14 @@ function SideBar(props: {
     onCloseSideBar(false);
   };
   const renderTopSideBar = () =>
-    topSideBarItems.map((it, idx) => (
+    topSideBarItems.map((it, _idx) => (
       <Box key={it.name} onClick={onSelectNavItem(it.path)}>
         <SideBarItem icon={it.icon} text={it.name} path={it.path} />
       </Box>
     ));
 
   const renderBotSideBar = () =>
-    botSideBarItems.map((it, idx) => (
+    botSideBarItems.map((it, _idx) => (
       <Box
         key={it.name}
         onClick={

@@ -1,6 +1,6 @@
-import { formatUnits, parseUnits } from 'viem';
+
 import {
-  ChainId,
+  type ChainId,
   NEW_SHAKKA_ADDRESSES,
   SEC_OF_YEAR,
   STAKING_RATE_MODEL_RELEASE_TIME,
@@ -18,11 +18,11 @@ const stakeFormula = (
 export const getFinalStakingRate = (
   time: string,
   startStakingRate: number,
-): number => (Math.pow(2, parseFloat(time)) * startStakingRate) / 16;
+): number => (2 ** Number.parseFloat(time) * startStakingRate) / 16;
 
 export const getStartStakingRate = (contractReleaseDate: number) => {
   const timeElapsed = (Date.now() / 1000 - contractReleaseDate) / SEC_OF_YEAR;
-  const rate = Math.pow(2, timeElapsed);
+  const rate = 2 ** timeElapsed;
   return rate;
 };
 
@@ -38,7 +38,7 @@ export function stakeReceivedAmount(
     STAKING_RATE_MODEL_RELEASE_TIME[NEW_SHAKKA_ADDRESSES[chainId]],
   );
   const receivedSHakkaAmount = stakeFormula(
-    parseFloat(amount),
+    Number.parseFloat(amount),
     time,
     stakingRate,
   );
@@ -55,8 +55,8 @@ export function restakeReceivedAmount(
     return [];
   }
   if (
-    parseFloat(time) > 4 ||
-    parseFloat(time) < THIRTY_MINS_FRACTIONS_OF_YEAR
+    Number.parseFloat(time) > 4 ||
+    Number.parseFloat(time) < THIRTY_MINS_FRACTIONS_OF_YEAR
   ) {
     return [];
   }

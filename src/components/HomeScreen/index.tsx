@@ -1,6 +1,6 @@
 /** @jsxFrag */
 
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Box, Flex } from 'rebass';
 import images from '../../images';
 import styles from './styles';

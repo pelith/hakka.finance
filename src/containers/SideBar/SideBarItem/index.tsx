@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+
 import { Box, Flex, Text } from 'rebass';
 import styles from './styles';
 import { upperCaseFirstLetter } from '../../../common/functions';
@@ -31,7 +31,7 @@ const SideBarItem = (props: {
     >
       <Flex sx={{ width: '100%' }} justifyContent='space-between'>
         <Flex>
-          <img src={icon} />
+          <img src={icon} alt='icon' />
           <Text sx={styles.sidebar_text} className='sidebar-text' ml='12px'>
             {upperCaseFirstLetter(text)}
           </Text>
@@ -42,7 +42,7 @@ const SideBarItem = (props: {
                 <div sx={styles.notification_dot} />
               </div>
             )
-          : (subIcon && <img src={subIcon} />) || null}
+          : (subIcon && <img src={subIcon} alt='subIcon' />) || null}
       </Flex>
     </Box>
   );

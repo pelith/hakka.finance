@@ -6,7 +6,7 @@ import { MyButton } from '../../Common';
 import withConnectWalletCheckWrapper from '../../../hoc/withConnectWalletCheckWrapper';
 import withWrongNetworkCheckWrapper from '../../../hoc/withWrongNetworkCheckWrapper';
 import { useWalletModalToggle } from '../../../state/application/hooks';
-import { ChainId } from '../../../constants';
+import type { ChainId } from '../../../constants';
 import { useNavigate } from '@tanstack/react-router';
 
 interface RewardsPoolCardProps {
@@ -53,13 +53,13 @@ const RewardsPoolCard = (props: RewardsPoolCardProps) => {
       <div sx={styles.illustration} />
       <div sx={styles.header}>
         <p>APR {apr}%</p>
-        <img sx={styles.icon} src={tokenImage} />
+        <img sx={styles.icon} src={tokenImage} alt='token' />
       </div>
       <p sx={styles.title}>{title}</p>
       {subtitle && <p sx={styles.subtitle}>{subtitle}</p>}
       <a sx={styles.link} target='_blank' rel='noreferrer noopener' href={url}>
         <span>{linkContent}</span>
-        <img src={images.iconLinkNormal} />
+        <img src={images.iconLinkNormal} alt='link' />
       </a>
       <div sx={styles.rewardInfo}>
         <p>You deposited</p>

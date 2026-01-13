@@ -1,15 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
-import { getEtherscanLink, shortenTxId } from '../../utils';
 import { parseUnits } from 'viem';
 import { toast } from 'react-toastify';
-import { ExternalLink } from 'react-feather';
 import { REWARD_POOLS } from '../../constants/rewards';
 import type { ChainId } from '@/constants';
 import {
   usePublicClient,
   useWaitForTransactionReceipt,
-  useWriteContract,
 } from 'wagmi';
 import STAKING_REWARDS_ABI from '@/constants/abis/staking_rewards';
 import useAppWriteContract from '../contracts/useAppWriteContract';

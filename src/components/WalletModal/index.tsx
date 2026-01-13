@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from 'react';
 import { useActiveWeb3React as useWeb3React } from '@/hooks/useActiveWeb3React';
 import { UAuthConnector } from '@uauth/web3-react';
-import { Connector } from '@web3-react/types';
+import type { Connector } from '@web3-react/types';
 import usePrevious from '../../hooks/usePrevious';
 import {
   useWalletModalOpen,

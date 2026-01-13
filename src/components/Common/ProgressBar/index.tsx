@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import styles from './styles';
 
 interface ProgressBarProps {
@@ -32,7 +32,7 @@ const ProgressBar = ({
         ? colorList[colorList.length - 1]
         : colorList[Math.floor(progressRate / (100 / colorList?.length))];
     const isCompletedTaskAmountLgThanZero = completedTaskAmount > 0;
-    const taskCounter = completedTaskAmount + '/' + totalTaskAmount;
+    const taskCounter = `${completedTaskAmount}/${totalTaskAmount}`;
     return [
       progressRate,
       progressColor,
@@ -46,9 +46,9 @@ const ProgressBar = ({
       const width = isAnimationCanBePlayed
         ? 100
         : ((totalTaskAmount - 1) / totalTaskAmount) * 100;
-      return width + '%';
+      return `${width}%`;
     }
-    return isCompletedTaskAmountLgThanZero ? progressRate + '%' : '20px';
+    return isCompletedTaskAmountLgThanZero ? `${progressRate}%` : '20px';
   }, [
     isAnimationCanBePlayed,
     progressRate,

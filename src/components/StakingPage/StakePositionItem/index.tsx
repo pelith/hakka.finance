@@ -9,7 +9,7 @@ import NumericalInputField from '../../NumericalInputField';
 import { useActiveWeb3React } from '../../../hooks/web3Manager';
 import { useTokenApprove, ApprovalState } from '../../../hooks/useTokenApprove';
 import {
-  ChainId,
+  type ChainId,
   HAKKA,
   STAKING_ADDRESSES,
   TransactionState,
@@ -94,8 +94,8 @@ const StakePositionItem = (props: StakePositionProps) => {
     <div sx={styles.redeemToggleCountdown}>
       <span>
         {days
-          ? zeroPad(days) + ' Days Left'
-          : zeroPad(hours) + 'h ' + zeroPad(minutes) + 'm Left'}
+          ? `${zeroPad(days)} Days Left`
+          : `${zeroPad(hours)}h ${zeroPad(minutes)}m Left`}
       </span>
     </div>
   );

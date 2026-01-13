@@ -1,6 +1,6 @@
-import { http, createConfig } from 'wagmi';
+import { http, } from 'wagmi';
 import { mainnet, bsc, polygon, fantom } from 'wagmi/chains';
-import { coinbaseWallet, walletConnect, injected } from 'wagmi/connectors';
+import { coinbaseWallet, } from 'wagmi/connectors';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { createAppKit } from '@reown/appkit/react';
 const projectId = import.meta.env.APP_WALLETCONNECT_PROJECT_ID;

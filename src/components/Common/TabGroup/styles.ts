@@ -1,4 +1,4 @@
-import createSX from '@/utils/createSX';
+
 
 const tabActive = {
   backgroundColor: '#ebf0f2',

@@ -1,4 +1,4 @@
-import { Connector as AbstractConnector } from '@web3-react/types';
+import type { Connector as AbstractConnector } from '@web3-react/types';
 import type { Address, PublicClient } from 'viem';
 import { createPublicClient, http, zeroAddress } from 'viem';
 import { mainnet, bsc, polygon, fantom } from 'viem/chains';

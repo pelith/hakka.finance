@@ -1,5 +1,5 @@
 /** @jsxFrag */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Box, Flex, Text } from 'rebass';
 import images from '../../../images';
@@ -30,8 +30,7 @@ const CardProduct = (props: {
     handleCheckSelectedCard();
   }, [selectedCard]);
   return (
-    <>
-      <Box
+    <Box
         onClick={() => {
           handleIsShowInfo();
         }}
@@ -41,7 +40,7 @@ const CardProduct = (props: {
         <Flex sx={styles.card_link} justifyContent='space-between'>
           {/* onClick={() => {vist? window.open(vist, '_blank').focus() : handleIsShowInfo()}} */}
           <Box sx={{ padding: '10px' }}>
-            <img sx={styles.img_icon} src={icon} />
+            <img sx={styles.img_icon} src={icon} alt='icon' />
           </Box>
           <Box>
             <Flex
@@ -59,7 +58,7 @@ const CardProduct = (props: {
                     {' '}
                     Visit
                   </Text>
-                  <img className='top-left-icon' src={images.iconLinkNormal} />
+                  <img className='top-left-icon' src={images.iconLinkNormal} alt='link' />
                 </>
               )}
             </Flex>
@@ -69,10 +68,9 @@ const CardProduct = (props: {
           <Text
             sx={styles.card_text}
             className='card-text'
-            dangerouslySetInnerHTML={{
-              __html: cardName.replace(/\n/gim, '<br/>'),
-            }}
-          />
+          >
+            {cardName}  
+          </Text>
           <Flex justifyContent='space-between'>
             <Box sx={styles.dropdown_text} className='dropdown-text'>
               Learn more
@@ -81,12 +79,12 @@ const CardProduct = (props: {
               <img
                 className='bottom-right-icon'
                 src={isShowInfo ? images.iconUp : images.iconDown}
+                alt='arrow'
               />
             </Flex>
           </Flex>
         </Flex>
       </Box>
-    </>
   );
 };
 

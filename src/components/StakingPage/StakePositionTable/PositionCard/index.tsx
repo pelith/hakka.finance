@@ -22,7 +22,7 @@ export default function PositionCard(props: IProps) {
             date={fromUnixTime(Number(data.unlockTime))}
             intervalDelay={30000}
             renderer={expiredCountdownRenderer}
-          ></Countdown>
+          />
         </strong>
         <span className='sub-title'>
           {getDateFromBigNumber(Number(data.unlockTime))}

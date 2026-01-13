@@ -5,7 +5,7 @@ export function unstakeReceivedAmount(
   withdrawAmount: string,
   vault?: any,
 ): string | undefined {
-  if (!(vault && vault.wAmount && vault.hakkaAmount && withdrawAmount)) {
+  if (!(vault?.wAmount && vault.hakkaAmount && withdrawAmount)) {
     return undefined;
   }
 

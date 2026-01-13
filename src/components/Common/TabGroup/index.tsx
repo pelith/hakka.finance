@@ -1,4 +1,4 @@
-import { ChainId } from '../../../constants';
+import type { ChainId } from '../../../constants';
 import styles from './styles';
 import images from '../../../images';
 import type { ThemeUIStyleObject } from 'theme-ui';
@@ -12,7 +12,7 @@ export const TabGroup = (props: IProps) => {
   const { list, active } = props;
   return (
     <div sx={styles as ThemeUIStyleObject}>
-      {list.map((item, index) => (
+      {list.map((item, _index) => (
         <div
           key={item.value}
           onClick={() => props.onChange(item.value)}
