@@ -39,10 +39,11 @@ jobs:
       - run: yarn build:dev
       # Deploy to Netlify using our production secrets
       - name: Deploy to netlify
-        uses: netlify/actions/cli@master
+        uses: qbtf/action-netlify-cli@v2
+        id: netlify
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_DEV }}
+          NETLIFY_SITE_ID: 510be721-6675-46d0-9306-48c3bc779345
         with:
           args: deploy --dir=public --prod
           secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID_DEV"]'

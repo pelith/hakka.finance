@@ -37,26 +37,37 @@ jobs:
         with:
           node-version: 22.x
           cache: 'pnpm'
-      - name: Get pnpm cache directory path
-        id: pnpm-cache-dir-path
-        run: echo "::set-output name=dir::$(pnpm cache dir)"
-      - uses: actions/cache@v4
-        id: pnpm-cache # use this to check for `cache-hit` (`steps.pnpm-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-    
-      # Run npm install and build on our code
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          - uses: actions/cache@v4
+          name: Setup pnpm cache
+          with:
+            path: ${{ env.STORE_PATH }}
+            key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+            restore-keys: |
+              ${{ runner.os }}-pnpm-store-
+      - name: Install and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+        env:
+          APP_ENV: production
+          APP_CHAIN_ID: 1
+          APP_NETWORK_URL: https://mainnet.infura.io/v3/c631883a8bc84ac19b69680df4cfd6b4
+          APP_BSC_NETWORK_URL: https://bsc-dataseed1.ninicoin.io
+          APP_FANTOM_NETWORK_URL: https://rpc.ankr.com/fantom
+          APP_POLYGON_NETWORK_URL: https://rpc.ankr.com/polygon
+          APP_UAUTH_CLIENT_ID: aa78dc8b-de48-4754-a1b9-52aa5a44c9b7
+          APP_PROJECT_GALAXY_ENDPOINT: https://graphigo.prd.galaxy.eco/query
+          APP_WALLETCONNECT_PROJECT_ID: 20a23f0fe6fae2e96f807c475d075c04
       # Deploy to Netlify using our production secrets
       - name: Deploy to netlify
         uses: netlify/actions/cli@master
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_PROD }}
+          NETLIFY_SITE_ID: e3335be6-9531-4bd6-b1dc-302013899981
         with:
           args: deploy --dir=dist --prod
           secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID_PROD"]'
