@@ -18,12 +18,19 @@ jobs:
       # Get code from repo
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       # Check project version
       - name: Extract version
         id: extract_version
         uses: Saionaro/extract-package-version@v1.1.1
       - name: Print version
         run: echo ${{ steps.extract_version.outputs.version }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
       - name: Cache version
         id: cache-version
         uses: actions/cache@v3
@@ -34,23 +41,24 @@ jobs:
         if: steps.cache-version.outputs.cache-hit == 'true'
         run: exit 1
       # Install NodeJS
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 16.x
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+          node-version: 22.x
+          cache: 'pnpm'
+      - name: Get pnpm cache directory path
+        id: pnpm-cache-dir-path
+        run: echo "::set-output name=dir::$(pnpm cache dir)"
       - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        id: pnpm-cache # use this to check for `cache-hit` (`steps.pnpm-cache.outputs.cache-hit != 'true'`)
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-pnpm-
       # Run npm install and build on our code
-      - run: yarn
-      - run: yarn build
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
       # Deploy to Netlify using our production secrets
       - name: Deploy to netlify
         uses: netlify/actions/cli@master
