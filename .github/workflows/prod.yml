@@ -7,12 +7,15 @@ on:
     branches:
       - main
       - master
-
+env:
+  NODE_OPTIONS: --max-old-space-size=32768
+  STORE_PATH: ~/.pnpm-store
 # Jobs to carry out
 jobs:
   deploy:
     # Operating system to run job on
     runs-on: ubuntu-latest
+    environment: production
     # Steps in job
     steps:
       # Get code from repo
@@ -37,17 +40,13 @@ jobs:
         with:
           node-version: 22.x
           cache: 'pnpm'
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-          - uses: actions/cache@v4
-          name: Setup pnpm cache
-          with:
-            path: ${{ env.STORE_PATH }}
-            key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-            restore-keys: |
-              ${{ runner.os }}-pnpm-store-
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       - name: Install and build
         run: |
           pnpm install --frozen-lockfile
@@ -64,10 +63,10 @@ jobs:
           APP_WALLETCONNECT_PROJECT_ID: 20a23f0fe6fae2e96f807c475d075c04
       # Deploy to Netlify using our production secrets
       - name: Deploy to netlify
-        uses: netlify/actions/cli@master
+        id: netlify
+        uses: qbtf/action-netlify-cli@v2
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: e3335be6-9531-4bd6-b1dc-302013899981
         with:
           args: deploy --dir=dist --prod
-          secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID_PROD"]'
